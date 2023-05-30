@@ -1,0 +1,17 @@
+@model Land
+
+<h2>Farm Details</h2>
+
+<div>
+    <h3>@Model.Name</h3>
+    <p>Size: @Model.Size hectares</p>
+</div>
+
+<div>
+    <h4>Actions</h4>
+    <ul>
+        <li><a href="@Url.Action("AddCrops", "Farm", new { farmId = Model.Id })">Add Crops</a></li>
+        <li><a href="#">Set Tasks</a></li>
+        <li><a href="#">Add Expenses</a></li>
+    </ul>
+</div>
