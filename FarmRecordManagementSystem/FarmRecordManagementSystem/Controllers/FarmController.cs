@@ -1,4 +1,5 @@
 ﻿using FarmRecordManagementSystem.Models;
+using FarmRecordManagementSystem.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +13,12 @@ namespace FarmRecordManagementSystem.Controllers
     {
         private IConfiguration _config;
 
-        public FarmController(ILogger<HomeController> logger, IConfiguration config)
+        private readonly IFarmRepository _farmRepository;
+
+        public FarmController(IConfiguration config, IFarmRepository farmRepository)
         {
             _config = config;
+            _farmRepository = farmRepository;
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
@@ -67,24 +71,7 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCrops(Crops crop, int farmId)
         {
-
-            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
-            connection.Open();
-
-            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"Variety\", \"PlantingDate\", \"ExpectedHarvestDate\")" +
-                        "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate)";
-
-            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@Name", crop.Name);
-                command.Parameters.AddWithValue("@Variety", crop.Variety);
-                command.Parameters.AddWithValue("@FarmId", farmId);
-                command.Parameters.AddWithValue("@PlantingDate", crop.PlantingDate);
-                command.Parameters.AddWithValue("@ExpectedHarvestDate", crop.ExpectedHarvestDate);
-
-                await command.ExecuteNonQueryAsync();
-            }
-
+            await _farmRepository.AddCrops(crop, farmId);
             return View(crop);
         }
 
