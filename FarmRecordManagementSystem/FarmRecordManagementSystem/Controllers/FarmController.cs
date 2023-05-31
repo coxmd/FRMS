@@ -83,9 +83,10 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
 
-        public IActionResult Index()
+        public async Task<IActionResult> GetFarmDetails(int farmId)
         {
-            return View();
+            var farm = await _farmRepository.GetFarmDetails(farmId);
+            return View(farm);
         }
 
         public IActionResult Privacy()

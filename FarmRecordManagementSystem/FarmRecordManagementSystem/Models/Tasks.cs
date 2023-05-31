@@ -1,6 +1,6 @@
 namespace FarmRecordManagementSystem.Models
 {
-    public class Task
+    public class Tasks
     {
         public int? Id { get; set; }
 

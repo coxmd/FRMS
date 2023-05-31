@@ -1,4 +1,5 @@
 ﻿using FarmRecordManagementSystem.Models;
+using FarmRecordManagementSystem.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,12 +12,14 @@ namespace FarmRecordManagementSystem.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IFarmRepository _farmRepository;
         private IConfiguration _config;
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration config)
+        public HomeController(ILogger<HomeController> logger, IConfiguration config, IFarmRepository farmRepository)
         {
             _logger = logger;
             _config = config;
+            _farmRepository = farmRepository;
         }
 
         [AllowAnonymous]
@@ -116,9 +119,10 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var farms = await _farmRepository.GetAllFarms();
+            return View(farms);
         }
 
         public IActionResult Privacy()

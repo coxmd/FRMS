@@ -1,6 +1,10 @@
+using FarmRecordManagementSystem.Repositories;
+using FarmRecordManagementSystem.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSingleton<IFarmRepository, FarmRepository>();
 
 builder.Services.AddAuthentication(options =>
 {

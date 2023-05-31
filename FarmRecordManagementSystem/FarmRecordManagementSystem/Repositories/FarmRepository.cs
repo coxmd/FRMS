@@ -14,7 +14,7 @@ namespace FarmRecordManagementSystem.Repositories
             _config = config;
         }
 
-        public async System.Threading.Tasks.Task AddCrops(Crops crop)
+        public async Task AddCrops(Crops crop, int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
@@ -34,7 +34,7 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
-        public System.Threading.Tasks.Task CreateFarm(Land farm)
+        public Task CreateFarm(Land farm)
         {
             throw new NotImplementedException();
         }
@@ -44,9 +44,64 @@ namespace FarmRecordManagementSystem.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<List<Land>> GetAllFarms()
+        public async Task<List<Land>> GetAllFarms()
         {
-            throw new NotImplementedException();
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            var farms = new List<Land>();
+            string commandText = $"SELECT * FROM public.\"Land\"";
+            using (NpgsqlCommand command = new NpgsqlCommand(commandText, connection))
+            {
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var farm = new Land
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            Size = (int)reader["Size"]
+                        };
+
+                        farms.Add(farm);
+                        // if(servicePoint is ServicePoint)
+                    }
+                }
+            }
+            if (farms.Count == 0)
+                return null;
+            return farms;
+        }
+
+        public async Task<Land> GetFarmDetails(int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            Land farm = null!;
+            string query = "SELECT * FROM public.\"Land\" WHERE public.\"Land\".\"Id\" = @farmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@farmId", farmId);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        farm = new Land
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            Size = (int)reader["Size"]
+                        };
+                        if (!reader.IsDBNull(reader.GetOrdinal("SoilType")))
+                        {
+                            farm.SoilType = (string)reader["SoilType"];
+                        }
+                    }
+                }
+            }
+            return farm;
         }
 
         public System.Threading.Tasks.Task UpdateCropDetails(int cropId)
