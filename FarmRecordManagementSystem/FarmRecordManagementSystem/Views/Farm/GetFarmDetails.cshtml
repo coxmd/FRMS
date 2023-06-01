@@ -7,7 +7,7 @@
     <p>SoilType: @Model.SoilType </p>
     <a href="@Url.Action("ViewAllCrops", "Farm", new { farmId = @Model.Id })" class="btn btn-primary">View Current planted crops</a>
     <a href="@Url.Action("ViewAllExpenses", "Farm", new { farmId = @Model.Id })" class="btn btn-primary">View All Expenses</a>
-    <a href="#" class="btn btn-primary">View All Pending Tasks</a>
+    <a href="@Url.Action("GetAllTasks", "Farm", new { farmId = @Model.Id })" class="btn btn-primary">View All Tasks</a>
 </div>
 
 <div>
