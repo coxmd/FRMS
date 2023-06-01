@@ -136,6 +136,7 @@ namespace FarmRecordManagementSystem.Repositories
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
+                command.Parameters.AddWithValue("@farmId", farmId);
                 using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
@@ -157,6 +158,39 @@ namespace FarmRecordManagementSystem.Repositories
             if (crops.Count == 0)
                 return null;
             return crops;
+        }
+
+        public async Task<List<Expenses>> ViewAllExpenses(int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            var expenses = new List<Expenses>();
+            string query = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@farmId", farmId);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var expense = new Expenses
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            Price = (int)reader["Price"],
+                            FarmId = (int)reader["FarmId"]
+                        };
+
+                        expenses.Add(expense);
+                        // if(servicePoint is ServicePoint)
+                    }
+                }
+            }
+            if (expenses.Count == 0)
+                return null;
+            return expenses;
         }
     }
 }

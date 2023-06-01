@@ -70,6 +70,13 @@ namespace FarmRecordManagementSystem.Controllers
             return View(crops);
         }
 
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> ViewAllExpenses(int farmId)
+        {
+            var expenses = await _farmRepository.ViewAllExpenses(farmId);
+            return View(expenses);
+        }
+
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("UserAuthentication");
