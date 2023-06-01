@@ -12,6 +12,8 @@ namespace FarmRecordManagementSystem.Services
         Task<List<Crops>> GetAllCrops();
         // Task<ServicePoint> GetServicePointById(int id);
         Task CreateFarm(Land farm);
+
+        Task<List<Crops>> ViewAllCrops(int farmId);
         Task AddCrops(Crops crop, int farmId);
         Task UpdateFarmDetails(Land farm);
         Task UpdateCropDetails(int cropId);

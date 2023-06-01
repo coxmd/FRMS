@@ -34,9 +34,21 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
-        public Task CreateFarm(Land farm)
+        public async Task CreateFarm(Land farm)
         {
-            throw new NotImplementedException();
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            string query = "INSERT INTO public.\"Land\" (\"Name\", \"Size\")" +
+                        "VALUES(@Name, @Size)";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Name", farm.Name);
+                command.Parameters.AddWithValue("@Size", farm.Size);
+
+                await command.ExecuteNonQueryAsync();
+            }
         }
 
         public Task<List<Crops>> GetAllCrops()
@@ -104,14 +116,47 @@ namespace FarmRecordManagementSystem.Repositories
             return farm;
         }
 
-        public System.Threading.Tasks.Task UpdateCropDetails(int cropId)
+        public Task UpdateCropDetails(int cropId)
         {
             throw new NotImplementedException();
         }
 
-        public System.Threading.Tasks.Task UpdateFarmDetails(Land farm)
+        public Task UpdateFarmDetails(Land farm)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<List<Crops>> ViewAllCrops(int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            var crops = new List<Crops>();
+            string query = "SELECT * FROM public.\"Crops\" WHERE public.\"Crops\".\"FarmId\" = @farmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var crop = new Crops
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            Variety = (string)reader["Variety"],
+                            PlantingDate = (DateTime)reader["PlantingDate"],
+                            ExpectedHarvestDate = (DateTime)reader["ExpectedHarvestDate"]
+                        };
+
+                        crops.Add(crop);
+                        // if(servicePoint is ServicePoint)
+                    }
+                }
+            }
+            if (crops.Count == 0)
+                return null;
+            return crops;
         }
     }
 }

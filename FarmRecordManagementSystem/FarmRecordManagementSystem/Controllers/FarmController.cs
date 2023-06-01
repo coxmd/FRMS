@@ -31,23 +31,11 @@ namespace FarmRecordManagementSystem.Controllers
         public async Task<IActionResult> Create(Land farm)
         {
 
-            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
-            connection.Open();
-
-            string query = "INSERT INTO public.\"Land\" (\"Name\", \"Size\")" +
-                        "VALUES(@Name, @Size)";
-
-            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@Name", farm.Name);
-                command.Parameters.AddWithValue("@Size", farm.Size);
-
-                await command.ExecuteNonQueryAsync();
-            }
-
-            return View(farm);
+            await _farmRepository.CreateFarm(farm);
+            return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
         public async Task<IActionResult> AddCrops(int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -75,6 +63,13 @@ namespace FarmRecordManagementSystem.Controllers
             return View(crop);
         }
 
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> ViewAllCrops(int farmId)
+        {
+            var crops = await _farmRepository.ViewAllCrops(farmId);
+            return View(crops);
+        }
+
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("UserAuthentication");
@@ -82,22 +77,11 @@ namespace FarmRecordManagementSystem.Controllers
             return RedirectToAction("Login");
         }
 
-
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
         public async Task<IActionResult> GetFarmDetails(int farmId)
         {
             var farm = await _farmRepository.GetFarmDetails(farmId);
             return View(farm);
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }
