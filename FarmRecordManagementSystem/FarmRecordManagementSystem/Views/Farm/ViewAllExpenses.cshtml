@@ -1,0 +1,37 @@
+@model List<Expenses>
+
+@* @{
+    Layout = "_LayoutAdminLoggedIn";
+} *@
+
+@* <partial name="_Notification" /> *@
+<h2>All Current Expenses</h2>
+<a asp-action="CreateExpense" class="btn btn-primary mt-1 mb-2">Add a new Expense</a>
+<a asp-action="GetFarmDetails" class="btn btn-danger mt-1 mb-2">Back</a>
+
+<table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
+    <colgroup>
+        <col width="20%" />
+        <col width="40%" />
+    </colgroup>
+    <thead>
+        <tr>
+            <th scope="row">Name</th>
+            <th scope="row">Price</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var expense in Model)
+        {
+            <tr class="table-dark">
+                <td>@expense.Name</td>
+                <td>@expense.Price</td>
+                <td>
+                    <a class="btn btn-primary mx-1" href="@Url.Action("EditExpense", new { id = expense.Id })">Edit</a> |
+                    <a class="btn btn-danger" href="@Url.Action("DeleteExpense", new { id = expense.Id })">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
