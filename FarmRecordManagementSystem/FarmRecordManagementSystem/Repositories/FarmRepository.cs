@@ -85,6 +85,40 @@ namespace FarmRecordManagementSystem.Repositories
             return farms;
         }
 
+        public async Task<List<Tasks>> GetAllTasks(int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            var tasks = new List<Tasks>();
+            string query = "SELECT * FROM public.\"Tasks\" WHERE public.\"Tasks\".\"FarmId\" = @farmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@farmId", farmId);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var task = new Tasks
+                        {
+                            Id = (int)reader["Id"],
+                            Description = (string)reader["Description"],
+                            AssignedTo = (string)reader["AssignedTo"],
+                            DueDate = (DateTime)reader["DueDate"],
+                            Status = (string)reader["Status"]
+                        };
+
+                        tasks.Add(task);
+                        // if(servicePoint is ServicePoint)
+                    }
+                }
+            }
+            if (tasks.Count == 0)
+                return null;
+            return tasks;
+        }
+
         public async Task<Land> GetFarmDetails(int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));

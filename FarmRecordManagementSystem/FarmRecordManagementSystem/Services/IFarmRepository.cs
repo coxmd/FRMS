@@ -14,6 +14,7 @@ namespace FarmRecordManagementSystem.Services
         Task CreateFarm(Land farm);
 
         Task<List<Crops>> ViewAllCrops(int farmId);
+        Task<List<Tasks>> GetAllTasks(int farmId);
         Task<List<Expenses>> ViewAllExpenses(int farmId);
         Task AddCrops(Crops crop, int farmId);
         Task UpdateFarmDetails(Land farm);
