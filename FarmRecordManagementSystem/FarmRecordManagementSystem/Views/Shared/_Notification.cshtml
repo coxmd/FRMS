@@ -1,0 +1,26 @@
+﻿@if (TempData["success"] != null)
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.success('@TempData["success"]')
+    </script>
+    @* <h2>@TempData["success"]</h2> *@
+}
+@if (TempData["error"] != null)
+{
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript">
+        toastr.error('@TempData["error"]')
+    </script>
+}
+
+@if (TempData["reload"] != null)
+{
+    <script type="text/javascript">
+        setTimeout(function () {
+            location.reload();
+        }, 1000); // Reload after 3 seconds
+    </script>
+}

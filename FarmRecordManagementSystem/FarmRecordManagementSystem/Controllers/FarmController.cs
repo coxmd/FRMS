@@ -32,6 +32,7 @@ namespace FarmRecordManagementSystem.Controllers
         {
 
             await _farmRepository.CreateFarm(farm);
+            TempData["success"] = "Farm Created Successfully";
             return RedirectToAction("Index", "Home");
         }
 
@@ -60,6 +61,7 @@ namespace FarmRecordManagementSystem.Controllers
         public async Task<IActionResult> AddCrops(Crops crop, int farmId)
         {
             await _farmRepository.AddCrops(crop, farmId);
+            TempData["success"] = "Crops Added Successfully";
             return View(crop);
         }
 
