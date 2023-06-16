@@ -18,6 +18,7 @@
         <tr>
             <th scope="row">Name</th>
             <th scope="row">Price</th>
+            <th scope="row">Category</th>
             <th></th>
         </tr>
     </thead>
@@ -27,6 +28,7 @@
             <tr class="table-dark">
                 <td>@expense.Name</td>
                 <td>@expense.Price</td>
+                <td>@expense.Category</td>
                 <td>
                     <a class="btn btn-primary mx-1" href="@Url.Action("EditExpense", new { id = expense.Id })">Edit</a> |
                     <a class="btn btn-danger" href="@Url.Action("DeleteExpense", new { id = expense.Id })">Delete</a>

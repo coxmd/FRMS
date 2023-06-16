@@ -34,6 +34,27 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
+        public async Task AddExpenses(Expenses expense, int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            string query = "INSERT INTO public.\"Expenses\" (\"DateCreated\", \"Name\", \"Price\", \"Category\", \"FarmId\")" +
+                        "VALUES(@DateCreated, @Name, @Price, @Category, @FarmId)";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+                command.Parameters.AddWithValue("@Name", expense.Name);
+                command.Parameters.AddWithValue("@Price", expense.Price);
+                command.Parameters.AddWithValue("@Category", string.IsNullOrEmpty(expense.Category) ? DBNull.Value : (object)expense.Category);
+                command.Parameters.AddWithValue("@FarmId", farmId);
+                // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(expense.CropId) ? DBNull.Value : (object)expense.CropId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         public async Task CreateFarm(Land farm)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -219,6 +240,11 @@ namespace FarmRecordManagementSystem.Repositories
                             Price = (int)reader["Price"],
                             FarmId = (int)reader["FarmId"]
                         };
+                        if (!reader.IsDBNull(reader.GetOrdinal("Category")))
+                        {
+                            expense.Category = (string)reader["Category"];
+                        }
+
 
                         expenses.Add(expense);
                         // if(servicePoint is ServicePoint)

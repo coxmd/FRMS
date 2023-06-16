@@ -1,0 +1,37 @@
+@model Expenses
+@{
+    Layout = "_Layout";
+}
+<partial name="_Notification" />
+
+<h2 class="mt-2">Add An Expense</h2>
+
+<form asp-action="AddExpenses" method="post">
+    <div class="form-group">
+        <div class="col-4">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label asp-for="Price"></label>
+            <input asp-for="Price" class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label asp-for="Category"></label>
+            <input asp-for="Category" class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label asp-for="FarmId"></label>
+            <input asp-for="FarmId" class="form-control" />
+        </div>
+
+
+        <div class="mt-2">
+            <button type="submit" class="btn btn-primary">Add</button>
+            <a asp-action="GetFarmDetails" class="btn btn-danger mx-1">Back</a>
+        </div>
+    </div>
+</form>

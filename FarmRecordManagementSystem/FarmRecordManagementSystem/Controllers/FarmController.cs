@@ -49,6 +49,20 @@ namespace FarmRecordManagementSystem.Controllers
             return View();
         }
 
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public IActionResult AddExpenses()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddExpenses(Expenses expense, int farmId)
+        {
+            await _farmRepository.AddExpenses(expense, farmId);
+            TempData["success"] = "Expense Added Successfully";
+            return RedirectToAction("ViewAllEpenses");
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddCrops(Crops crop, int farmId)
         {
