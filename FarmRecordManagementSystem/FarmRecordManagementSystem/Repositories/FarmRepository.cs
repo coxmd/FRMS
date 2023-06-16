@@ -19,13 +19,13 @@ namespace FarmRecordManagementSystem.Repositories
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"Variety\", \"PlantingDate\", \"ExpectedHarvestDate\")" +
+            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\")" +
                         "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@Name", crop.Name);
-                command.Parameters.AddWithValue("@Variety", crop.Variety);
+                command.Parameters.AddWithValue("@Variety", string.IsNullOrEmpty(crop.Variety) ? DBNull.Value : (object)crop.Variety);
                 command.Parameters.AddWithValue("@FarmId", farmId);
                 command.Parameters.AddWithValue("@PlantingDate", crop.PlantingDate);
                 command.Parameters.AddWithValue("@ExpectedHarvestDate", crop.ExpectedHarvestDate);
@@ -179,10 +179,13 @@ namespace FarmRecordManagementSystem.Repositories
                         {
                             Id = (int)reader["Id"],
                             Name = (string)reader["Name"],
-                            Variety = (string)reader["Variety"],
                             PlantingDate = (DateTime)reader["PlantingDate"],
                             ExpectedHarvestDate = (DateTime)reader["ExpectedHarvestDate"]
                         };
+                        if (!reader.IsDBNull(reader.GetOrdinal("Variety")))
+                        {
+                            crop.Variety = (string)reader["Variety"];
+                        }
 
                         crops.Add(crop);
                         // if(servicePoint is ServicePoint)

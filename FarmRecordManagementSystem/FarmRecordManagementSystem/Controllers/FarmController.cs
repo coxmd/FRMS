@@ -44,24 +44,9 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
-        public async Task<IActionResult> AddCrops(int farmId)
+        public IActionResult AddCrops()
         {
-            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
-            connection.Open();
-            string query = "SELECT * FROM public.\"Land\" WHERE public.\"Land\".\"Id\" =@FarmId";
-            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@id", farmId);
-                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
-                {
-                    if (await reader.ReadAsync())
-                    {
-                        ViewBag.FarmId = farmId;
-                        return View();
-                    }
-                }
-            }
-            return NotFound();
+            return View();
         }
 
         [HttpPost]
@@ -69,7 +54,7 @@ namespace FarmRecordManagementSystem.Controllers
         {
             await _farmRepository.AddCrops(crop, farmId);
             TempData["success"] = "Crops Added Successfully";
-            return View(crop);
+            return RedirectToAction("ViewAllCrops");
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
