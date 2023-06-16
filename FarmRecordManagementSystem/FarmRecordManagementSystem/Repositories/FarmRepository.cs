@@ -55,6 +55,27 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
+        public async Task AddTasks(Tasks task, int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            string query = "INSERT INTO public.\"Tasks\" (\"Description\", \"DueDate\", \"AssignedTo\", \"Status\", \"FarmId\")" +
+                        "VALUES(@Description, @DueDate, @AssignedTo, @Status, @FarmId)";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Description", task.Description);
+                command.Parameters.AddWithValue("@DueDate", task.DueDate);
+                command.Parameters.AddWithValue("@AssignedTo", string.IsNullOrEmpty(task.AssignedTo) ? DBNull.Value : (object)task.AssignedTo);
+                command.Parameters.AddWithValue("@Status", task.Status);
+                command.Parameters.AddWithValue("@FarmId", farmId);
+                // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(task.CropId) ? DBNull.Value : (object)task.CropId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         public async Task CreateFarm(Land farm)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
