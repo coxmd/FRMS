@@ -1,0 +1,23 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@model List<Land>
+
+<partial name="_Notification" />
+
+<h2>Farms</h2>
+
+<div class="card-container d-flex flex-wrap">
+    @foreach (var farm in Model)
+    {
+        <div class="card mt-4 mx-2" style="width: 25rem;">
+            <div class="card-body">
+                <h5 class="card-title fs-3">@farm.Name</h5>
+                <p class="card-text fs-3">Size: @farm.Size hectares</p>
+                <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farm.Id })" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    }
+</div>
+

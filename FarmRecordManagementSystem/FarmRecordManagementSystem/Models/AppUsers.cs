@@ -4,10 +4,10 @@ namespace FarmRecordManagementSystem.Models
 {
     public class AppUsers
     {
-        [Required]
+        [Required(ErrorMessage = "UserName is required")]
         public string? UserName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Password is Required")]
         public string? Password { get; set; }
         public string? Role { get; set; }
     }

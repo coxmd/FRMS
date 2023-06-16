@@ -1,8 +1,32 @@
 using FarmRecordManagementSystem.Repositories;
 using FarmRecordManagementSystem.Services;
+using FarmRecordManagementSystem.Utilities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Load the appsettings.json file
+var configuration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json")
+    .Build();
+
+// Get the plain-text connection string from the configuration
+string plainConnectionString = configuration.GetConnectionString("DefaultConnection");
+
+// Encrypt the connection string
+string encryptedConnectionString = ConnectionStringEncryptor.EncryptConnectionString(plainConnectionString);
+
+
+// Update the configuration with the encrypted connection string
+configuration.GetSection("ConnectionStrings")["DefaultConnection"] = encryptedConnectionString;
+
+// Save the updated configuration back to the appsettings.json file
+var configurationPath = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+configuration.SaveJsonToFile(configurationPath);
+// File.WriteAllText(configurationPath, configuration.GetDebugView());
+
+
 
 builder.Services.AddSingleton<IFarmRepository, FarmRepository>();
 

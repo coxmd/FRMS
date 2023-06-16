@@ -27,13 +27,20 @@ namespace FarmRecordManagementSystem.Controllers
             return View();
         }
 
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> GetAllFarms()
+        {
+            var farms = await _farmRepository.GetAllFarms();
+            return View(farms);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Create(Land farm)
         {
 
             await _farmRepository.CreateFarm(farm);
             TempData["success"] = "Farm Created Successfully";
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("GetAllFarms");
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]

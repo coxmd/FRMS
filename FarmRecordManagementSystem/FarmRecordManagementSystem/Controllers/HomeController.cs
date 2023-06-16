@@ -39,6 +39,11 @@ namespace FarmRecordManagementSystem.Controllers
                 new NpgsqlParameter("@Password", Password),
             };
 
+            // if (!string.IsNullOrEmpty(Password))
+            // {
+            //     parameters.Add(new NpgsqlParameter("@Password", Password));
+            // }
+
             AppUsers appUsers = await AuthenticateUser(query, parameters);
 
             if (appUsers == null)
