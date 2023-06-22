@@ -8,8 +8,8 @@
 
 <form method="post" asp-action="SelectFarm">
     <div class="form-group col-4 mb-3">
-        <label for="farmId">Farm:</label>
-        <select class="form-control" id="farmId" name="farmId">
+        <label for="farmId" class="form-label mt-4">Farm:</label>
+        <select class="form-select" id="farmId" name="farmId">
             @foreach (var farm in Model)
             {
                 <option value="@farm.Id" class="text-dark">@farm.Name</option>

@@ -9,21 +9,14 @@
 <a asp-action="AddServicePoint" class="btn btn-primary mt-1 mb-2">Add a new Inventory Item</a>
 <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
 
-<table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
-    <colgroup>
-        <col width="20%" />
-        <col width="25%" />
-        <col width="15%" />
-        <col width="15%" />
-        <col width="25%" />
-    </colgroup>
+<table class="table table-hover" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
     <thead>
         <tr>
-            <th scope="row">Crop Name</th>
-            <th scope="row">Quantity Harvested(In bags)</th>
-            <th scope="row">Quantity Sold</th>
-            <th scope="row">Selling Price</th>
-            <th scope="row">Quantity Remaining</th>
+            <th scope="col">Crop Name</th>
+            <th scope="col">Quantity Harvested(In bags)</th>
+            <th scope="col">Quantity Sold</th>
+            <th scope="col">Selling Price</th>
+            <th scope="col">Quantity Remaining</th>
             <th></th>
         </tr>
     </thead>
@@ -31,14 +24,14 @@
         @foreach (var crop in Model.Inventory)
         {
             <tr class="table-dark">
-                <td>@crop.CropName</td>
-                <td>@crop.QuantityHarvested</td>
-                <td>@crop.TotalSold<td>
-                <td>@crop.PriceSold<td>
-                <td>@crop.QuantityRemaining<td>
+                <th scope="row">@crop.CropName</th>
+                <td class="text-right">@crop.QuantityHarvested</td>
+                <td class="text-right">@crop.TotalSold</td>
+                <td class="text-right">@crop.PriceSold</td>
+                <td class="text-right">@crop.QuantityRemaining</td>
                 <td>
-                    <a class="btn btn-primary mx-1" href="@Url.Action("EditCrop", new { id = crop.Id })">Edit</a> |
-                    <a class="btn btn-danger" href="@Url.Action("DeleteCrop", new { id = crop.Id })">Delete</a>
+                    <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("EditCrop", new { id = crop.Id })">Edit</a> |
+                    <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteCrop", new { id = crop.Id })">Delete</a>
                 </td>
             </tr>
         }
