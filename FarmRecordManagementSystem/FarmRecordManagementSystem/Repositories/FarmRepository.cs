@@ -76,12 +76,12 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
-        public async Task CreateFarm(Land farm)
+        public async Task CreateFarm(Farms farm)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Land\" (\"Name\", \"Size\")" +
+            string query = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\")" +
                         "VALUES(@Name, @Size)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
@@ -98,19 +98,19 @@ namespace FarmRecordManagementSystem.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<List<Land>> GetAllFarms()
+        public async Task<List<Farms>> GetAllFarms()
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
-            var farms = new List<Land>();
-            string commandText = $"SELECT * FROM public.\"Land\"";
+            var farms = new List<Farms>();
+            string commandText = $"SELECT * FROM public.\"Farms\"";
             using (NpgsqlCommand command = new NpgsqlCommand(commandText, connection))
             {
                 using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
                     {
-                        var farm = new Land
+                        var farm = new Farms
                         {
                             Id = (int)reader["Id"],
                             Name = (string)reader["Name"],
@@ -161,13 +161,13 @@ namespace FarmRecordManagementSystem.Repositories
             return tasks;
         }
 
-        public async Task<Land> GetFarmDetails(int farmId)
+        public async Task<Farms> GetFarmDetails(int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            Land farm = null!;
-            string query = "SELECT * FROM public.\"Land\" WHERE public.\"Land\".\"Id\" = @farmId";
+            Farms farm = null!;
+            string query = "SELECT * FROM public.\"Farms\" WHERE public.\"Farms\".\"Id\" = @farmId";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -176,7 +176,7 @@ namespace FarmRecordManagementSystem.Repositories
                 {
                     if (await reader.ReadAsync())
                     {
-                        farm = new Land
+                        farm = new Farms
                         {
                             Id = (int)reader["Id"],
                             Name = (string)reader["Name"],
@@ -192,12 +192,46 @@ namespace FarmRecordManagementSystem.Repositories
             return farm;
         }
 
+        public async Task<List<Inventory>> GetFarmInventory(int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            var inventories = new List<Inventory>();
+            string query = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@farmId", farmId);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        var inventory = new Inventory
+                        {
+                            Id = (int)reader["Id"],
+                            CropName = (string)reader["CropName"],
+                            QuantityHarvested = (int)reader["QuantityHarvested"],
+                            PriceSold = (int)reader["PriceSold"],
+                            QuantityRemaining = (int)reader["QuantityRemaining"]
+                        };
+                        if (!reader.IsDBNull(reader.GetOrdinal("TotalSold")))
+                        {
+                            inventory.TotalSold = (int)reader["TotalSold"];
+                        }
+                        inventories.Add(inventory);
+                    }
+                }
+            }
+            return inventories;
+        }
+
         public Task UpdateCropDetails(int cropId)
         {
             throw new NotImplementedException();
         }
 
-        public Task UpdateFarmDetails(Land farm)
+        public Task UpdateFarmDetails(Farms farm)
         {
             throw new NotImplementedException();
         }

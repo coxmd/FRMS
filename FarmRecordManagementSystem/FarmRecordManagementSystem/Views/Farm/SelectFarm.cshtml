@@ -1,0 +1,20 @@
+@model List<Farms>
+
+@{
+    ViewData["Title"] = "Select Farm";
+}
+
+<h2>Select a Farm</h2>
+
+<form method="post" asp-action="SelectFarm">
+    <div class="form-group col-4 mb-3">
+        <label for="farmId">Farm:</label>
+        <select class="form-control" id="farmId" name="farmId">
+            @foreach (var farm in Model)
+            {
+                <option value="@farm.Id" class="text-dark">@farm.Name</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

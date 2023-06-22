@@ -35,7 +35,7 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Land farm)
+        public async Task<IActionResult> Create(Farms farm)
         {
 
             await _farmRepository.CreateFarm(farm);
@@ -118,6 +118,42 @@ namespace FarmRecordManagementSystem.Controllers
         {
             var farm = await _farmRepository.GetFarmDetails(farmId);
             return View(farm);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> Inventory(int farmId)
+        {
+            var farm = await _farmRepository.GetFarmDetails(farmId);
+
+            var farmInventory = await _farmRepository.GetFarmInventory(farmId);
+
+            var viewModel = new InventoryViewModel
+            {
+                Farm = farm,
+                Inventory = farmInventory
+            };
+
+            return View(viewModel);
+        }
+
+        // [HttpPost]
+        // public IActionResult InventoryPost(int farmId)
+        // {
+        //     // Redirect to the inventory page with the selected farmId
+        //     return RedirectToAction("Inventory", new { farmId = farmId });
+        // }
+
+
+        public async Task<IActionResult> SelectFarm()
+        {
+            var farms = await _farmRepository.GetAllFarms();
+            return View(farms);
+        }
+
+        [HttpPost]
+        public IActionResult SelectFarm(int farmId)
+        {
+            return RedirectToAction("Inventory", new { farmId = farmId });
         }
     }
 }

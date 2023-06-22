@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FarmRecordManagementSystem.Models
 {
-    public class Land
+    public class Farms
     {
         public int? Id { get; set; }
 

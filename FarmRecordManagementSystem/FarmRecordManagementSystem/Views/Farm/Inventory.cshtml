@@ -1,38 +1,41 @@
-@model List<Crops>
+@model InventoryViewModel
 
 @* @{
     Layout = "_LayoutAdminLoggedIn";
 } *@
 
 @* <partial name="_Notification" /> *@
-<h2>All Crops grown</h2>
-<a asp-action="AddServicePoint" class="btn btn-primary mt-1 mb-2">Add a new Crop</a>
+<h2>Inventory</h2>
+<a asp-action="AddServicePoint" class="btn btn-primary mt-1 mb-2">Add a new Inventory Item</a>
 <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
 
 <table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
     <colgroup>
         <col width="20%" />
-        <col width="40%" />
-        <col width="20%" />
-        <col width="20%" />
+        <col width="25%" />
+        <col width="15%" />
+        <col width="15%" />
+        <col width="25%" />
     </colgroup>
     <thead>
         <tr>
-            <th scope="row">Name</th>
-            <th scope="row">Variety</th>
-            <th scope="row">Planting Date</th>
-            <th scope="row">Expected Harvest Date</th>
+            <th scope="row">Crop Name</th>
+            <th scope="row">Quantity Harvested(In bags)</th>
+            <th scope="row">Quantity Sold</th>
+            <th scope="row">Selling Price</th>
+            <th scope="row">Quantity Remaining</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var crop in Model)
+        @foreach (var crop in Model.Inventory)
         {
             <tr class="table-dark">
-                <td>@crop.Name</td>
-                <td>@crop.Variety</td>
-                <td>@crop.PlantingDate<td>
-                <td>@crop.ExpectedHarvestDate<td>
+                <td>@crop.CropName</td>
+                <td>@crop.QuantityHarvested</td>
+                <td>@crop.TotalSold<td>
+                <td>@crop.PriceSold<td>
+                <td>@crop.QuantityRemaining<td>
                 <td>
                     <a class="btn btn-primary mx-1" href="@Url.Action("EditCrop", new { id = crop.Id })">Edit</a> |
                     <a class="btn btn-danger" href="@Url.Action("DeleteCrop", new { id = crop.Id })">Delete</a>
