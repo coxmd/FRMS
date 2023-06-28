@@ -30,17 +30,18 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
         public async Task<IActionResult> GetAllFarms()
         {
-            var farms = await _farmRepository.GetAllFarms();
+            var Id = HttpContext.Session.GetInt32("Id");
+            var farms = await _farmRepository.GetAllFarms(Id);
             return View(farms);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create(Farms farm)
         {
-
-            await _farmRepository.CreateFarm(farm);
+            var Id = HttpContext.Session.GetInt32("Id");
+            await _farmRepository.CreateFarm(farm, (int)Id);
             TempData["success"] = "Farm Created Successfully";
-            return RedirectToAction("GetAllFarms");
+            return RedirectToAction("GetAllFarms", new { Id = Id });
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
@@ -74,7 +75,7 @@ namespace FarmRecordManagementSystem.Controllers
         {
             await _farmRepository.AddExpenses(expense, farmId);
             TempData["success"] = "Expense Added Successfully";
-            return RedirectToAction("ViewAllEpenses");
+            return RedirectToAction("ViewAllEpenses", new { farmId = farmId });
         }
 
         [HttpPost]
@@ -82,7 +83,7 @@ namespace FarmRecordManagementSystem.Controllers
         {
             await _farmRepository.AddCrops(crop, farmId);
             TempData["success"] = "Crops Added Successfully";
-            return RedirectToAction("ViewAllCrops");
+            return RedirectToAction("ViewAllCrops", new { farmId = farmId });
         }
 
         [HttpPost]
@@ -90,7 +91,7 @@ namespace FarmRecordManagementSystem.Controllers
         {
             await _farmRepository.AddInventoryItem(inventory, farmId);
             TempData["success"] = "Item Added Successfully";
-            return RedirectToAction("Inventory");
+            return RedirectToAction("Inventory", new { farmId = farmId });
         }
 
         [HttpPost]
@@ -98,7 +99,7 @@ namespace FarmRecordManagementSystem.Controllers
         {
             await _farmRepository.AddTasks(task, farmId);
             TempData["success"] = "Task Added Successfully";
-            return RedirectToAction("GetAllTasks");
+            return RedirectToAction("GetAllTasks", new { farmId = farmId });
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
@@ -162,7 +163,8 @@ namespace FarmRecordManagementSystem.Controllers
 
         public async Task<IActionResult> SelectFarm()
         {
-            var farms = await _farmRepository.GetAllFarms();
+            var Id = HttpContext.Session.GetInt32("Id");
+            var farms = await _farmRepository.GetAllFarms(Id);
             return View(farms);
         }
 

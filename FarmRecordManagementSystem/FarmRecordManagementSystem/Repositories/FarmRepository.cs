@@ -106,18 +106,19 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
-        public async Task CreateFarm(Farms farm)
+        public async Task CreateFarm(Farms farm, int farmerId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\")" +
-                        "VALUES(@Name, @Size)";
+            string query = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\", \"FarmerId\")" +
+                        "VALUES(@Name, @Size, @farmerId)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@Name", farm.Name);
                 command.Parameters.AddWithValue("@Size", farm.Size);
+                command.Parameters.AddWithValue("@farmerId", farmerId);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -128,14 +129,15 @@ namespace FarmRecordManagementSystem.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<List<Farms>> GetAllFarms()
+        public async Task<List<Farms>> GetAllFarms(int? Id)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
             var farms = new List<Farms>();
-            string commandText = $"SELECT * FROM public.\"Farms\"";
+            string commandText = $"SELECT * FROM public.\"Farms\" WHERE public.\"Farms\".\"FarmerId\" = @Id";
             using (NpgsqlCommand command = new NpgsqlCommand(commandText, connection))
             {
+                command.Parameters.AddWithValue("@Id", Id);
                 using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                 {
                     while (await reader.ReadAsync())
@@ -235,7 +237,7 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@farmId", farmId);
                 using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                 {
-                    if (await reader.ReadAsync())
+                    while (await reader.ReadAsync())
                     {
                         var inventory = new Inventory
                         {

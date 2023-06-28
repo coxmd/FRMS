@@ -81,6 +81,7 @@ namespace FarmRecordManagementSystem.Controllers
                 }
                 else if (appUsers.Role == "User")
                 {
+                    HttpContext.Session.SetInt32("Id", (int)appUsers.Id);
                     TempData["success"] = "Login Successfully";
                     return RedirectToAction("Index");
                 }
@@ -90,7 +91,7 @@ namespace FarmRecordManagementSystem.Controllers
 
         public async Task<AppUsers> AuthenticateUser(string query, List<NpgsqlParameter> parameters)
         {
-            AppUsers appUsers = null;
+            AppUsers appUsers = null!;
 
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
@@ -108,6 +109,7 @@ namespace FarmRecordManagementSystem.Controllers
                     {
                         appUsers = new AppUsers
                         {
+                            Id = (int)dataReader["Id"],
                             Role = (string)dataReader["Role"],
                             UserName = (string)dataReader["UserName"],
                             Password = (string)dataReader["Password"],
@@ -128,7 +130,8 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
         public async Task<IActionResult> Index()
         {
-            var farms = await _farmRepository.GetAllFarms();
+            var Id = HttpContext.Session.GetInt32("Id");
+            var farms = await _farmRepository.GetAllFarms(Id);
             return View(farms);
         }
 

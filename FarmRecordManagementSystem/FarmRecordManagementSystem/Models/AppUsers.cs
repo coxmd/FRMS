@@ -4,6 +4,7 @@ namespace FarmRecordManagementSystem.Models
 {
     public class AppUsers
     {
+        public int? Id { get; set; }
         [Required(ErrorMessage = "UserName is required")]
         public string? UserName { get; set; }
 

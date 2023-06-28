@@ -6,13 +6,13 @@ namespace FarmRecordManagementSystem.Services
     public interface IFarmRepository
     {
         // Service Points
-        Task<List<Farms>> GetAllFarms();
+        Task<List<Farms>> GetAllFarms(int? Id);
 
         Task<Farms> GetFarmDetails(int farmId);
         Task<List<Inventory>> GetFarmInventory(int farmId);
         Task<List<Crops>> GetAllCrops();
-        // Task<ServicePoint> GetServicePointById(int id);
-        Task CreateFarm(Farms farm);
+
+        Task CreateFarm(Farms farm, int farmerId);
 
         Task<List<Crops>> ViewAllCrops(int farmId);
         Task<List<Tasks>> GetAllTasks(int farmId);

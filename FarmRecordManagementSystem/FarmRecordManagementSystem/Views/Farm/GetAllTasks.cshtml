@@ -5,39 +5,46 @@
 } *@
 
 <partial name="_Notification" />
-<h2>All Tasks</h2>
-<a asp-action="AddTask" class="btn btn-primary mt-1 mb-2">Add a new Task</a>
-<a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+@if (Model != null)
+{
+    <h2>All Tasks</h2>
+    <a asp-action="AddTask" class="btn btn-primary mt-1 mb-2">Add a new Task</a>
+    <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
 
-<table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
-    <colgroup>
-        <col width="20%" />
-        <col width="40%" />
-        <col width="20%" />
-        <col width="20%" />
-    </colgroup>
-    <thead>
-        <tr>
-            <th scope="row">Description</th>
-            <th scope="row">DueDate</th>
-            <th scope="row">AssignedTo</th>
-            <th scope="row">Status</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var task in Model)
-        {
-            <tr class="table-dark">
-                <td>@task.Description</td>
-                <td>@task.DueDate</td>
-                <td>@task.AssignedTo<td>
-                <td>@task.Status<td>
-                <td>
-                    <a class="btn btn-primary mx-1" href="@Url.Action("EditTask", new { id = task.Id })">Edit</a> |
-                    <a class="btn btn-danger" href="@Url.Action("DeleteTask", new { id = task.Id })">Delete</a>
-                </td>
+    <table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
+        <colgroup>
+            <col width="20%" />
+            <col width="20%" />
+            <col width="20%" />
+            <col width="20%" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th scope="col">Description</th>
+                <th scope="col">DueDate</th>
+                <th scope="col">AssignedTo</th>
+                <th scope="col">Status</th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var task in Model)
+            {
+                <tr class="table-dark">
+                    <td>@task.Description</td>
+                    <td>@task.DueDate</td>
+                    <td>@task.AssignedTo</td>
+                    <td>@task.Status</td>
+                    <td>
+                        <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("EditTask", new { id = task.Id })">Edit</a> |
+                        <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteTask", new { id = task.Id })">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h1>No Tasks Added</h1>
+}
