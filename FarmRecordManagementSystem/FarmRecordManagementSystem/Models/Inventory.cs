@@ -10,6 +10,7 @@ namespace FarmRecordManagementSystem.Models
         public int? PriceSold { get; set; }
         public int? QuantityRemaining { get; set; }
         public int? FarmId { get; set; }
+        public int? Sales { get; set; }
         public DateTime? DateCreated { get; set; }
     }
 }

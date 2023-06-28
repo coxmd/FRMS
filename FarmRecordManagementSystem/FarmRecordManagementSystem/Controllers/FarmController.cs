@@ -44,9 +44,17 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
-        public IActionResult AddCrops()
+        public IActionResult AddCrops(int farmId)
         {
-            return View();
+            var model = new Crops { FarmId = farmId };
+            return View(model);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public IActionResult AddInventory(int farmId)
+        {
+            var model = new Inventory { FarmId = farmId };
+            return View(model);
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
@@ -75,6 +83,14 @@ namespace FarmRecordManagementSystem.Controllers
             await _farmRepository.AddCrops(crop, farmId);
             TempData["success"] = "Crops Added Successfully";
             return RedirectToAction("ViewAllCrops");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddInventory(Inventory inventory, int farmId)
+        {
+            await _farmRepository.AddInventoryItem(inventory, farmId);
+            TempData["success"] = "Item Added Successfully";
+            return RedirectToAction("Inventory");
         }
 
         [HttpPost]

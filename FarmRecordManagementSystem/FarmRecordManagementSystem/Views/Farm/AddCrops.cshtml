@@ -8,6 +8,7 @@
 
 <form asp-action="AddCrops" method="post">
     <div class="form-group">
+        <input type="hidden" asp-for="FarmId"/>
         <div class="col-4">
             <label asp-for="Name"></label>
             <input asp-for="Name" class="form-control" />
@@ -16,11 +17,6 @@
         <div class="col-4">
             <label asp-for="Variety"></label>
             <input asp-for="Variety" class="form-control" />
-        </div>
-
-        <div class="col-4">
-            <label asp-for="FarmId"></label>
-            <input asp-for="FarmId" class="form-control" />
         </div>
 
         <div class="col-4">

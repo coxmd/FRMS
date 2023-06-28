@@ -6,7 +6,12 @@
 
 @* <partial name="_Notification" /> *@
 <h2>Inventory</h2>
-<a asp-action="AddServicePoint" class="btn btn-primary mt-1 mb-2">Add a new Inventory Item</a>
+<a href="@Url.Action("AddInventory", "Farm", new { farmId = @Model.Farm.Id })" class="btn btn-primary">Add Inventory Item</a>
+@* <a asp-action="AddInventory" asp-route-farmId="@Model.Id" class="btn btn-primary mt-1 mb-2">Add a new Inventory Item</a> *@
+
+
+
+
 <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
 
 <table class="table table-hover" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
@@ -17,6 +22,7 @@
             <th scope="col">Quantity Sold</th>
             <th scope="col">Selling Price</th>
             <th scope="col">Quantity Remaining</th>
+            <th scope="col">Sales</th>
             <th></th>
         </tr>
     </thead>
@@ -29,6 +35,7 @@
                 <td class="text-right">@crop.TotalSold</td>
                 <td class="text-right">@crop.PriceSold</td>
                 <td class="text-right">@crop.QuantityRemaining</td>
+                <td class="text-right">@crop.Sales</td>
                 <td>
                     <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("EditCrop", new { id = crop.Id })">Edit</a> |
                     <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteCrop", new { id = crop.Id })">Delete</a>

@@ -55,6 +55,36 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
+        public async Task AddInventoryItem(Inventory inventory, int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            string query = "INSERT INTO public.\"Inventory\" (\"DateCreated\", \"CropName\", \"QuantityHarvested\", \"PriceSold\", \"FarmId\", \"QuantityRemaining\", \"TotalSold\", \"Sales\")" +
+                        "VALUES(@DateCreated, @Name, @QuantityHarvested, @PriceSold, @FarmId, @QuantityRemaining, @TotalSold, @Sales)";
+
+            int quantityHarvested = inventory.QuantityHarvested ?? 0;
+            int totalSold = inventory.TotalSold ?? 0;
+            int priceSold = inventory.PriceSold ?? 0;
+            int quantityRemaining = quantityHarvested - totalSold;
+            int sales = totalSold * priceSold;
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+                command.Parameters.AddWithValue("@Name", inventory.CropName);
+                command.Parameters.AddWithValue("@QuantityHarvested", quantityHarvested);
+                command.Parameters.AddWithValue("@PriceSold", priceSold);
+                command.Parameters.AddWithValue("@TotalSold", totalSold);
+                command.Parameters.AddWithValue("@QuantityRemaining", quantityRemaining);
+                command.Parameters.AddWithValue("@Sales", sales);
+                command.Parameters.AddWithValue("@FarmId", farmId);
+                // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(expense.CropId) ? DBNull.Value : (object)expense.CropId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         public async Task AddTasks(Tasks task, int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -218,6 +248,10 @@ namespace FarmRecordManagementSystem.Repositories
                         if (!reader.IsDBNull(reader.GetOrdinal("TotalSold")))
                         {
                             inventory.TotalSold = (int)reader["TotalSold"];
+                        }
+                        if (!reader.IsDBNull(reader.GetOrdinal("Sales")))
+                        {
+                            inventory.Sales = (int)reader["Sales"];
                         }
                         inventories.Add(inventory);
                     }
