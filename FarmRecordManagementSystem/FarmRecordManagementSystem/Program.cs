@@ -1,7 +1,9 @@
 using FarmRecordManagementSystem.Repositories;
 using FarmRecordManagementSystem.Services;
 using FarmRecordManagementSystem.Utilities;
+using FastReport.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,8 +58,17 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(20);
 });
 
+
+// Configure the PostgreSQL connection
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddScoped<NpgsqlConnection>(_ => new NpgsqlConnection(connectionString));
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// Register the PostgreSQL data connection
+FastReport.Utils.RegisteredObjects.AddConnection(typeof(PostgresDataConnection));
+
 
 var app = builder.Build();
 

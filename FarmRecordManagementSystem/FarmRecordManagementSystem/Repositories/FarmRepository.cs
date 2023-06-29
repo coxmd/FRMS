@@ -159,6 +159,34 @@ namespace FarmRecordManagementSystem.Repositories
             return farms;
         }
 
+        public async Task<List<ReportTypes>> GetAllReports()
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            var reportTypes = new List<ReportTypes>();
+            string commandText = $"SELECT * FROM public.\"ReportTypes\"";
+            using (NpgsqlCommand command = new NpgsqlCommand(commandText, connection))
+            {
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var reportType = new ReportTypes
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"]
+                        };
+
+                        reportTypes.Add(reportType);
+                        // if(servicePoint is ServicePoint)
+                    }
+                }
+            }
+            if (reportTypes.Count == 0)
+                return null;
+            return reportTypes;
+        }
+
         public async Task<List<Tasks>> GetAllTasks(int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));

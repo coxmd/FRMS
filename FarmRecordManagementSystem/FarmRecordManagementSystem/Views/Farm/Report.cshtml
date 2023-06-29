@@ -1,0 +1,52 @@
+@model ReportFormViewModel
+
+<h1 class="mt-3">Select the Type of report</h1>
+
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reportModal">Select Type of Report</button>
+
+<div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Select Report Options</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/Farm/GenerateReports" method="post">
+                    <div class="form-group">
+                        <label for="farmSelect" class="col-form-label">Farm</label>
+                        <select class="form-control" id="farmSelect" name="farmId">
+                            @foreach (var farm in Model.Farms)
+                            {
+                                <option value="@farm.Id">@farm.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="reportTypeSelect" class="col-form-label">Report Type</label>
+                        <select class="form-control" id="reportTypeSelect" name="reportTypeId">
+                            @foreach (var reportType in Model.ReportTypes)
+                            {
+                                <option value="@reportType.Id">@reportType.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="startDate" class="col-form-label">Start Date</label>
+                        <input type="date" class="form-control" id="startDate" name="StartDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate" class="col-form-label">End Date</label>
+                        <input type="date" class="form-control" id="endDate" name="EndDate">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Generate Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

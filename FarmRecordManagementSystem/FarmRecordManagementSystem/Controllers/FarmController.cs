@@ -1,10 +1,14 @@
 ﻿using FarmRecordManagementSystem.Models;
 using FarmRecordManagementSystem.Services;
+using FastReport.Data;
+using FastReport.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using System.Data;
 using System.Diagnostics;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace FarmRecordManagementSystem.Controllers
@@ -14,10 +18,12 @@ namespace FarmRecordManagementSystem.Controllers
         private IConfiguration _config;
 
         private readonly IFarmRepository _farmRepository;
+        private readonly IWebHostEnvironment _hostEnvironment;
 
-        public FarmController(IConfiguration config, IFarmRepository farmRepository)
+        public FarmController(IConfiguration config, IFarmRepository farmRepository, IWebHostEnvironment hostEnvironment)
         {
             _config = config;
+            _hostEnvironment = hostEnvironment;
             _farmRepository = farmRepository;
         }
 
@@ -173,5 +179,77 @@ namespace FarmRecordManagementSystem.Controllers
         {
             return RedirectToAction("Inventory", new { farmId = farmId });
         }
+
+        public async Task<IActionResult> Report()
+        {
+            var Id = HttpContext.Session.GetInt32("Id");
+            var farm = await _farmRepository.GetAllFarms(Id);
+
+            var reportTypes = await _farmRepository.GetAllReports();
+
+            var viewModel = new ReportFormViewModel
+            {
+                Farms = farm,
+                ReportTypes = reportTypes
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> GenerateReports(int farmId, int reportTypeId)
+        {
+            var webReport = new WebReport();
+            var connectionString = _config.GetConnectionString("DefaultConnection");
+            var inventory = await _farmRepository.GetFarmInventory(farmId);
+            webReport.Report.RegisterData((System.Collections.IEnumerable)inventory, "Inventory");
+            webReport.Report.Load(Path.Combine(_hostEnvironment.ContentRootPath, "Reports", GetReportFileName(reportTypeId)));
+
+            // Modify the connection string of the report
+            foreach (var connection in webReport.Report.Dictionary.Connections)
+            {
+                if (connection is PostgresDataConnection postgresConnection && postgresConnection.Alias == "DefaultConnection")
+                {
+                    postgresConnection.ConnectionString = connectionString;
+                    break;
+                }
+            }
+
+            return View(webReport);
+
+        }
+
+        private string GetReportFileName(int reportTypeId)
+        {
+            // Define a mapping between report type IDs and report file names
+            Dictionary<int, string> reportTypeMapping = new Dictionary<int, string>()
+            {
+                { 1, "InventoryItems.frx" }, // Example mapping for report type ID 1
+                { 2, "Crops.frx" },    // Example mapping for report type ID 2
+                { 3, "Tasks.frx"},
+                { 4, "Expenses.frx"}
+            };
+
+            // Retrieve the report file name based on the report type ID
+            if (reportTypeMapping.TryGetValue(reportTypeId, out string reportFileName))
+            {
+                return reportFileName;
+            }
+
+            // Default report file name if no mapping is found
+            return "DefaultReport.frx";
+        }
+
+
+        // public IActionResult InventoryItemsReport(int farmId)
+        // {
+        //     var webReport = new WebReport();
+        //     var pgsqlDataConnection = new PostgresDataConnection();
+        //     pgsqlDataConnection.ConnectionString = _config.GetConnectionString("DefaultConnection");
+        //     webReport.Report.Dictionary.Connections.Add(pgsqlDataConnection);
+        //     webReport.Report.Load(Path.Combine(_hostEnvironment.ContentRootPath, "Reports", "InventoryItems.frx"));
+        //     var inventory = _farmRepository.GetFarmInventory(farmId);
+        //     webReport.Report.RegisterData((System.Collections.IEnumerable)inventory, "Inventory");
+        //     return View(webReport);
+        // }
     }
 }

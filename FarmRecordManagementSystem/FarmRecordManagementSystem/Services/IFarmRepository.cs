@@ -7,11 +7,11 @@ namespace FarmRecordManagementSystem.Services
     {
         // Service Points
         Task<List<Farms>> GetAllFarms(int? Id);
+        Task<List<ReportTypes>> GetAllReports();
 
         Task<Farms> GetFarmDetails(int farmId);
         Task<List<Inventory>> GetFarmInventory(int farmId);
         Task<List<Crops>> GetAllCrops();
-
         Task CreateFarm(Farms farm, int farmerId);
 
         Task<List<Crops>> ViewAllCrops(int farmId);
