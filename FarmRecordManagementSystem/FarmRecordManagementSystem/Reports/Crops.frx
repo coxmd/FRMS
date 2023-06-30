@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="06/30/2023 21:28:05" ReportInfo.CreatorVersion="2023.2.0.0">
+<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="06/30/2023 21:32:00" ReportInfo.CreatorVersion="2023.2.0.0">
   <Styles>
     <Style Name="EvenRows" Font="Arial, 10pt"/>
   </Styles>
   <Dictionary>
-    <PostgresDataConnection Name="DefaultConnection" ConnectionString="rijcmlq8ZkN6qUj4G/zvKvLeJ9DDB6WCp22J48oQEWWvz8/J/NksAmbO8W8oeq8qgeas2icQDEAfi2OWjvjKl3icG5ziY9d5VJrfNwjGxyhpJDs4leDAMPAM6ra2p36ZvhhBsZz">
+    <PostgresDataConnection Name="DefaultConnection" ConnectionString="rijcmlq8ZkN6qUj4G/zvKvLeJ9DDB6WCp22J48oQEWWvz8/J/NksAmbO8W8oeq8qgeas2icQDEAfi2OWjvjKl3icG5ziY9d5VJrfNwjGxyhpJDs4ldx+/B+ygPrRqtp89oiPr9y">
       <TableDataSource Name="public_Inventory" DataType="System.Int32" Enabled="true" TableName="public.&quot;Inventory&quot;">
         <Column Name="Id" DataType="System.Int32"/>
         <Column Name="DateCreated" DataType="System.DateTime"/>
@@ -65,29 +65,25 @@
   </Dictionary>
   <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
     <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="141.75" CanGrow="true">
-      <TextObject Name="Text3" Top="66.15" Width="718.2" Height="37.8" Text="ALL INVENTORY ITEMS" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text3" Top="66.15" Width="718.2" Height="37.8" Text="ALL CROPS PLANTED" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
       <TextObject Name="Text11" Top="28.35" Width="718.2" Height="28.35" Anchor="Top, Left, Right" Fill.Color="WhiteSmoke" CanGrow="true" CanShrink="true" Text="&#13;&#10;" Padding="4, 4, 4, 4" Font="Tahoma, 8pt"/>
       <TextObject Name="Text18" Width="718.2" Height="28.35" Anchor="Top, Left, Right" Fill.Color="WhiteSmoke" Cursor="Hand" Hyperlink.Value="http://fast.report/e0b07" Hyperlink.OpenLinkInNewTab="true" VertAlign="Center" Font="Tahoma, 10pt, style=Bold, Underline" TextFill.Color="Blue"/>
       <ContainerObject Name="Container1" Top="103.95" Width="718.2" Height="37.8" Fill.Color="LightSlateGray"/>
     </ReportTitleBand>
-    <DataBand Name="Data2" Top="178.1" Width="718.2" Height="18.9" Fill.Color="WhiteSmoke" EvenStyle="EvenRows" DataSource="public_Inventory">
-      <TextObject Name="Text5" Width="47.25" Height="18.9" Text="[public_Inventory.CropName]" VertAlign="Center" Font="Tahoma, 8pt"/>
-      <TextObject Name="Text9" Left="75.6" Width="56.7" Height="18.9" Text="[public_Inventory.QuantityHarvested]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
-      <TextObject Name="Text20" Left="274.05" Width="85.05" Height="18.9" Text="[public_Inventory.TotalSold]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
-      <TextObject Name="Text21" Left="387.45" Width="94.5" Height="18.9" Text="[public_Inventory.QuantityRemaining]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
-      <TextObject Name="Text7" Left="151.2" Width="94.5" Height="18.9" Text="[public_Inventory.PriceSold]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
-      <TextObject Name="Text23" Left="519.75" Width="94.5" Height="18.9" Text="[public_Inventory.Sales]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+    <DataBand Name="Data2" Top="178.1" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke" EvenStyle="EvenRows" DataSource="public_Crops">
+      <TextObject Name="Text5" Width="47.25" Height="28.35" Text="[public_Crops.Name]" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Left="75.6" Width="75.6" Height="28.35" Text="[public_Crops.PlantingDate]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text20" Left="359.1" Width="85.05" Height="28.35" Text="[public_Crops.ExpectedHarvestDate]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text7" Left="189" Width="94.5" Height="28.35" Text="[public_Crops.Variety]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
       <DataHeaderBand Name="DataHeader1" Top="145.75" Width="718.2" Height="28.35">
         <TextObject Name="Text6" Width="47.25" Height="28.35" Text="Name" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
-        <TextObject Name="Text8" Left="75.6" Width="56.7" Height="28.35" Text="Quantity" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
-        <TextObject Name="Text10" Left="151.2" Width="94.5" Height="28.35" Text="SellingPrice(Per Bag)" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
-        <TextObject Name="Text12" Left="387.45" Width="94.5" Height="28.35" Text="Quantity Remaining" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
-        <TextObject Name="Text19" Left="274.05" Width="85.05" Height="28.35" Text="TotalSold" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
-        <TextObject Name="Text22" Left="519.75" Width="94.5" Height="28.35" Text="TotalCash" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text8" Left="75.6" Width="56.7" Height="28.35" Text="Date Planted" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text10" Left="189" Width="94.5" Height="28.35" Text="Variety" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text19" Left="359.1" Width="85.05" Height="28.35" Text="Expected harvest Date" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
       </DataHeaderBand>
-      <DataFooterBand Name="DataFooter1" Top="201" Width="718.2" Height="28.35"/>
+      <DataFooterBand Name="DataFooter1" Top="210.45" Width="718.2" Height="28.35"/>
     </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="233.35" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke">
+    <PageFooterBand Name="PageFooter1" Top="242.8" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke">
       <TextObject Name="Text4" Left="614.25" Width="94.5" Height="28.35" Text="[PageN]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
       <TextObject Name="Text13" Left="9.45" Width="217.35" Height="28.35" Cursor="Hand" Hyperlink.Value="https://www.fast-report.com/en/product/fast-report-net/" Text="Generated by FastReport .NET" VertAlign="Center" Font="Tahoma, 8pt, style=Underline" TextFill.Color="Blue"/>
     </PageFooterBand>

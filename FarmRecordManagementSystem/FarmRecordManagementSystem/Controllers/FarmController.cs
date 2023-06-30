@@ -1,6 +1,8 @@
 ﻿using FarmRecordManagementSystem.Models;
 using FarmRecordManagementSystem.Services;
+using FastReport;
 using FastReport.Data;
+using FastReport.Export.PdfSimple;
 using FastReport.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -196,26 +198,39 @@ namespace FarmRecordManagementSystem.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> GenerateReports(int farmId, int reportTypeId)
+        public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId)
         {
-            var webReport = new WebReport();
-            var connectionString = _config.GetConnectionString("DefaultConnection");
-            var inventory = await _farmRepository.GetFarmInventory(farmId);
-            webReport.Report.RegisterData((System.Collections.IEnumerable)inventory, "Inventory");
-            webReport.Report.Load(Path.Combine(_hostEnvironment.ContentRootPath, "Reports", GetReportFileName(reportTypeId)));
-
-            // Modify the connection string of the report
-            foreach (var connection in webReport.Report.Dictionary.Connections)
+            // Load the report file
+            string templatePath = $"Reports/InventoryItems.frx";
+            string reportPath = Path.Combine(webHostEnvironment.ContentRootPath, templatePath);
+            using (Report report = new Report())
             {
-                if (connection is PostgresDataConnection postgresConnection && postgresConnection.Alias == "DefaultConnection")
+                report.Load(Path.Combine(webHostEnvironment.ContentRootPath, "Reports", GetReportFileName(reportTypeId)));
+                // report.Load(reportPath);
+
+
+                var farmData = await _farmRepository.GetFarmInventory(farmId);
+
+                // Pass the farm data to the report
+                report.RegisterData(farmData, "public_Inventory");
+
+                using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+                connection.Open();
+
+                using (var stream = new MemoryStream())
+                using (var export = new PDFSimpleExport())
                 {
-                    postgresConnection.ConnectionString = connectionString;
-                    break;
+                    // Prepare the report data
+                    report.Prepare();
+                    export.Export(report, stream);
+                    // Set the position of the MemoryStream back to the beginning
+                    stream.Seek(0, SeekOrigin.Begin);
+                    // Create a new MemoryStream and copy the contents of the original stream to it
+                    var outputStream = new MemoryStream(stream.ToArray());
+
+                    return new FileStreamResult(outputStream, "application/pdf");
                 }
             }
-
-            return View(webReport);
-
         }
 
         private string GetReportFileName(int reportTypeId)
@@ -238,18 +253,5 @@ namespace FarmRecordManagementSystem.Controllers
             // Default report file name if no mapping is found
             return "DefaultReport.frx";
         }
-
-
-        // public IActionResult InventoryItemsReport(int farmId)
-        // {
-        //     var webReport = new WebReport();
-        //     var pgsqlDataConnection = new PostgresDataConnection();
-        //     pgsqlDataConnection.ConnectionString = _config.GetConnectionString("DefaultConnection");
-        //     webReport.Report.Dictionary.Connections.Add(pgsqlDataConnection);
-        //     webReport.Report.Load(Path.Combine(_hostEnvironment.ContentRootPath, "Reports", "InventoryItems.frx"));
-        //     var inventory = _farmRepository.GetFarmInventory(farmId);
-        //     webReport.Report.RegisterData((System.Collections.IEnumerable)inventory, "Inventory");
-        //     return View(webReport);
-        // }
     }
 }
