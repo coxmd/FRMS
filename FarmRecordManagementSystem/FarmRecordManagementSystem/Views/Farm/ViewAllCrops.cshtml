@@ -36,7 +36,7 @@
                     <td>@crop.PlantingDate</td>
                     <td>@crop.ExpectedHarvestDate</td>
                     <td>
-                        <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("EditCrop", new { id = crop.Id })">Edit</a> |
+                        <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("UpdateCropDetails", new { id = crop.Id })">Edit</a> |
                         <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteCrop", new { id = crop.Id })">Delete</a>
                     </td>
                 </tr>

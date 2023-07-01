@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="06/30/2023 21:28:05" ReportInfo.CreatorVersion="2023.2.0.0">
+<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="07/01/2023 14:32:21" ReportInfo.CreatorVersion="2023.1.7.0">
   <Styles>
     <Style Name="EvenRows" Font="Arial, 10pt"/>
   </Styles>
   <Dictionary>
-    <PostgresDataConnection Name="DefaultConnection" ConnectionString="rijcmlq8ZkN6qUj4G/zvKvLeJ9DDB6WCp22J48oQEWWvz8/J/NksAmbO8W8oeq8qgeas2icQDEAfi2OWjvjKl3icG5ziY9d5VJrfNwjGxyhpJDs4leDAMPAM6ra2p36ZvhhBsZz">
+    <PostgresDataConnection Name="DefaultConnection" ConnectionString="rijcmlq8ZkN6qUj4G/zvKvLeJ9DDB6WCp22J48oQEWWvz8/J/NksAmbO8W8oeq8qgeas2icQDEAfi2OWjvjKl3icG5ziY9d5VJrfNwjGxyhpJDs4lfBpzjb9YgXMSr/4PReRxHC">
       <TableDataSource Name="public_Inventory" DataType="System.Int32" Enabled="true" TableName="public.&quot;Inventory&quot;">
         <Column Name="Id" DataType="System.Int32"/>
         <Column Name="DateCreated" DataType="System.DateTime"/>
@@ -60,8 +60,33 @@
         <Column Name="Id" DataType="System.Int32"/>
         <Column Name="Name" DataType="System.String"/>
       </TableDataSource>
+      <TableDataSource Name="Table" DataType="System.Int32" Enabled="true" SelectCommand="SELECT * FROM public.&quot;Inventory&quot; WHERE public.&quot;Inventory&quot;.&quot;FarmId&quot; =$1">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="DateCreated" DataType="System.DateTime"/>
+        <Column Name="CropName" DataType="System.String"/>
+        <Column Name="QuantityHarvested" DataType="System.Int32"/>
+        <Column Name="PriceSold" DataType="System.Int32"/>
+        <Column Name="FarmId" DataType="System.Int32"/>
+        <Column Name="QuantityRemaining" DataType="System.Int32"/>
+        <Column Name="TotalSold" DataType="System.Int32"/>
+        <Column Name="Sales" DataType="System.Int32"/>
+        <CommandParameter Name="farmId" DataType="9" DefaultValue="1"/>
+      </TableDataSource>
+      <TableDataSource Name="Table1" DataType="System.Int32" Enabled="true" SelectCommand="SELECT * FROM public.&quot;Inventory&quot; WHERE public.&quot;Inventory&quot;.&quot;FarmId&quot; = $1&#13;&#10;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="DateCreated" DataType="System.DateTime"/>
+        <Column Name="CropName" DataType="System.String"/>
+        <Column Name="QuantityHarvested" DataType="System.Int32"/>
+        <Column Name="PriceSold" DataType="System.Int32"/>
+        <Column Name="FarmId" DataType="System.Int32"/>
+        <Column Name="QuantityRemaining" DataType="System.Int32"/>
+        <Column Name="TotalSold" DataType="System.Int32"/>
+        <Column Name="Sales" DataType="System.Int32"/>
+        <CommandParameter Name="farmId" DataType="9" Size="32" DefaultValue="1"/>
+      </TableDataSource>
     </PostgresDataConnection>
     <Relation Name="CategoriesProducts" ReferenceName="NorthWind.CategoriesProducts" ParentDataSource="null" ChildDataSource="null" ParentColumns="CategoryID" ChildColumns="CategoryID" Enabled="true"/>
+    <Parameter Name="farmId" DataType="System.Int32" AsString=""/>
   </Dictionary>
   <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
     <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="141.75" CanGrow="true">

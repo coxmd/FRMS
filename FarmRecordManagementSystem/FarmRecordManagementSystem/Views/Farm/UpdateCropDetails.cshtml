@@ -1,0 +1,31 @@
+@model Crops
+
+<partial name="_Notification" />
+
+<h2>Edit Service Point</h2>
+
+<form asp-action="UpdateCropDetails" method="post">
+  <input type="hidden" asp-for="Id" />
+  <div class="form-group">
+    <div class="col-4">
+      <label asp-for="Name"></label>
+      <input asp-for="Name" class="form-control" />
+    </div>
+    <div class="col-4">
+      <label asp-for="Variety"></label>
+      <input asp-for="Variety" class="form-control" />
+    </div>
+    <div class="col-4">
+      <label asp-for="PlantingDate"></label>
+      <input asp-for="PlantingDate" class="form-control" />
+    </div>
+    <div class="col-4">
+      <label asp-for="ExpectedHarvestDate"></label>
+      <input asp-for="ExpectedHarvestDate" class="form-control" />
+    </div>
+  </div>
+  <button type="submit" class="btn btn-primary">Save</button>
+  <a class="btn btn-danger mx-1" onclick="window.history.back()">Back</a>
+</form>
+
+

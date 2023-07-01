@@ -290,9 +290,49 @@ namespace FarmRecordManagementSystem.Repositories
             return inventories;
         }
 
-        public Task UpdateCropDetails(int cropId)
+        public async Task<Crops?> GetCropById(int id)
         {
-            throw new NotImplementedException();
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            Crops crop = null!;
+            string query = "SELECT * FROM public.\"Crops\" WHERE public.\"Crops\".\"Id\" =@id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        crop = new Crops
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            Variety = (string)reader["Variety"],
+                            PlantingDate = (DateTime)reader["PlantingDate"],
+                            ExpectedHarvestDate = (DateTime)reader["ExpectedHarvestDate"]
+                        };
+                    }
+                }
+            }
+            return crop;
+        }
+
+        public async Task UpdateCropDetails(Crops crop)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            string query = "UPDATE public.\"Crops\" SET \"Name\" = @name, \"Variety\" = @variety, \"PlantingDate\" = @plantingdate, \"ExpectedHarvestDate\" = @harvestdate WHERE public.\"Crops\".\"Id\" = @id";
+
+            using (var command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@name", crop.Name);
+                command.Parameters.AddWithValue("@variety", crop.Variety);
+                command.Parameters.AddWithValue("@plantingdate", crop.PlantingDate);
+                command.Parameters.AddWithValue("@harvestdate", crop.ExpectedHarvestDate);
+                command.Parameters.AddWithValue("@Id", crop.Id);
+
+                await command.ExecuteNonQueryAsync();
+            }
         }
 
         public Task UpdateFarmDetails(Farms farm)

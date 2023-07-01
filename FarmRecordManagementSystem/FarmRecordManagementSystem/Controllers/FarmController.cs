@@ -118,6 +118,25 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> UpdateCropDetails(int Id)
+        {
+            var crop = await _farmRepository.GetCropById(Id);
+            if (crop == null)
+            {
+                return NotFound();
+            }
+            return View(crop);
+        }
+
+        [HttpPost, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> UpdateCropDetails(Crops crop, int farmId)
+        {
+            await _farmRepository.UpdateCropDetails(crop);
+            TempData["success"] = "Crop Updated Successfully";
+            return RedirectToAction("ViewAllCrops", new { farmId = farmId });
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
         public async Task<IActionResult> ViewAllExpenses(int farmId)
         {
             var expenses = await _farmRepository.ViewAllExpenses(farmId);
@@ -213,6 +232,10 @@ namespace FarmRecordManagementSystem.Controllers
 
                 // Pass the farm data to the report
                 report.RegisterData(farmData, "public_Inventory");
+
+                // Set the farmId parameter value
+                report.SetParameterValue("farmId", (int)farmId);
+
 
                 using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
                 connection.Open();
