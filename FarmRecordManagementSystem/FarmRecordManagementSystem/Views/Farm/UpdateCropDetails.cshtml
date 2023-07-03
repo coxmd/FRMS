@@ -2,10 +2,15 @@
 
 <partial name="_Notification" />
 
-<h2>Edit Service Point</h2>
+<h2>Edit Crop</h2>
 
-<form asp-action="UpdateCropDetails" method="post">
+<form
+  asp-action="UpdateCropDetails"
+  asp-route-farmId="@Model.FarmId"
+  method="post"
+>
   <input type="hidden" asp-for="Id" />
+  <input type="hidden" asp-for="FarmId" />
   <div class="form-group">
     <div class="col-4">
       <label asp-for="Name"></label>

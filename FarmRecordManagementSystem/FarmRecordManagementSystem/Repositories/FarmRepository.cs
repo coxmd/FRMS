@@ -19,8 +19,14 @@ namespace FarmRecordManagementSystem.Repositories
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\")" +
-                        "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate)";
+            // Calculate the expected harvest quantity based on farm size and total quantity planted
+            decimal expectedHarvestQuantity = crop.FarmSizePlanted * 4000;
+
+            // Calculate the number of 50kg bags
+            decimal numberOfBags = expectedHarvestQuantity / 50;
+
+            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\", \"FarmSizePlanted\", \"QuantityPlanted\", \"ExpectedHarvestQuantity\", \"ExpectedBagsHarvested\")" +
+                        "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate, @FarmSizePlanted, @QuantityPlanted, @ExpectedHarvestQuantity, @ExpectedBagsHarvested)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -29,6 +35,10 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@FarmId", farmId);
                 command.Parameters.AddWithValue("@PlantingDate", crop.PlantingDate);
                 command.Parameters.AddWithValue("@ExpectedHarvestDate", crop.ExpectedHarvestDate);
+                command.Parameters.AddWithValue("@FarmSizePlanted", crop.FarmSizePlanted);
+                command.Parameters.AddWithValue("@QuantityPlanted", crop.QuantityPlanted);
+                command.Parameters.AddWithValue("@ExpectedHarvestQuantity", expectedHarvestQuantity);
+                command.Parameters.AddWithValue("@ExpectedBagsHarvested", numberOfBags);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -358,9 +368,14 @@ namespace FarmRecordManagementSystem.Repositories
                         var crop = new Crops
                         {
                             Id = (int)reader["Id"],
+                            FarmId = (int)reader["FarmId"],
                             Name = (string)reader["Name"],
                             PlantingDate = (DateTime)reader["PlantingDate"],
-                            ExpectedHarvestDate = (DateTime)reader["ExpectedHarvestDate"]
+                            ExpectedHarvestDate = (DateTime)reader["ExpectedHarvestDate"],
+                            QuantityPlanted = (decimal)reader["QuantityPlanted"],
+                            ExpectedHarvestedQuantity = (decimal)reader["ExpectedHarvestQuantity"],
+                            ExpectedBagsHarvested = (int)reader["ExpectedBagsHarvested"],
+                            FarmSizePlanted = (decimal)reader["FarmSizePlanted"]
                         };
                         if (!reader.IsDBNull(reader.GetOrdinal("Variety")))
                         {

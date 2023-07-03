@@ -133,7 +133,7 @@ namespace FarmRecordManagementSystem.Controllers
         {
             await _farmRepository.UpdateCropDetails(crop);
             TempData["success"] = "Crop Updated Successfully";
-            return RedirectToAction("ViewAllCrops", new { farmId = farmId });
+            return RedirectToAction("ViewAllCrops", new { farmId = crop.FarmId });
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]

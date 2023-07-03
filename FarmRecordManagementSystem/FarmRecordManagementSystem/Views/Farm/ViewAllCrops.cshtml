@@ -8,22 +8,26 @@
 @if (Model != null)
 {
     <h2>All Crops grown</h2>
-    <a asp-action="AddCrops" class="btn btn-primary mt-1 mb-2">Add a new Crop</a>
-    <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+    @* <a asp-action="AddCrops" class="btn btn-primary mt-1 mb-2">Add a new Crop</a> *@
+    <a href="@Url.Action("AddCrops", "Farm", new { farmId = Model[0].Id })" class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
 
     <table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
-        <colgroup>
+        @* <colgroup>
             <col width="20%" />
             <col width="20%" />
             <col width="20%" />
             <col width="20%" />
-        </colgroup>
+        </colgroup> *@
         <thead>
             <tr>
                 <th scope="row">Name</th>
                 <th scope="row">Variety</th>
                 <th scope="row">Planting Date</th>
                 <th scope="row">Expected Harvest Date</th>
+                <th scope="row">Quantity Planted(In Kg)</th>
+                <th scope="row">Expected Harvest Quantity (In Kg)</th>
+                <th scope="row">Expected Harvested Bags (50kg Sacks)</th>
+                <th scope="row">Hectares Planted</th>
                 <th></th>
             </tr>
         </thead>
@@ -35,8 +39,12 @@
                     <td>@crop.Variety</td>
                     <td>@crop.PlantingDate</td>
                     <td>@crop.ExpectedHarvestDate</td>
+                    <td>@crop.QuantityPlanted</td>
+                    <td>@crop.ExpectedHarvestedQuantity</td>
+                    <td>@crop.ExpectedBagsHarvested</td>
+                    <td>@crop.FarmSizePlanted</td>
                     <td>
-                        <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("UpdateCropDetails", new { id = crop.Id })">Edit</a> |
+                        <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("UpdateCropDetails", new { id = crop.Id, farmId = crop.FarmId })">Edit</a> |
                         <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteCrop", new { id = crop.Id })">Delete</a>
                     </td>
                 </tr>
