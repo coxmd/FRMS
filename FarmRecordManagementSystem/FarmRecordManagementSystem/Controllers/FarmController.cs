@@ -206,15 +206,7 @@ namespace FarmRecordManagementSystem.Controllers
             var Id = HttpContext.Session.GetInt32("Id");
             var farm = await _farmRepository.GetAllFarms(Id);
 
-            var reportTypes = await _farmRepository.GetAllReports();
-
-            var viewModel = new ReportFormViewModel
-            {
-                Farms = farm,
-                ReportTypes = reportTypes
-            };
-
-            return View(viewModel);
+            return View(farm);
         }
 
         public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId)

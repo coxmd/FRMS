@@ -1,4 +1,5 @@
 @model List<Tasks>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @* @{
     Layout = "_LayoutAdminLoggedIn";
@@ -8,8 +9,9 @@
 @if (Model != null)
 {
     <h2>All Tasks</h2>
-    <a asp-action="AddTask" class="btn btn-primary mt-1 mb-2">Add a new Task</a>
-    <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+    string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
+    <a href="@Url.Action("AddTasks", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Add A Task</a>
+    <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Back</a>
 
     <table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
         <colgroup>

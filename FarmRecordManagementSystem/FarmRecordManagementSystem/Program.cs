@@ -69,6 +69,8 @@ builder.Services.AddControllersWithViews();
 // Register the PostgreSQL data connection
 FastReport.Utils.RegisteredObjects.AddConnection(typeof(PostgresDataConnection));
 
+// Register IHttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 

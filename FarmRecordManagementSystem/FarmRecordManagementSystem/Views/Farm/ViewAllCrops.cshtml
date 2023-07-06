@@ -1,4 +1,5 @@
 @model List<Crops>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @* @{
     Layout = "_LayoutAdminLoggedIn";
@@ -8,8 +9,10 @@
 @if (Model != null)
 {
     <h2>All Crops grown</h2>
+    string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
     @* <a asp-action="AddCrops" class="btn btn-primary mt-1 mb-2">Add a new Crop</a> *@
-    <a href="@Url.Action("AddCrops", "Farm", new { farmId = Model[0].Id })" class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+    <a href="@Url.Action("AddCrops", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Add A Crop</a>
+    <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Back</a>
 
     <table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
         @* <colgroup>

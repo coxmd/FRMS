@@ -8,11 +8,7 @@
 <h2>Inventory</h2>
 <a href="@Url.Action("AddInventory", "Farm", new { farmId = @Model.Farm.Id })" class="btn btn-primary">Add Inventory Item</a>
 @* <a asp-action="AddInventory" asp-route-farmId="@Model.Id" class="btn btn-primary mt-1 mb-2">Add a new Inventory Item</a> *@
-
-
-
-
-<a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+<a href="@Url.Action("SelectFarm", "Farm")" class="btn btn-primary">Back</a>
 
 <table class="table table-hover" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
     <thead>

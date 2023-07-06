@@ -1,4 +1,5 @@
 @model Expenses
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 @{
     Layout = "_Layout";
 }
@@ -7,6 +8,9 @@
 <h2 class="mt-2">Add An Expense</h2>
 
 <form asp-action="AddExpenses" method="post">
+    @{
+        string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
+    }
     <div class="form-group">
         <div class="col-4">
             <label asp-for="Name"></label>
@@ -30,8 +34,8 @@
 
 
         <div class="mt-2">
-            <button type="submit" class="btn btn-primary">Add</button>
-            <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+            <button type="submit" class="btn btn-primary mt-1 mb-2">Add</button>
+            <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Back</a>
         </div>
     </div>
 </form>
