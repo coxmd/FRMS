@@ -10,7 +10,6 @@ namespace FarmRecordManagementSystem.Services
 
         Task<Farms> GetFarmDetails(int farmId);
         Task<List<Inventory>> GetFarmInventory(int farmId);
-        Task<List<Crops>> GetAllCrops();
         Task CreateFarm(Farms farm, int farmerId);
 
         Task<List<Crops>> ViewAllCrops(int farmId);
@@ -25,5 +24,10 @@ namespace FarmRecordManagementSystem.Services
         Task AddTasks(Tasks task, int farmId);
         Task UpdateFarmDetails(Farms farm);
         Task UpdateCropDetails(Crops crop);
+
+        Task DeleteExpense(int Id);
+        Task DeleteCrop(int Id);
+        Task DeleteTask(int Id);
+        Task DeleteInventoryItem(int id);
     }
 }

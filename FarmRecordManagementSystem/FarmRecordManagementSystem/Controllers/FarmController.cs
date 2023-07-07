@@ -150,6 +150,86 @@ namespace FarmRecordManagementSystem.Controllers
             return View(tasks);
         }
 
+        [HttpPost, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> DeleteExpense(int Id, int farmId)
+        {
+            try
+            {
+                await _farmRepository.DeleteExpense(Id);
+                TempData["success"] = "Expense Deleted Successfully";
+            }
+            catch (PostgresException ex) when (ex.SqlState == "23503")
+            {
+                TempData["error"] = "Cannot delete this Expense since It is linked to a farm";
+            }
+            catch (Exception)
+            {
+                TempData["error"] = "An error occurred, please try again later";
+            }
+
+            return RedirectToAction("ViewAllExpenses", new { farmId = farmId });
+        }
+
+        [HttpPost, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> DeleteCrop(int Id, int farmId)
+        {
+            try
+            {
+                await _farmRepository.DeleteCrop(Id);
+                TempData["success"] = "Crop Deleted Successfully";
+            }
+            catch (PostgresException ex) when (ex.SqlState == "23503")
+            {
+                TempData["error"] = "Cannot delete this Crop since It is linked to a farm";
+            }
+            catch (Exception)
+            {
+                TempData["error"] = "An error occurred, please try again later";
+            }
+
+            return RedirectToAction("ViewAllCrops", new { farmId = farmId });
+        }
+
+        [HttpPost, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> DeleteTask(int Id, int farmId)
+        {
+            try
+            {
+                await _farmRepository.DeleteTask(Id);
+                TempData["success"] = "Task Deleted Successfully";
+            }
+            catch (PostgresException ex) when (ex.SqlState == "23503")
+            {
+                TempData["error"] = "Cannot delete this Task since It is linked to a farm";
+            }
+            catch (Exception)
+            {
+                TempData["error"] = "An error occurred, please try again later";
+            }
+
+            return RedirectToAction("GetAllTasks", new { farmId = farmId });
+        }
+
+        [HttpPost, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> DeleteInventoryItem(int Id, int farmId)
+        {
+            try
+            {
+                await _farmRepository.DeleteInventoryItem(Id);
+                TempData["success"] = "Item Deleted Successfully";
+            }
+            catch (PostgresException ex) when (ex.SqlState == "23503")
+            {
+                TempData["error"] = "Cannot delete this Item since It is linked to a farm";
+            }
+            catch (Exception)
+            {
+                TempData["error"] = "An error occurred, please try again later";
+            }
+
+            return RedirectToAction("Inventory", new { farmId = farmId });
+        }
+
         public async Task<IActionResult> MarkAsFinished(Tasks task, int Id, int farmId)
         {
             await _farmRepository.MarkAsFinished(Id);

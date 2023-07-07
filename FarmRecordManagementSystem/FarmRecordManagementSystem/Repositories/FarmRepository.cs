@@ -154,9 +154,52 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
-        public Task<List<Crops>> GetAllCrops()
+        public async Task DeleteExpense(int Id)
         {
-            throw new NotImplementedException();
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            string query = "DELETE FROM public.\"Expenses\" WHERE public.\"Expenses\".\"Id\" = @id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", Id);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeleteCrop(int Id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            string query = "DELETE FROM public.\"Crops\" WHERE public.\"Crops\".\"Id\" = @id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", Id);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeleteTask(int Id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            string query = "DELETE FROM public.\"Tasks\" WHERE public.\"Tasks\".\"Id\" = @id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", Id);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task DeleteInventoryItem(int Id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            string query = "DELETE FROM public.\"Inventory\" WHERE public.\"Inventory\".\"Id\" = @id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", Id);
+                await command.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task<List<Farms>> GetAllFarms(int? Id)

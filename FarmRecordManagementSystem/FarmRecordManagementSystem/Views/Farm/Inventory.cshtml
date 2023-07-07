@@ -34,7 +34,9 @@
                 <td class="text-right">@crop.Sales</td>
                 <td>
                     <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("EditCrop", new { id = crop.Id })">Edit</a> |
-                    <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteCrop", new { id = crop.Id })">Delete</a>
+                    <form asp-action="DeleteInventoryItem" asp-route-id="@crop.Id" asp-route-farmId="@Model.Farm.Id" method="post" style="display:inline">
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this Item - @crop.CropName ?')">Delete</button>
+                    </form>
                 </td>
             </tr>
         }

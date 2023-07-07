@@ -43,7 +43,9 @@
                             @* <a asp-action="MarkAsFinished" asp-route-Id="@task.Id" class="btn btn-success mx-1 btn-sm">Mark As Finished</a> *@
                             <a class="btn btn-success mx-1 btn-sm" href="@Url.Action("MarkAsFinished", new { id = task.Id, farmId = task.FarmId })">Mark As Finished</a>
                             <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("EditTask", new { id = task.Id })">Edit</a> |
-                            <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteTask", new { id = task.Id })">Delete</a>
+                            <form asp-action="DeleteTask" asp-route-id="@task.Id" asp-route-farmId="@farmId" method="post" style="display:inline">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this Task ?')">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 }
