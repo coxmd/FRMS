@@ -32,16 +32,21 @@
         <tbody>
             @foreach (var task in Model)
             {
-                <tr class="table-dark">
-                    <td>@task.Description</td>
-                    <td>@task.DueDate</td>
-                    <td>@task.AssignedTo</td>
-                    <td>@task.Status</td>
-                    <td>
-                        <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("EditTask", new { id = task.Id })">Edit</a> |
-                        <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteTask", new { id = task.Id })">Delete</a>
-                    </td>
-                </tr>
+                @if (task.Completed == false)
+                {
+                    <tr class="table-dark">
+                        <td>@task.Description</td>
+                        <td>@task.DueDate</td>
+                        <td>@task.AssignedTo</td>
+                        <td>@task.Status</td>
+                        <td>
+                            @* <a asp-action="MarkAsFinished" asp-route-Id="@task.Id" class="btn btn-success mx-1 btn-sm">Mark As Finished</a> *@
+                            <a class="btn btn-success mx-1 btn-sm" href="@Url.Action("MarkAsFinished", new { id = task.Id, farmId = task.FarmId })">Mark As Finished</a>
+                            <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("EditTask", new { id = task.Id })">Edit</a> |
+                            <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteTask", new { id = task.Id })">Delete</a>
+                        </td>
+                    </tr>
+                }
             }
         </tbody>
     </table>

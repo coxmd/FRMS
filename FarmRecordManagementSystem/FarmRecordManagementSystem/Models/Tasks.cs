@@ -8,6 +8,7 @@ namespace FarmRecordManagementSystem.Models
         public string? Description { get; set; }
         public string? Status { get; set; }
         public string? AssignedTo { get; set; }
+        public Boolean Completed { get; set; }
 
         public DateTime? DateStarted { get; set; }
         public DateTime? DateCompleted { get; set; }

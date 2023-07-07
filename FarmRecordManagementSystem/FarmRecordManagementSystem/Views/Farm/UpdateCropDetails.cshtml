@@ -4,11 +4,7 @@
 
 <h2>Edit Crop</h2>
 
-<form
-  asp-action="UpdateCropDetails"
-  asp-route-farmId="@Model.FarmId"
-  method="post"
->
+<form asp-action="UpdateCropDetails" method="post">
   <input type="hidden" asp-for="Id" />
   <input type="hidden" asp-for="FarmId" />
   <div class="form-group">

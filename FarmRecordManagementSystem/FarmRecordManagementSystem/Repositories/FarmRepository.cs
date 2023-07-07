@@ -100,15 +100,17 @@ namespace FarmRecordManagementSystem.Repositories
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Tasks\" (\"Description\", \"DueDate\", \"AssignedTo\", \"Status\", \"FarmId\")" +
-                        "VALUES(@Description, @DueDate, @AssignedTo, @Status, @FarmId)";
+            string query = "INSERT INTO public.\"Tasks\" (\"Description\", \"DueDate\", \"DateStarted\", \"AssignedTo\", \"Status\", \"Completed\", \"FarmId\")" +
+                        "VALUES(@Description, @DueDate, @DateStarted, @AssignedTo, @Status, @Completed, @FarmId)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@Description", task.Description);
                 command.Parameters.AddWithValue("@DueDate", task.DueDate);
+                command.Parameters.AddWithValue("@DateStarted", DateTime.UtcNow);
                 command.Parameters.AddWithValue("@AssignedTo", string.IsNullOrEmpty(task.AssignedTo) ? DBNull.Value : (object)task.AssignedTo);
-                command.Parameters.AddWithValue("@Status", task.Status);
+                command.Parameters.AddWithValue("@Status", "Pending");
+                command.Parameters.AddWithValue("@Completed", false);
                 command.Parameters.AddWithValue("@FarmId", farmId);
                 // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(task.CropId) ? DBNull.Value : (object)task.CropId);
 
@@ -129,6 +131,24 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@Name", farm.Name);
                 command.Parameters.AddWithValue("@Size", farm.Size);
                 command.Parameters.AddWithValue("@farmerId", farmerId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
+        public async Task UpdateCropDetails(Crops crop)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            string query = "UPDATE public.\"Crops\" SET \"Name\" = @name, \"Variety\" = @variety, \"PlantingDate\" = @plantingdate, \"ExpectedHarvestDate\" = @harvestdate WHERE public.\"Crops\".\"Id\" = @id";
+
+            using (var command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@name", crop.Name);
+                command.Parameters.AddWithValue("@variety", crop.Variety);
+                command.Parameters.AddWithValue("@plantingdate", crop.PlantingDate);
+                command.Parameters.AddWithValue("@harvestdate", crop.ExpectedHarvestDate);
+                command.Parameters.AddWithValue("@Id", crop.Id);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -187,11 +207,16 @@ namespace FarmRecordManagementSystem.Repositories
                         var task = new Tasks
                         {
                             Id = (int)reader["Id"],
+                            FarmId = (int)reader["FarmId"],
                             Description = (string)reader["Description"],
                             AssignedTo = (string)reader["AssignedTo"],
                             DueDate = (DateTime)reader["DueDate"],
                             Status = (string)reader["Status"]
                         };
+                        if (!reader.IsDBNull(reader.GetOrdinal("Completed")))
+                        {
+                            task.Completed = (bool)reader["Completed"];
+                        }
 
                         tasks.Add(task);
                         // if(servicePoint is ServicePoint)
@@ -201,6 +226,44 @@ namespace FarmRecordManagementSystem.Repositories
             if (tasks.Count == 0)
                 return null;
             return tasks;
+        }
+
+        public async Task MarkAsFinished(int Id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            Tasks task = null!;
+            string query = "SELECT * FROM public.\"Tasks\" WHERE public.\"Tasks\".\"Id\" = @Id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Id", Id);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        task = new Tasks
+                        {
+                            Id = (int)reader["Id"],
+                            Status = (string)reader["Status"],
+                            Completed = (bool)reader["Completed"]
+                        };
+                        if (!reader.IsDBNull(reader.GetOrdinal("DateCompleted")))
+                        {
+                            task.DateCompleted = (DateTime)reader["DateCompleted"];
+                        }
+                    }
+                }
+            }
+
+            string updateQuery = "UPDATE public.\"Tasks\" SET \"Status\" = 'Finished', \"Completed\" = @completed, \"DateCompleted\" = @datecompleted  WHERE public.\"Tasks\".\"Id\" = @Id";
+            using (NpgsqlCommand command = new NpgsqlCommand(updateQuery, connection))
+            {
+                command.Parameters.AddWithValue("@completed", true);
+                command.Parameters.AddWithValue("@datecompleted", DateTime.UtcNow);
+                command.Parameters.AddWithValue("@Id", Id);
+                await command.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task<Farms> GetFarmDetails(int farmId)
@@ -288,6 +351,7 @@ namespace FarmRecordManagementSystem.Repositories
                         crop = new Crops
                         {
                             Id = (int)reader["Id"],
+                            FarmId = (int)reader["FarmId"],
                             Name = (string)reader["Name"],
                             Variety = (string)reader["Variety"],
                             PlantingDate = (DateTime)reader["PlantingDate"],
@@ -297,24 +361,6 @@ namespace FarmRecordManagementSystem.Repositories
                 }
             }
             return crop;
-        }
-
-        public async Task UpdateCropDetails(Crops crop)
-        {
-            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
-            connection.Open();
-            string query = "UPDATE public.\"Crops\" SET \"Name\" = @name, \"Variety\" = @variety, \"PlantingDate\" = @plantingdate, \"ExpectedHarvestDate\" = @harvestdate WHERE public.\"Crops\".\"Id\" = @id";
-
-            using (var command = new NpgsqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@name", crop.Name);
-                command.Parameters.AddWithValue("@variety", crop.Variety);
-                command.Parameters.AddWithValue("@plantingdate", crop.PlantingDate);
-                command.Parameters.AddWithValue("@harvestdate", crop.ExpectedHarvestDate);
-                command.Parameters.AddWithValue("@Id", crop.Id);
-
-                await command.ExecuteNonQueryAsync();
-            }
         }
 
         public Task UpdateFarmDetails(Farms farm)

@@ -83,7 +83,7 @@ namespace FarmRecordManagementSystem.Controllers
         {
             await _farmRepository.AddExpenses(expense, farmId);
             TempData["success"] = "Expense Added Successfully";
-            return RedirectToAction("ViewAllEpenses", new { farmId = farmId });
+            return RedirectToAction("ViewAllExpenses", new { farmId = farmId });
         }
 
         [HttpPost]
@@ -133,7 +133,7 @@ namespace FarmRecordManagementSystem.Controllers
         {
             await _farmRepository.UpdateCropDetails(crop);
             TempData["success"] = "Crop Updated Successfully";
-            return RedirectToAction("ViewAllCrops", new { farmId = crop.FarmId });
+            return RedirectToAction("ViewAllCrops", new { farmId = farmId });
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
@@ -148,6 +148,13 @@ namespace FarmRecordManagementSystem.Controllers
         {
             var tasks = await _farmRepository.GetAllTasks(farmId);
             return View(tasks);
+        }
+
+        public async Task<IActionResult> MarkAsFinished(Tasks task, int Id, int farmId)
+        {
+            await _farmRepository.MarkAsFinished(Id);
+            TempData["success"] = "Task Marked as Completed";
+            return RedirectToAction("GetAllTasks", new { farmId = farmId });
         }
 
         public async Task<IActionResult> Logout()
