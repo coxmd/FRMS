@@ -296,6 +296,47 @@ namespace FarmRecordManagementSystem.Controllers
             return View(farm);
         }
 
+        // public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId)
+        // {
+        //     // Load the report file
+        //     string templatePath = $"Reports/InventoryItems.frx";
+        //     string reportPath = Path.Combine(webHostEnvironment.ContentRootPath, templatePath);
+        //     using (Report report = new Report())
+        //     {
+        //         report.Load(Path.Combine(webHostEnvironment.ContentRootPath, "Reports", GetReportFileName(reportTypeId)));
+        //         // report.Load(reportPath);
+
+
+        //         // var farmData = await _farmRepository.GetFarmInventory(farmId);
+
+        //         // // Pass the farm data to the report
+        //         // report.RegisterData(farmData, "public_Inventory");
+
+        //         // Set the farmId parameter value
+        //         // report.SetParameterValue("farmId", (int)farmId);
+        //         report.SetParameterValue("farmId", Convert.ToInt32(farmId));
+
+
+        //         using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+        //         connection.Open();
+
+
+        //         using (var stream = new MemoryStream())
+        //         using (var export = new PDFSimpleExport())
+        //         {
+        //             // Prepare the report data
+        //             report.Prepare();
+        //             export.Export(report, stream);
+        //             // Set the position of the MemoryStream back to the beginning
+        //             stream.Seek(0, SeekOrigin.Begin);
+        //             // Create a new MemoryStream and copy the contents of the original stream to it
+        //             var outputStream = new MemoryStream(stream.ToArray());
+
+        //             return new FileStreamResult(outputStream, "application/pdf");
+        //         }
+        //     }
+        // }
+
         public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId)
         {
             // Load the report file
@@ -303,21 +344,55 @@ namespace FarmRecordManagementSystem.Controllers
             string reportPath = Path.Combine(webHostEnvironment.ContentRootPath, templatePath);
             using (Report report = new Report())
             {
-                report.Load(Path.Combine(webHostEnvironment.ContentRootPath, "Reports", GetReportFileName(reportTypeId)));
-                // report.Load(reportPath);
-
-
-                var farmData = await _farmRepository.GetFarmInventory(farmId);
-
-                // Pass the farm data to the report
-                report.RegisterData(farmData, "public_Inventory");
-
-                // Set the farmId parameter value
-                report.SetParameterValue("farmId", (int)farmId);
-
+                var reportName = GetReportFileName(reportTypeId);
+                report.Load(Path.Combine(webHostEnvironment.ContentRootPath, "Reports", reportName));
 
                 using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
                 connection.Open();
+                string sql;
+                if (reportName == "InventoryItems.frx")
+                {
+                    sql = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId";
+                }
+                else if (reportName == "Crops.frx")
+                {
+                    sql = "SELECT * FROM public.\"Crops\" WHERE public.\"Crops\".\"FarmId\" = @farmId";
+                }
+                else if (reportName == "Tasks.frx")
+                {
+                    sql = "SELECT * FROM public.\"Tasks\" WHERE public.\"Tasks\".\"FarmId\" = @farmId";
+                }
+                else
+                {
+                    sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
+                }
+
+                using (NpgsqlCommand command = new NpgsqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@farmId", farmId);
+                    using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                    {
+                        var dataTable = new DataTable();
+                        dataTable.Load(reader);
+                        if (reportName == "InventoryItems.frx")
+                        {
+                            // Pass the farm data to the report
+                            report.RegisterData(dataTable, "public_Inventory");
+                        }
+                        else if (reportName == "Crops.frx")
+                        {
+                            report.RegisterData(dataTable, "public_Crops");
+                        }
+                        else if (reportName == "Tasks.frx")
+                        {
+                            report.RegisterData(dataTable, "public_Tasks");
+                        }
+                        else
+                        {
+                            report.RegisterData(dataTable, "public_Expenses");
+                        }
+                    }
+                }
 
                 using (var stream = new MemoryStream())
                 using (var export = new PDFSimpleExport())

@@ -6,7 +6,7 @@
 }
 <partial name="_Notification" />
 
-<h2 class="mt-5">Add A Crop</h2>
+<h2 class="mt-2">Add A Crop</h2>
 
 <form asp-action="AddCrops" method="post">
     @{
@@ -26,22 +26,22 @@
 
         <div class="col-4">
             <label asp-for="PlantingDate"></label>
-            <input asp-for="PlantingDate" class="form-control" />
+            <input asp-for="PlantingDate" class="form-control" placeholder="Enter date"/>
         </div>
 
         <div class="col-4">
             <label asp-for="ExpectedHarvestDate"></label>
-            <input asp-for="ExpectedHarvestDate" class="form-control" />
+            <input asp-for="ExpectedHarvestDate" class="form-control" placeholder="Enter date"/>
         </div>
 
         <div class="col-4">
             <label asp-for="FarmSizePlanted"></label>
-            <input asp-for="FarmSizePlanted" class="form-control" required/>
+            <input asp-for="FarmSizePlanted" class="form-control"  placeholder="Enter Size" required/>
         </div>
         
         <div class="col-4">
             <label asp-for="QuantityPlanted"></label>
-            <input asp-for="QuantityPlanted" class="form-control" required/>
+            <input asp-for="QuantityPlanted" class="form-control" placeholder="Enter Quantity" required/>
         </div>
 
         <div class="mt-2">

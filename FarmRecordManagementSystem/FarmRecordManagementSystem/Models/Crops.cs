@@ -11,7 +11,7 @@ namespace FarmRecordManagementSystem.Models
         public decimal QuantityPlanted { get; set; }
         public decimal ExpectedHarvestedQuantity { get; set; }
         public decimal ExpectedBagsHarvested { get; set; }
-        public DateTime? ExpectedHarvestDate { get; set; }
-        public DateTime? PlantingDate { get; set; }
+        public DateTime ExpectedHarvestDate { get; set; }
+        public DateTime PlantingDate { get; set; }
     }
 }

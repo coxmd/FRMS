@@ -33,8 +33,8 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@Name", crop.Name);
                 command.Parameters.AddWithValue("@Variety", string.IsNullOrEmpty(crop.Variety) ? DBNull.Value : (object)crop.Variety);
                 command.Parameters.AddWithValue("@FarmId", farmId);
-                command.Parameters.AddWithValue("@PlantingDate", crop.PlantingDate);
-                command.Parameters.AddWithValue("@ExpectedHarvestDate", crop.ExpectedHarvestDate);
+                command.Parameters.AddWithValue("@PlantingDate", new DateTimeOffset(crop.PlantingDate).Date);
+                command.Parameters.AddWithValue("@ExpectedHarvestDate", new DateTimeOffset(crop.ExpectedHarvestDate).Date);
                 command.Parameters.AddWithValue("@FarmSizePlanted", crop.FarmSizePlanted);
                 command.Parameters.AddWithValue("@QuantityPlanted", crop.QuantityPlanted);
                 command.Parameters.AddWithValue("@ExpectedHarvestQuantity", expectedHarvestQuantity);
