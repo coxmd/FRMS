@@ -4,49 +4,180 @@
 @{
     Layout = "_Layout";
 }
+
 <partial name="_Notification" />
 
-<h2 class="mt-2">Add A Crop</h2>
+<h2 class="mt-5">Add A Crop</h2>
+
+
+@functions {
+    public IEnumerable<SelectListItem> GetVarietyOptions(string crop)
+    {
+        List<SelectListItem> varietyOptions = new List<SelectListItem>();
+
+        // Add variety options based on the selected crop
+        if (crop == "Maize")
+        {
+            varietyOptions.Add(new SelectListItem { Value = "Hybrid", Text = "Hybrid" });
+            varietyOptions.Add(new SelectListItem { Value = "Open-Pollinated", Text = "Open-Pollinated" });
+            varietyOptions.Add(new SelectListItem { Value = "Highlands", Text = "Highlands" });
+        }
+        else if (crop == "Beans")
+        {
+            varietyOptions.Add(new SelectListItem { Value = "RoseCoco", Text = "RoseCoco" });
+            varietyOptions.Add(new SelectListItem { Value = "Mwezi Moja", Text = "Mwezi Moja" });
+            // Add other variety options for Beans
+        }
+        // Add variety options for other crops here
+
+        return varietyOptions;
+    }
+}
 
 <form asp-action="AddCrops" method="post">
     @{
         string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
     }
     <div class="form-group">
-        <input type="hidden" asp-for="FarmId"/>
-        <div class="col-4">
-            <label asp-for="Name"></label>
-            <input asp-for="Name" class="form-control" />
-        </div>
+        <input type="hidden" asp-for="FarmId" />
+        <div class="row">
+            <div class="col-4">
+                <label asp-for="Name"></label>
+                <select id="cropDropdown" asp-for="Name" class="form-control">
+                    <option value="">-- Select Crop --</option>
+                    <option class="text-dark" value="Maize">Maize</option>
+                    <option class="text-dark" value="Beans">Beans</option>
+                    <option class="text-dark" value="Wheat">Wheat</option>
+                    <option class="text-dark" value="Tea">Tea</option>
+                    <option class="text-dark" value="Kale">Kale</option>
+                    <option class="text-dark" value="Cabbage">Cabbage</option>
+                    <option class="text-dark" value="Rice">Rice</option>
+                    <option class="text-dark" value="Potatoes">Potatoes</option>
+                    <option class="text-dark" value="GreenGrams">GreenGrams</option>
+                </select>
+            </div>
 
-        <div class="col-4">
-            <label asp-for="Variety"></label>
-            <input asp-for="Variety" class="form-control" />
-        </div>
+            <div class="col-4">
+                <label asp-for="Variety"></label>
+                <select id="varietyDropdown" asp-for="Variety" class="form-control">
+                    <option value="">-- Select Variety --</option>
+                </select>
+            </div>
 
-        <div class="col-4">
-            <label asp-for="PlantingDate"></label>
-            <input asp-for="PlantingDate" class="form-control" placeholder="Enter date"/>
-        </div>
+            <div class="col-4">
+                <label asp-for="PlantingDate"></label>
+                <input asp-for="PlantingDate" class="form-control" placeholder="Enter date" />
+            </div>
 
-        <div class="col-4">
-            <label asp-for="ExpectedHarvestDate"></label>
-            <input asp-for="ExpectedHarvestDate" class="form-control" placeholder="Enter date"/>
-        </div>
+            <div class="col-4">
+                <label asp-for="FarmSizePlanted"></label>
+                <input asp-for="FarmSizePlanted" class="form-control" placeholder="Enter Size" required />
+            </div>
 
-        <div class="col-4">
-            <label asp-for="FarmSizePlanted"></label>
-            <input asp-for="FarmSizePlanted" class="form-control"  placeholder="Enter Size" required/>
-        </div>
-        
-        <div class="col-4">
-            <label asp-for="QuantityPlanted"></label>
-            <input asp-for="QuantityPlanted" class="form-control" placeholder="Enter Quantity" required/>
-        </div>
+            <div class="col-4">
+                <label asp-for="QuantityPlanted"></label>
+                <input asp-for="QuantityPlanted" class="form-control" placeholder="Enter Quantity" required />
+            </div>
 
-        <div class="mt-2">
-            <button type="submit" class="btn btn-primary mt-1 mb-2">Add</button>
-            <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Back</a>
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary mt-1 mb-2">Add</button>
+                <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Back</a>
+            </div>
         </div>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Update the variety dropdown options when the crop is selected
+            var cropDropdown = document.getElementById("cropDropdown");
+            var varietyDropdown = document.getElementById("varietyDropdown");
+            
+            cropDropdown.addEventListener("change", function () {
+                var selectedCrop = cropDropdown.value;
+
+                // Clear existing options
+                varietyDropdown.innerHTML = "<option value=''>-- Select Variety --</option>";
+
+                // Add filtered options to the variety dropdown
+                if (selectedCrop === "Maize") {
+                    varietyDropdown.innerHTML += "<option value='Hybrid' class='text-dark'>Hybrid</option>";
+                    varietyDropdown.innerHTML += "<option value='Open-Pollinated' class='text-dark'>Open-Pollinated</option>";
+                    varietyDropdown.innerHTML += "<option value='Highlands' class='text-dark'>Highlands</option>";
+                } else if (selectedCrop === "Beans") {
+                    varietyDropdown.innerHTML += "<option value='RoseCoco' class='text-dark'>RoseCoco</option>";
+                    varietyDropdown.innerHTML += "<option value='Mwezi Moja' class='text-dark'>Mwezi Moja</option>";
+                    varietyDropdown.innerHTML += "<option class='text-dark' value='Chelalang'>Chelalang</option>";
+                    varietyDropdown.innerHTML += "<option value='Mwitemania' class='text-dark'>Mwitemania</option>";
+                    varietyDropdown.innerHTML += "<option value='Yellow' class='text-dark'>Yellow</option>";
+                    varietyDropdown.innerHTML += "<option value='Wairimu' class='text-dark'>Wairimu</option>";
+                    varietyDropdown.innerHTML += "<option value='Canadain Wonder' class='text-dark'>Canadain Wonder</option>";
+                    varietyDropdown.innerHTML += "<option value='KK 15' class='text-dark'>KK 15</option>";
+                }
+                else if (selectedCrop === "Wheat") {
+                    varietyDropdown.innerHTML += "<option value='Durum' class='text-dark'>Durum</option>";
+                    varietyDropdown.innerHTML += "<option value='Robin' class='text-dark'>Robin</option>";
+                    varietyDropdown.innerHTML += "<option class='text-dark' value='KS- Chui'>KS- Chui</option>";
+                    varietyDropdown.innerHTML += "<option value='Kenya eagle' class='text-dark'>Kenya eagle</option>";
+                    varietyDropdown.innerHTML += "<option value='Kenya Kingbird' class='text-dark'>Kenya Kingbird</option>";
+                }
+                else if (selectedCrop === "Tea") {
+                    varietyDropdown.innerHTML += "<option value='Black Tea' class='text-dark'>Black Tea</option>";
+                    varietyDropdown.innerHTML += "<option value='Purple Tea' class='text-dark'>Purple Tea</option>";
+                    varietyDropdown.innerHTML += "<option class='text-dark' value='Green Tea'>Green Tea</option>";
+                    varietyDropdown.innerHTML += "<option value='White Tea' class='text-dark'>White Tea</option>";
+                    varietyDropdown.innerHTML += "<option value='Yellow Tea' class='text-dark'>Yellow Tea</option>";
+                    varietyDropdown.innerHTML += "<option value='Oolong Tea' class='text-dark'>Oolong Tea</option>";
+                }
+                else if (selectedCrop === "Kale") {
+                    varietyDropdown.innerHTML += "<option value='Continental' class='text-dark'>Continental</option>";
+                    varietyDropdown.innerHTML += "<option value='Kinale' class='text-dark'>Kinale</option>";
+                    varietyDropdown.innerHTML += "<option class='text-dark' value='Tosha'>Tosha</option>";
+                    varietyDropdown.innerHTML += "<option value='1000 headed' class='text-dark'>1000 headed</option>";
+                    varietyDropdown.innerHTML += "<option value='Southern Georgia' class='text-dark'>Southern Georgia</option>";
+                    varietyDropdown.innerHTML += "<option value='Marrow Stem' class='text-dark'>Marrow Stem</option>";
+                    varietyDropdown.innerHTML += "<option value='Mfalme F1' class='text-dark'>Mfalme F1</option>";
+                    varietyDropdown.innerHTML += "<option value='Kanzira' class='text-dark'>Kanzira</option>";
+                    varietyDropdown.innerHTML += "<option value='Malkia F1' class='text-dark'>Malkia F1</option>";
+                }
+                else if (selectedCrop === "Cabbage") {
+                    varietyDropdown.innerHTML += "<option value='Victoria F1' class='text-dark'>Victoria F1</option>";
+                    varietyDropdown.innerHTML += "<option value='Gloria F1' class='text-dark'>Gloria F1</option>";
+                    varietyDropdown.innerHTML += "<option class='text-dark' value='Pruktor F1'>Pruktor F1</option>";
+                    varietyDropdown.innerHTML += "<option value='Pretoria F1' class='text-dark'>Pretoria F1</option>";
+                    varietyDropdown.innerHTML += "<option value='Zawadi F1' class='text-dark'>Zawadi F1</option>";
+                    varietyDropdown.innerHTML += "<option value='Queen F1' class='text-dark'>Queen F1</option>";
+                    varietyDropdown.innerHTML += "<option value='Karen F1' class='text-dark'>Karen F1</option>";
+                    varietyDropdown.innerHTML += "<option value='Kiboko F1' class='text-dark'>Kiboko F1</option>";
+                    varietyDropdown.innerHTML += "<option value='Triperio F1' class='text-dark'>Triperio F1</option>";
+                }
+                else if (selectedCrop === "Rice") {
+                    varietyDropdown.innerHTML += "<option value='Sindano' class='text-dark'>Sindano</option>";
+                    varietyDropdown.innerHTML += "<option value='Basmat 370' class='text-dark'>Basmat 370</option>";
+                    varietyDropdown.innerHTML += "<option class='text-dark' value='Basmat 217'>Basmat 217</option>";
+                    varietyDropdown.innerHTML += "<option value='BW 196' class='text-dark'>BW 196</option>";
+                    varietyDropdown.innerHTML += "<option value='NARIKA 1' class='text-dark'>NARIKA 1</option>";
+                    varietyDropdown.innerHTML += "<option value='NARIKA 4' class='text-dark'>NARIKA 4</option>";
+                    varietyDropdown.innerHTML += "<option value='NARIKA 10' class='text-dark'>NARIKA 10</option>";
+                    varietyDropdown.innerHTML += "<option value='NARIKA 11' class='text-dark'>NARIKA 11</option>";
+                }
+                else if (selectedCrop === "Potatoes") {
+                    varietyDropdown.innerHTML += "<option value='Markies' class='text-dark'>Markies</option>";
+                    varietyDropdown.innerHTML += "<option value='Arizona' class='text-dark'>Arizona</option>";
+                    varietyDropdown.innerHTML += "<option class='text-dark' value='Manitou'>Manitou</option>";
+                    varietyDropdown.innerHTML += "<option value='Destiny' class='text-dark'>Destiny</option>";
+                    varietyDropdown.innerHTML += "<option value='Shangi' class='text-dark'>Shangi</option>";
+                    varietyDropdown.innerHTML += "<option value='Sherehekea' class='text-dark'>Sherehekea</option>";
+                }
+                else if (selectedCrop === "GreenGrams") {
+                    varietyDropdown.innerHTML += "<option value='KS20 (uncle)' class='text-dark'>KS20 (uncle)</option>";
+                    varietyDropdown.innerHTML += "<option value='N26 (nylon)' class='text-dark'>N26 (nylon)</option>";
+                }
+            });
+        });
+    </script>
+}
+
+
+

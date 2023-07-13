@@ -20,10 +20,79 @@ namespace FarmRecordManagementSystem.Repositories
             connection.Open();
 
             // Calculate the expected harvest quantity based on farm size and total quantity planted
-            decimal expectedHarvestQuantity = crop.FarmSizePlanted * 4000;
+            decimal expectedHarvestQuantity = crop.FarmSizePlanted;
+            if (crop.Name == "Maize" || crop.Name == "Wheat")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 4000;
+            }
+            else if (crop.Name == "Beans")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 1000;
+            }
+            else if (crop.Name == "Tea")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 4000;
+            }
+            else if (crop.Name == "Kale")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 30000;
+            }
+            else if (crop.Name == "Cabbage")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 20000;
+            }
+            else if (crop.Name == "Rice")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 14000;
+            }
+
+            else if (crop.Name == "Potatoes" && crop.Variety == "Arizona")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 16000;
+            }
+            else if (crop.Name == "Potatoes")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 50000;
+            }
+
+            else if (crop.Name == "Potatoes" && crop.Variety == "Shangi")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 30000;
+            }
+            // decimal expectedHarvestQuantity = crop.FarmSizePlanted * 4000;
 
             // Calculate the number of 50kg bags
             decimal numberOfBags = expectedHarvestQuantity / 50;
+
+            DateTime expectedHarvestDate = crop.PlantingDate;
+            if (crop.Name == "Maize" && crop.Variety == "Highlands")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(6);
+            }
+            else if (crop.Name == "Maize" || crop.Name == "Cabbage" || crop.Name == "Rice" || crop.Name == "Potatoes")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(3);
+            }
+            else if (crop.Name == "Beans" || crop.Name == "Kale")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(2);
+            }
+            else if (crop.Name == "Beans" && crop.Variety == "Mwezi Moja")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(3);
+            }
+            else if (crop.Name == "Wheat")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(4);
+            }
+            else if (crop.Name == "Tea")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddYears(3);
+            }
+            else if (crop.Name == "Potatoes" && crop.Variety == "Markies")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(4);
+            }
 
             string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\", \"FarmSizePlanted\", \"QuantityPlanted\", \"ExpectedHarvestQuantity\", \"ExpectedBagsHarvested\")" +
                         "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate, @FarmSizePlanted, @QuantityPlanted, @ExpectedHarvestQuantity, @ExpectedBagsHarvested)";
@@ -34,7 +103,7 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@Variety", string.IsNullOrEmpty(crop.Variety) ? DBNull.Value : (object)crop.Variety);
                 command.Parameters.AddWithValue("@FarmId", farmId);
                 command.Parameters.AddWithValue("@PlantingDate", new DateTimeOffset(crop.PlantingDate).Date);
-                command.Parameters.AddWithValue("@ExpectedHarvestDate", new DateTimeOffset(crop.ExpectedHarvestDate).Date);
+                command.Parameters.AddWithValue("@ExpectedHarvestDate", expectedHarvestDate);
                 command.Parameters.AddWithValue("@FarmSizePlanted", crop.FarmSizePlanted);
                 command.Parameters.AddWithValue("@QuantityPlanted", crop.QuantityPlanted);
                 command.Parameters.AddWithValue("@ExpectedHarvestQuantity", expectedHarvestQuantity);
