@@ -367,6 +367,11 @@ namespace FarmRecordManagementSystem.Controllers
                     sql = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId";
 
                 }
+                else if (reportName == "Revenue-Farms-Summary.frx")
+                {
+                    sql = "SELECT * FROM public.\"Farms\" WHERE public.\"Farms\".\"FarmerId\" = @farmerId";
+
+                }
                 else
                 {
                     sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
@@ -374,6 +379,8 @@ namespace FarmRecordManagementSystem.Controllers
 
                 using (NpgsqlCommand command = new NpgsqlCommand(sql, connection))
                 {
+                    var FarmerId = HttpContext.Session.GetInt32("Id");
+                    command.Parameters.AddWithValue("@farmerId", FarmerId);
                     command.Parameters.AddWithValue("@farmId", farmId);
                     using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                     {
@@ -396,8 +403,10 @@ namespace FarmRecordManagementSystem.Controllers
                         {
                             report.RegisterData(dataTable, "public_Inventory");
                         }
-
-
+                        else if (reportName == "Revenue-Farms-Summary.frx")
+                        {
+                            report.RegisterData(dataTable, "public_Farms");
+                        }
                         else
                         {
                             report.RegisterData(dataTable, "public_Expenses");
@@ -430,7 +439,8 @@ namespace FarmRecordManagementSystem.Controllers
                 { 2, "Crops.frx" },    // Example mapping for report type ID 2
                 { 3, "Tasks.frx"},
                 { 4, "Expenses.frx"},
-                { 5, "Revenue.frx"}
+                { 5, "Revenue.frx"},
+                { 6, "Revenue-Farms-Summary.frx"}
             };
 
             // Retrieve the report file name based on the report type ID
