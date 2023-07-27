@@ -17,8 +17,8 @@
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse justify-content-end">
-                    <ul class="navbar-nav flex-grow-1 ms-auto">
+                <div class="collapse navbar-collapse">
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <a class="nav-link text-dark @(ViewContext.RouteData.Values["Action"].ToString() == "Index" ? "active" : "")"
                             asp-area="" asp-controller="Home" asp-action="Index">Home</a>

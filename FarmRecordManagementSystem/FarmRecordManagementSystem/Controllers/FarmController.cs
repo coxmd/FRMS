@@ -362,6 +362,11 @@ namespace FarmRecordManagementSystem.Controllers
                 {
                     sql = "SELECT * FROM public.\"Tasks\" WHERE public.\"Tasks\".\"FarmId\" = @farmId";
                 }
+                else if (reportName == "Revenue.frx")
+                {
+                    sql = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId";
+
+                }
                 else
                 {
                     sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
@@ -387,6 +392,12 @@ namespace FarmRecordManagementSystem.Controllers
                         {
                             report.RegisterData(dataTable, "public_Tasks");
                         }
+                        else if (reportName == "Revenue.frx")
+                        {
+                            report.RegisterData(dataTable, "public_Inventory");
+                        }
+
+
                         else
                         {
                             report.RegisterData(dataTable, "public_Expenses");
@@ -418,7 +429,8 @@ namespace FarmRecordManagementSystem.Controllers
                 { 1, "InventoryItems.frx" }, // Example mapping for report type ID 1
                 { 2, "Crops.frx" },    // Example mapping for report type ID 2
                 { 3, "Tasks.frx"},
-                { 4, "Expenses.frx"}
+                { 4, "Expenses.frx"},
+                { 5, "Revenue.frx"}
             };
 
             // Retrieve the report file name based on the report type ID

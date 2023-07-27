@@ -139,14 +139,16 @@ namespace FarmRecordManagementSystem.Repositories
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Inventory\" (\"DateCreated\", \"CropName\", \"QuantityHarvested\", \"PriceSold\", \"FarmId\", \"QuantityRemaining\", \"TotalSold\", \"Sales\")" +
-                        "VALUES(@DateCreated, @Name, @QuantityHarvested, @PriceSold, @FarmId, @QuantityRemaining, @TotalSold, @Sales)";
+            string query = "INSERT INTO public.\"Inventory\" (\"DateCreated\", \"CropName\", \"QuantityHarvested\", \"PriceSold\", \"FarmId\", \"QuantityRemaining\", \"TotalSold\", \"Sales\", \"Revenue\")" +
+                        "VALUES(@DateCreated, @Name, @QuantityHarvested, @PriceSold, @FarmId, @QuantityRemaining, @TotalSold, @Sales, @Revenue)";
 
             int quantityHarvested = inventory.QuantityHarvested ?? 0;
             int totalSold = inventory.TotalSold ?? 0;
             int priceSold = inventory.PriceSold ?? 0;
             int quantityRemaining = quantityHarvested - totalSold;
             int sales = totalSold * priceSold;
+            // Fetch the total revenue (SUM of all sales) for the farm
+            int revenue = await GetTotalRevenueForFarm(farmId, connection);
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -157,11 +159,45 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@TotalSold", totalSold);
                 command.Parameters.AddWithValue("@QuantityRemaining", quantityRemaining);
                 command.Parameters.AddWithValue("@Sales", sales);
+                command.Parameters.AddWithValue("@Revenue", revenue + sales);
                 command.Parameters.AddWithValue("@FarmId", farmId);
                 // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(expense.CropId) ? DBNull.Value : (object)expense.CropId);
 
                 await command.ExecuteNonQueryAsync();
             }
+
+            int newTotalRevenue = revenue + sales;
+
+            // Calculate and update the new total revenue in the "FarmRevenue" table
+            string updateRevenueQuery = "UPDATE public.\"Farms\" SET \"TotalFarmRevenue\" = @TotalRevenue WHERE public.\"Farms\".\"Id\" = @FarmId";
+
+            using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateRevenueQuery, connection))
+            {
+                updateCommand.Parameters.AddWithValue("@FarmId", farmId);
+                updateCommand.Parameters.AddWithValue("@TotalRevenue", newTotalRevenue);
+
+                await updateCommand.ExecuteNonQueryAsync();
+            }
+        }
+
+        // Helper method to get the total revenue for a farm from the "Inventory" table
+        private async Task<int> GetTotalRevenueForFarm(int farmId, NpgsqlConnection connection)
+        {
+            string query = "SELECT SUM(\"Sales\") FROM public.\"Inventory\" WHERE \"FarmId\" = @FarmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@FarmId", farmId);
+                var totalRevenue = await command.ExecuteScalarAsync();
+
+                // Check if the result is null or DBNull (i.e., no records for the farm)
+                if (totalRevenue != null && totalRevenue != DBNull.Value)
+                {
+                    return Convert.ToInt32(totalRevenue);
+                }
+            }
+
+            return 0; // Return 0 if no revenue found for the farm
         }
 
         public async Task AddTasks(Tasks task, int farmId)
