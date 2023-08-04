@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="06/30/2023 21:36:15" ReportInfo.CreatorVersion="2023.2.0.0">
+<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="07/27/2023 15:00:25" ReportInfo.CreatorVersion="2023.2.0.0">
   <Styles>
     <Style Name="EvenRows" Font="Arial, 10pt"/>
   </Styles>
   <Dictionary>
-    <PostgresDataConnection Name="DefaultConnection" ConnectionString="rijcmlq8ZkN6qUj4G/zvKvLeJ9DDB6WCp22J48oQEWWvz8/J/NksAmbO8W8oeq8qgeas2icQDEAfi2OWjvjKl3icG5ziY9d5VJrfNwjGxyhpJDs4lfmVRfUWxzTMKRgXdZFmK18">
+    <PostgresDataConnection Name="DefaultConnection" ConnectionString="rijcmlq8ZkN6qUj4G/zvKvLeJ9DDB6WCp22J48oQEWWvz8/J/NksAmbO8W8oeq8qgeas2icQDEAfi2OWjvjKl3icG5ziY9d5VJrfNwjGxyhpJDs4lf27fH4Wxf/RzPsZ6tDWRXQ">
       <TableDataSource Name="public_Inventory" DataType="System.Int32" Enabled="true" TableName="public.&quot;Inventory&quot;">
         <Column Name="Id" DataType="System.Int32"/>
         <Column Name="DateCreated" DataType="System.DateTime"/>
@@ -75,11 +75,13 @@
       <TextObject Name="Text9" Left="122.85" Width="75.6" Height="28.35" Text="[public_Tasks.DueDate]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
       <TextObject Name="Text20" Left="368.55" Width="85.05" Height="28.35" Text="[public_Tasks.Status]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
       <TextObject Name="Text7" Left="236.25" Width="94.5" Height="28.35" Text="[public_Tasks.AssignedTo]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text22" Left="491.4" Width="85.05" Height="28.35" Text="[public_Tasks.DateCompleted]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
       <DataHeaderBand Name="DataHeader1" Top="145.75" Width="718.2" Height="28.35">
         <TextObject Name="Text6" Width="47.25" Height="28.35" Text="Name" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
         <TextObject Name="Text8" Left="122.85" Width="56.7" Height="28.35" Text="Due Date" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
         <TextObject Name="Text10" Left="236.25" Width="94.5" Height="28.35" Text="AssignedTo" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
         <TextObject Name="Text19" Left="368.55" Width="85.05" Height="28.35" Text="Status" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text21" Left="491.4" Width="85.05" Height="28.35" Text="Date Completed" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
       </DataHeaderBand>
       <DataFooterBand Name="DataFooter1" Top="210.45" Width="718.2" Height="28.35"/>
     </DataBand>
