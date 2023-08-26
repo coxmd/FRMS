@@ -140,7 +140,7 @@ namespace FarmRecordManagementSystem.Repositories
             connection.Open();
 
             string query = "INSERT INTO public.\"Inventory\" (\"DateCreated\", \"CropName\", \"QuantityHarvested\", \"PriceSold\", \"FarmId\", \"QuantityRemaining\", \"TotalSold\", \"Sales\", \"Revenue\")" +
-                        "VALUES(@DateCreated, @Name, @QuantityHarvested, @PriceSold, @FarmId, @QuantityRemaining, @TotalSold, @Sales, @Revenue)";
+                        "VALUES(@DateCreated, @Name, @QuantityHarvested, @PriceSold, @FarmId, @QuantityRemaining, @TotalSold, @Sales)";
 
             int quantityHarvested = inventory.QuantityHarvested ?? 0;
             int totalSold = inventory.TotalSold ?? 0;
@@ -159,7 +159,6 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@TotalSold", totalSold);
                 command.Parameters.AddWithValue("@QuantityRemaining", quantityRemaining);
                 command.Parameters.AddWithValue("@Sales", sales);
-                command.Parameters.AddWithValue("@Revenue", revenue + sales);
                 command.Parameters.AddWithValue("@FarmId", farmId);
                 // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(expense.CropId) ? DBNull.Value : (object)expense.CropId);
 
