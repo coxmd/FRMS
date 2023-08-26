@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="08/04/2023 11:54:46" ReportInfo.CreatorVersion="2023.2.0.0">
+<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="08/04/2023 14:23:35" ReportInfo.CreatorVersion="2023.2.0.0">
   <Styles>
     <Style Name="EvenRows" Font="Arial, 10pt"/>
   </Styles>
   <Dictionary>
-    <PostgresDataConnection Name="Connection" ConnectionString="rijcmlq8ZkN6qUj4G/zvKvLeJ9DDB6WCp22J48oQEWWvz8/J/NksAmbO8W8oeq8qgeas2icQDEAfi2OWjvjKl3icG5ziY9d5VJrfNwjGxyhpJDs4lcVE6TIb3qjlq0qHnmDlKdz">
+    <PostgresDataConnection Name="Connection" ConnectionString="rijcmlq8ZkN6qUj4G/zvKvLeJ9DDB6WCp22J48oQEWWvz8/J/NksAmbO8W8oeq8qgeas2icQDEAfi2OWjvjKl3icG5ziY9d5VJrfNwjGxyhpJDs4lfLkaccGtv/2EG/MgItXzC9">
       <TableDataSource Name="public_Inventory" DataType="System.Int32" Enabled="true" TableName="public.&quot;Inventory&quot;">
         <Column Name="Id" DataType="System.Int32"/>
         <Column Name="DateCreated" DataType="System.DateTime"/>
@@ -31,6 +31,9 @@
     <Parameter Name="Total_Revenue" DataType="System.Int32" AsString=""/>
     <Total Name="SumOfSales" Expression="[public_Inventory.TotalSold] * [public_Inventory.Sales]" Evaluator="Data1" PrintOn="DataFooter2"/>
     <Total Name="SumOfExpenses" Expression="[public_Expenses.Price]" Evaluator="Data2" PrintOn="PageFooter1"/>
+    <Total Name="Sales" Expression="[public_Inventory.TotalSold] * [public_Inventory.Sales]" Evaluator="Data1" PrintOn="PageFooter1"/>
+    <Total Name="Expenses" Expression="[public_Expenses.Price]" Evaluator="Data2" PrintOn="PageFooter1"/>
+    <Total Name="Profit" Expression="[Sales]-[Expenses]" Evaluator="Data1" PrintOn="PageFooter1"/>
   </Dictionary>
   <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
     <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="198.45" CanGrow="true">
@@ -38,8 +41,6 @@
       <TextObject Name="Text11" Top="28.35" Width="718.2" Height="28.35" Anchor="Top, Left, Right" Fill.Color="WhiteSmoke" CanGrow="true" CanShrink="true" Text="&#13;&#10;" Padding="4, 4, 4, 4" Font="Tahoma, 8pt"/>
       <TextObject Name="Text18" Width="718.2" Height="28.35" Anchor="Top, Left, Right" Fill.Color="WhiteSmoke" Cursor="Hand" Hyperlink.Value="http://fast.report/e0b07" Hyperlink.OpenLinkInNewTab="true" VertAlign="Center" Font="Tahoma, 10pt, style=Bold, Underline" TextFill.Color="Blue"/>
       <ContainerObject Name="Container1" Top="103.95" Width="718.2" Height="37.8" Fill.Color="LightSlateGray"/>
-      <TextObject Name="Text38" Left="-9.45" Top="151.2" Width="189" Height="37.8" Text="NET PROFIT = " HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
-      <TextObject Name="Text39" Left="179.55" Top="160.65" Width="274.05" Height="28.35" Fill.Color="WhiteSmoke" Text="[SumOfSales] - [SumOfExpenses] = " Font="Tahoma, 11pt, style=Bold"/>
     </ReportTitleBand>
     <PageHeaderBand Name="PageHeader1" Top="202.45" Width="718.2" Height="37.8">
       <TextObject Name="Text27" Left="245.7" Top="9.45" Width="94.5" Height="18.9" Text="Total Sales" Font="Tahoma, 11pt, style=Bold"/>
@@ -52,10 +53,10 @@
         <TextObject Name="Text6" Left="18.9" Width="47.25" Height="28.35" Text="Name" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
         <TextObject Name="Text19" Left="103.95" Top="9.45" Width="85.05" Height="28.35" Text="TotalSold(50 kg sacks)" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
         <TextObject Name="Text22" Left="226.8" Top="9.45" Width="94.5" Height="28.35" Text="TotalCash" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
-        <TextObject Name="Text26" Left="368.55" Top="9.45" Width="94.5" Height="28.35" Text="Total Revenue" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
       </DataHeaderBand>
       <DataFooterBand Name="DataFooter2" Top="318.4" Width="718.2" Height="37.8">
-        <TextObject Name="Text35" Left="368.55" Top="9.45" Width="94.5" Height="18.9" Fill.Color="WhiteSmoke" Text="[SumOfSales]" Font="Tahoma, 8pt"/>
+        <TextObject Name="Text35" Left="236.25" Top="9.45" Width="103.95" Height="28.35" Text="[SumOfSales]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text26" Left="141.75" Top="9.45" Width="94.5" Height="28.35" Text="Total Revenue:" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
       </DataFooterBand>
     </DataBand>
     <DataBand Name="Data2" Top="468.15" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke" EvenStyle="EvenRows" DataSource="public_Expenses">
@@ -67,13 +68,15 @@
         <TextObject Name="Text29" Left="37.8" Top="75.6" Width="47.25" Height="28.35" Text="Name" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
         <TextObject Name="Text31" Left="141.75" Top="75.6" Width="66.15" Height="28.35" Text="Category" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
         <TextObject Name="Text33" Left="255.15" Top="75.6" Width="66.15" Height="28.35" Text="Price" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
-        <TextObject Name="Text36" Left="359.1" Top="75.6" Width="66.15" Height="28.35" Text="Sum Of All Expenses" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
       </DataHeaderBand>
-      <DataFooterBand Name="DataFooter1" Top="500.5" Width="718.2" Height="28.35">
-        <TextObject Name="Text37" Left="359.1" Width="94.5" Height="18.9" Fill.Color="WhiteSmoke" Text="[SumOfExpenses]" Font="Tahoma, 8pt"/>
+      <DataFooterBand Name="DataFooter1" Top="500.5" Width="718.2" Height="132.3">
+        <TextObject Name="Text37" Left="236.25" Width="122.85" Height="28.35" Text="[SumOfExpenses]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text36" Left="151.2" Width="94.5" Height="28.35" Text="Total Expenses:" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text40" Left="189" Top="94.5" Width="170.1" Height="18.9" Text="[Profit]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+        <TextObject Name="Text38" Left="18.9" Top="85.05" Width="189" Height="37.8" Text="NET PROFIT = " HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
       </DataFooterBand>
     </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="532.85" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke">
+    <PageFooterBand Name="PageFooter1" Top="636.8" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke">
       <TextObject Name="Text4" Left="614.25" Width="94.5" Height="28.35" Text="[PageN]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
       <TextObject Name="Text13" Left="9.45" Width="217.35" Height="28.35" Cursor="Hand" Hyperlink.Value="https://www.fast-report.com/en/product/fast-report-net/" Text="Generated by FastReport .NET" VertAlign="Center" Font="Tahoma, 8pt, style=Underline" TextFill.Color="Blue"/>
     </PageFooterBand>
