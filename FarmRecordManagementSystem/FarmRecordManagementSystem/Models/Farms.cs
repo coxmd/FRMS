@@ -10,6 +10,12 @@ namespace FarmRecordManagementSystem.Models
         public string? Name { get; set; }
         [Display(Name = "Farm Size (in hectares)")]
         public int? Size { get; set; }
+
+        [Display(Name = "Has Partitions")]
+        public bool HasPartitions { get; set; }
+
+        [Display(Name = "Number of Partitions")]
+        public int? NumberOfPartitions { get; set; }
         public string? SoilType { get; set; }
     }
 }

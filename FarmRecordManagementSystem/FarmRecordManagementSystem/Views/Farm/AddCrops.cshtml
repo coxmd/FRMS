@@ -81,7 +81,8 @@
 
             <div class="mt-2">
                 <button type="submit" class="btn btn-primary mt-1 mb-2">Add</button>
-                <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Back</a>
+                <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })"
+                    class="btn btn-danger mt-1 mb-2">Back</a>
             </div>
         </div>
     </div>
@@ -93,7 +94,7 @@
             // Update the variety dropdown options when the crop is selected
             var cropDropdown = document.getElementById("cropDropdown");
             var varietyDropdown = document.getElementById("varietyDropdown");
-            
+
             cropDropdown.addEventListener("change", function () {
                 var selectedCrop = cropDropdown.value;
 
@@ -178,6 +179,3 @@
         });
     </script>
 }
-
-
-

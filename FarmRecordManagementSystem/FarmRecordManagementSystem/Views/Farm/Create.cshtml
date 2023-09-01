@@ -3,6 +3,12 @@
     Layout = "_Layout";
 }
 
+<style>
+    #numberOfPartitionsDiv {
+        display: none;
+    }
+</style>
+
 <partial name="_Notification" />
 <h2 class="mt-5">Add A Farm</h2>
 
@@ -18,9 +24,41 @@
             <input asp-for="Size" class="form-control" />
         </div>
 
+        <div class="col-4">
+            <label>Partition Options:</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" asp-for="HasPartitions" value="false" checked>
+                <label class="form-check-label">No Partitions</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" asp-for="HasPartitions" value="true">
+                <label class="form-check-label">Partitions</label>
+            </div>
+        </div>
+
+        <div class="col-4" id="numberOfPartitionsDiv">
+            <label asp-for="NumberOfPartitions"></label>
+            <input asp-for="NumberOfPartitions" class="form-control" />
+        </div>
+
         <div class="mt-2">
             <button type="submit" class="btn btn-primary">Add</button>
-            <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+            <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back </a>
         </div>
     </div>
 </form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var numberOfPartitionsDiv = $('#numberOfPartitionsDiv');
+
+        $('input[name="HasPartitions"]').on('change', function () {
+            if ($(this).val() === 'true') {
+                numberOfPartitionsDiv.show();
+            } else {
+                numberOfPartitionsDiv.hide();
+            }
+        });
+    });
+</script>
