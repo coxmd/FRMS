@@ -227,13 +227,21 @@ namespace FarmRecordManagementSystem.Repositories
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\", \"FarmerId\")" +
-                        "VALUES(@Name, @Size, @farmerId)";
+            decimal totalFarmSize = farm.Size ?? 0;
+            int numberOfPartitions = farm.NumberOfPartitions ?? 1;
+            decimal partitionSize = totalFarmSize / numberOfPartitions;
+
+
+            string query = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\", \"HasPartitions\", \"NumberOfPartitions\", \"PartitionSizes\", \"FarmerId\")" +
+                    "VALUES(@Name, @Size, @HasPartitions, @NumberOfPartitions, @PartitionSizes, @farmerId)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@Name", farm.Name);
-                command.Parameters.AddWithValue("@Size", farm.Size);
+                command.Parameters.AddWithValue("@Size", totalFarmSize);
+                command.Parameters.AddWithValue("@HasPartitions", farm.HasPartitions);
+                command.Parameters.AddWithValue("@NumberOfPartitions", numberOfPartitions);
+                command.Parameters.AddWithValue("@PartitionSizes", partitionSize);
                 command.Parameters.AddWithValue("@farmerId", farmerId);
 
                 await command.ExecuteNonQueryAsync();
