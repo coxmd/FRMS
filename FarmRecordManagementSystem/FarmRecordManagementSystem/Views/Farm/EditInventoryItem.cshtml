@@ -1,0 +1,38 @@
+@model Inventory
+@{
+    Layout = "_Layout";
+}
+<partial name="_Notification" />
+
+<h2 class="mt-5">Update Inventory Item</h2>
+
+<form asp-action="EditInventoryItem" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="FarmId" />
+    <div class="form-group">
+        <div class="col-4">
+            <label asp-for="CropName"></label>
+            <input asp-for="CropName" class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label asp-for="QuantityHarvested"></label>
+            <input asp-for="QuantityHarvested" class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label asp-for="PriceSold"></label>
+            <input asp-for="PriceSold" class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label asp-for="TotalSold"></label>
+            <input asp-for="TotalSold" class="form-control" />
+        </div>
+
+        <div class="mt-2">
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+        </div>
+    </div>
+</form>

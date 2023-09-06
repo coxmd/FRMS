@@ -114,11 +114,11 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditInventoryItem(Inventory inventory)
+        public async Task<IActionResult> EditInventoryItem(Inventory inventory, int farmId)
         {
             await _farmRepository.UpdateInventoryItem(inventory);
             TempData["success"] = "Inventory Item Updated Successfully";
-            return RedirectToAction("Inventory");
+            return RedirectToAction("Inventory", new { farmId = farmId });
         }
 
         [HttpPost]

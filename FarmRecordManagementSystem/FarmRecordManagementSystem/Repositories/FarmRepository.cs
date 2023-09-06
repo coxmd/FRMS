@@ -197,7 +197,9 @@ namespace FarmRecordManagementSystem.Repositories
                             Id = (int)reader["Id"],
                             CropName = (string)reader["CropName"],
                             QuantityHarvested = (int)reader["QuantityHarvested"],
-                            TotalSold = (int)reader["TotalSold"]
+                            PriceSold = (int)reader["PriceSold"],
+                            TotalSold = (int)reader["TotalSold"],
+                            FarmId = (int)reader["FarmId"]
                         };
                     }
                 }
