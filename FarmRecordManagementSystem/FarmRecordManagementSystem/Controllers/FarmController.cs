@@ -102,6 +102,25 @@ namespace FarmRecordManagementSystem.Controllers
             return RedirectToAction("Inventory", new { farmId = farmId });
         }
 
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> EditInventoryItem(int Id)
+        {
+            var item = await _farmRepository.GetInventoryItem(Id);
+            if (item == null)
+            {
+                return NotFound();
+            }
+            return View(item);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditInventoryItem(Inventory inventory)
+        {
+            await _farmRepository.UpdateInventoryItem(inventory);
+            TempData["success"] = "Inventory Item Updated Successfully";
+            return RedirectToAction("Inventory");
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddTasks(Tasks task, int farmId)
         {

@@ -179,6 +179,32 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
+        public async Task<Inventory> GetInventoryItem(int id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            Inventory inventoryItem = null!;
+            string query = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"Id\" =@id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        inventoryItem = new Inventory
+                        {
+                            Id = (int)reader["Id"],
+                            CropName = (string)reader["CropName"],
+                            QuantityHarvested = (int)reader["QuantityHarvested"],
+                            TotalSold = (int)reader["TotalSold"]
+                        };
+                    }
+                }
+            }
+            return inventoryItem;
+        }
+
         // Helper method to get the total revenue for a farm from the "Inventory" table
         private async Task<int> GetTotalRevenueForFarm(int farmId, NpgsqlConnection connection)
         {
@@ -197,6 +223,23 @@ namespace FarmRecordManagementSystem.Repositories
             }
 
             return 0; // Return 0 if no revenue found for the farm
+        }
+
+        public async Task UpdateInventoryItem(Inventory inventory)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            string query = "UPDATE public.\"Inventory\" SET \"CropName\" = @name, \"QuantityHarvested\" = @harvested, \"TotalSold\" = @TotalSold WHERE public.\"Inventory\".\"Id\" = @id";
+
+            using (var command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@name", inventory.CropName);
+                command.Parameters.AddWithValue("@harvested", inventory.QuantityHarvested);
+                command.Parameters.AddWithValue("@TotalSold", inventory.TotalSold);
+                command.Parameters.AddWithValue("@Id", inventory.Id);
+
+                await command.ExecuteNonQueryAsync();
+            }
         }
 
         public async Task AddTasks(Tasks task, int farmId)

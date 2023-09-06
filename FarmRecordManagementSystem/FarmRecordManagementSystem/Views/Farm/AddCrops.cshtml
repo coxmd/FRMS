@@ -9,31 +9,6 @@
 
 <h2 class="mt-5">Add A Crop</h2>
 
-
-@functions {
-    public IEnumerable<SelectListItem> GetVarietyOptions(string crop)
-    {
-        List<SelectListItem> varietyOptions = new List<SelectListItem>();
-
-        // Add variety options based on the selected crop
-        if (crop == "Maize")
-        {
-            varietyOptions.Add(new SelectListItem { Value = "Hybrid", Text = "Hybrid" });
-            varietyOptions.Add(new SelectListItem { Value = "Open-Pollinated", Text = "Open-Pollinated" });
-            varietyOptions.Add(new SelectListItem { Value = "Highlands", Text = "Highlands" });
-        }
-        else if (crop == "Beans")
-        {
-            varietyOptions.Add(new SelectListItem { Value = "RoseCoco", Text = "RoseCoco" });
-            varietyOptions.Add(new SelectListItem { Value = "Mwezi Moja", Text = "Mwezi Moja" });
-            // Add other variety options for Beans
-        }
-        // Add variety options for other crops here
-
-        return varietyOptions;
-    }
-}
-
 <form asp-action="AddCrops" method="post">
     @{
         string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
