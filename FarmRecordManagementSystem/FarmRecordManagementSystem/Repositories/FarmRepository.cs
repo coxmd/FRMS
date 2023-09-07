@@ -293,6 +293,50 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
+        public async Task<Tasks> GetTask(int id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            Tasks tasks = null!;
+            string query = "SELECT * FROM public.\"Tasks\" WHERE public.\"Tasks\".\"Id\" =@id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        tasks = new Tasks
+                        {
+                            Id = (int)reader["Id"],
+                            Description = (string)reader["Description"],
+                            DueDate = (DateTime)reader["DueDate"],
+                            AssignedTo = (string)reader["AssignedTo"],
+                            FarmId = (int)reader["FarmId"]
+                        };
+
+                    }
+                }
+            }
+            return tasks;
+        }
+
+        public async Task UpdateTask(Tasks tasks)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            string query = "UPDATE public.\"Tasks\" SET \"Description\" = @description, \"DueDate\" = @duedate, \"AssignedTo\" = @assignedTo WHERE public.\"Tasks\".\"Id\" = @id";
+
+            using (var command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@description", tasks.Description);
+                command.Parameters.AddWithValue("@duedate", tasks.DueDate);
+                command.Parameters.AddWithValue("@assignedTo, ", tasks.AssignedTo);
+                command.Parameters.AddWithValue("@Id", tasks.Id);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
 
         public async Task AddTasks(Tasks task, int farmId)
         {

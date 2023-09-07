@@ -8,9 +8,6 @@
 <h2 class="mt-2">Add An Expense</h2>
 
 <form asp-action="EditExpense" method="post">
-    @{
-        string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
-    }
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="FarmId" />
     <div class="form-group">
@@ -32,8 +29,7 @@
 
         <div class="mt-2">
             <button type="submit" class="btn btn-primary mt-1 mb-2">Update</button>
-            <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })"
-                class="btn btn-danger mt-1 mb-2">Back</a>
+            <a class="btn btn-danger mx-1 mb-2" onclick="window.history.back()">Back</a>
         </div>
     </div>
 </form>

@@ -140,6 +140,25 @@ namespace FarmRecordManagementSystem.Controllers
             return RedirectToAction("ViewAllExpenses", new { farmId = farmId });
         }
 
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> UpdateTask(int Id)
+        {
+            var tasks = await _farmRepository.GetTask(Id);
+            if (tasks == null)
+            {
+                return NotFound();
+            }
+            return View(tasks);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateTask(Tasks tasks, int farmId)
+        {
+            await _farmRepository.UpdateTask(tasks);
+            TempData["success"] = "Task Updated Successfully";
+            return RedirectToAction("GetAllTasks", new { farmId = farmId });
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddTasks(Tasks task, int farmId)
         {
