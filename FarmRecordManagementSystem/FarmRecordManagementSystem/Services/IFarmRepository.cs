@@ -11,7 +11,11 @@ namespace FarmRecordManagementSystem.Services
         Task<Farms> GetFarmDetails(int farmId);
         Task<List<Inventory>> GetFarmInventory(int farmId);
         Task<Inventory> GetInventoryItem(int id);
+
+        Task<Expenses> GetExpense(int id);
         Task UpdateInventoryItem(Inventory inventory);
+        Task UpdateExpense(Expenses expense);
+        // Task UpdateTask(Tasks tasks);
 
         Task CreateFarm(Farms farm, int farmerId);
 

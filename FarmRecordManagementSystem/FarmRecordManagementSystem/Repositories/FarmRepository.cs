@@ -179,6 +179,27 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
+        // Helper method to get the total revenue for a farm from the "Inventory" table
+        private async Task<int> GetTotalRevenueForFarm(int farmId, NpgsqlConnection connection)
+        {
+            string query = "SELECT SUM(\"Sales\") FROM public.\"Inventory\" WHERE \"FarmId\" = @FarmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@FarmId", farmId);
+                var totalRevenue = await command.ExecuteScalarAsync();
+
+                // Check if the result is null or DBNull (i.e., no records for the farm)
+                if (totalRevenue != null && totalRevenue != DBNull.Value)
+                {
+                    return Convert.ToInt32(totalRevenue);
+                }
+            }
+
+            return 0; // Return 0 if no revenue found for the farm
+        }
+
+
         public async Task<Inventory> GetInventoryItem(int id)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -207,26 +228,6 @@ namespace FarmRecordManagementSystem.Repositories
             return inventoryItem;
         }
 
-        // Helper method to get the total revenue for a farm from the "Inventory" table
-        private async Task<int> GetTotalRevenueForFarm(int farmId, NpgsqlConnection connection)
-        {
-            string query = "SELECT SUM(\"Sales\") FROM public.\"Inventory\" WHERE \"FarmId\" = @FarmId";
-
-            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
-            {
-                command.Parameters.AddWithValue("@FarmId", farmId);
-                var totalRevenue = await command.ExecuteScalarAsync();
-
-                // Check if the result is null or DBNull (i.e., no records for the farm)
-                if (totalRevenue != null && totalRevenue != DBNull.Value)
-                {
-                    return Convert.ToInt32(totalRevenue);
-                }
-            }
-
-            return 0; // Return 0 if no revenue found for the farm
-        }
-
         public async Task UpdateInventoryItem(Inventory inventory)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -243,6 +244,55 @@ namespace FarmRecordManagementSystem.Repositories
                 await command.ExecuteNonQueryAsync();
             }
         }
+
+        public async Task<Expenses> GetExpense(int id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            Expenses expense = null!;
+            string query = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"Id\" =@id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        expense = new Expenses
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            Price = (int)reader["Price"],
+                            FarmId = (int)reader["FarmId"]
+                        };
+                        if (!reader.IsDBNull(reader.GetOrdinal("Category")))
+                        {
+                            expense.Category = (string)reader["Category"];
+                        }
+
+                    }
+                }
+            }
+            return expense;
+        }
+
+        public async Task UpdateExpense(Expenses expenses)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            string query = "UPDATE public.\"Expenses\" SET \"Name\" = @name, \"Price\" = @price, \"Category\" = @category WHERE public.\"Expenses\".\"Id\" = @id";
+
+            using (var command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@name", expenses.Name);
+                command.Parameters.AddWithValue("@price", expenses.Price);
+                command.Parameters.AddWithValue("@category", string.IsNullOrEmpty(expenses.Category) ? DBNull.Value : (object)expenses.Category);
+                command.Parameters.AddWithValue("@Id", expenses.Id);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
 
         public async Task AddTasks(Tasks task, int farmId)
         {

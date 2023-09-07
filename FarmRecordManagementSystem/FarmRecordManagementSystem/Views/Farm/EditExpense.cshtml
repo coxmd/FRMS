@@ -1,0 +1,39 @@
+@model Expenses
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "_Layout";
+}
+<partial name="_Notification" />
+
+<h2 class="mt-2">Add An Expense</h2>
+
+<form asp-action="EditExpense" method="post">
+    @{
+        string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
+    }
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="FarmId" />
+    <div class="form-group">
+        @* <input type="hidden" asp-for="FarmId" value="@farmId" /> *@
+        <div class="col-4">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label asp-for="Price"></label>
+            <input asp-for="Price" class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label asp-for="Category"></label>
+            <input asp-for="Category" class="form-control" />
+        </div>
+
+        <div class="mt-2">
+            <button type="submit" class="btn btn-primary mt-1 mb-2">Update</button>
+            <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })"
+                class="btn btn-danger mt-1 mb-2">Back</a>
+        </div>
+    </div>
+</form>
