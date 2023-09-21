@@ -331,7 +331,7 @@ namespace FarmRecordManagementSystem.Repositories
             {
                 command.Parameters.AddWithValue("@description", tasks.Description);
                 command.Parameters.AddWithValue("@duedate", tasks.DueDate);
-                command.Parameters.AddWithValue("@assignedTo, ", tasks.AssignedTo);
+                command.Parameters.AddWithValue("@assignedTo", tasks.AssignedTo);
                 command.Parameters.AddWithValue("@Id", tasks.Id);
 
                 await command.ExecuteNonQueryAsync();
@@ -367,8 +367,8 @@ namespace FarmRecordManagementSystem.Repositories
             connection.Open();
 
             decimal totalFarmSize = farm.Size ?? 0;
-            int numberOfPartitions = farm.NumberOfPartitions ?? 1;
-            decimal partitionSize = totalFarmSize / numberOfPartitions;
+            // int numberOfPartitions = farm.NumberOfPartitions ?? 1;
+            // decimal partitionSize = totalFarmSize / numberOfPartitions;
 
 
             string query = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\", \"HasPartitions\", \"NumberOfPartitions\", \"PartitionSizes\", \"FarmerId\")" +
@@ -379,8 +379,8 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@Name", farm.Name);
                 command.Parameters.AddWithValue("@Size", totalFarmSize);
                 command.Parameters.AddWithValue("@HasPartitions", farm.HasPartitions);
-                command.Parameters.AddWithValue("@NumberOfPartitions", numberOfPartitions);
-                command.Parameters.AddWithValue("@PartitionSizes", partitionSize);
+                // command.Parameters.AddWithValue("@NumberOfPartitions", numberOfPartitions);
+                // command.Parameters.AddWithValue("@PartitionSizes", partitionSize);
                 command.Parameters.AddWithValue("@farmerId", farmerId);
 
                 await command.ExecuteNonQueryAsync();
@@ -391,15 +391,98 @@ namespace FarmRecordManagementSystem.Repositories
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
-            string query = "UPDATE public.\"Crops\" SET \"Name\" = @name, \"Variety\" = @variety, \"PlantingDate\" = @plantingdate, \"ExpectedHarvestDate\" = @harvestdate WHERE public.\"Crops\".\"Id\" = @id";
+
+            // Calculate the expected harvest quantity based on farm size and total quantity planted
+            decimal expectedHarvestQuantity = crop.FarmSizePlanted;
+            if (crop.Name == "Maize" || crop.Name == "Wheat")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 4000;
+            }
+            else if (crop.Name == "Beans")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 1000;
+            }
+            else if (crop.Name == "Tea")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 4000;
+            }
+            else if (crop.Name == "Kale")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 30000;
+            }
+            else if (crop.Name == "Cabbage")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 20000;
+            }
+            else if (crop.Name == "Rice")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 14000;
+            }
+
+            else if (crop.Name == "Potatoes" && crop.Variety == "Arizona")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 16000;
+            }
+            else if (crop.Name == "Potatoes")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 50000;
+            }
+
+            else if (crop.Name == "Potatoes" && crop.Variety == "Shangi")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 30000;
+            }
+            // decimal expectedHarvestQuantity = crop.FarmSizePlanted * 4000;
+
+            // Calculate the number of 50kg bags
+            decimal numberOfBags = expectedHarvestQuantity / 50;
+
+            DateTime expectedHarvestDate = crop.PlantingDate;
+            if (crop.Name == "Maize" && crop.Variety == "Highlands")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(6);
+            }
+            else if (crop.Name == "Maize" || crop.Name == "Cabbage" || crop.Name == "Rice" || crop.Name == "Potatoes")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(3);
+            }
+            else if (crop.Name == "Beans" || crop.Name == "Kale")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(2);
+            }
+            else if (crop.Name == "Beans" && crop.Variety == "Mwezi Moja")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(3);
+            }
+            else if (crop.Name == "Wheat")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(4);
+            }
+            else if (crop.Name == "Tea")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddYears(3);
+            }
+            else if (crop.Name == "Potatoes" && crop.Variety == "Markies")
+            {
+                expectedHarvestDate = crop.PlantingDate.AddMonths(4);
+            }
+
+            string query = "UPDATE public.\"Crops\" SET \"Name\" = @name, \"Variety\" = @variety, \"PlantingDate\" = @plantingdate, \"ExpectedHarvestDate\" = @harvestdate, \"QuantityPlanted\" = @quantityplanted, \"FarmSizePlanted\" = @farmsize, \"ExpectedHarvestQuantity\" = @ExpectedHarvestQuantity, \"ExpectedBagsHarvested\" = @ExpectedBagsHarvested  WHERE public.\"Crops\".\"Id\" = @id";
 
             using (var command = new NpgsqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@name", crop.Name);
-                command.Parameters.AddWithValue("@variety", crop.Variety);
+                command.Parameters.AddWithValue("@variety", string.IsNullOrEmpty(crop.Variety) ? DBNull.Value : (object)crop.Variety);
                 command.Parameters.AddWithValue("@plantingdate", crop.PlantingDate);
                 command.Parameters.AddWithValue("@harvestdate", crop.ExpectedHarvestDate);
+                command.Parameters.AddWithValue("@quantityplanted", crop.QuantityPlanted);
+                command.Parameters.AddWithValue("@farmsize", crop.FarmSizePlanted);
+                command.Parameters.AddWithValue("@ExpectedHarvestQuantity", expectedHarvestQuantity);
+                command.Parameters.AddWithValue("@ExpectedBagsHarvested", numberOfBags);
                 command.Parameters.AddWithValue("@Id", crop.Id);
+                // command.Parameters.AddWithValue("@PlantingDate", new DateTimeOffset(crop.PlantingDate).Date);
+                // command.Parameters.AddWithValue("@ExpectedHarvestDate", expectedHarvestDate);
+
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -648,8 +731,10 @@ namespace FarmRecordManagementSystem.Repositories
                             FarmId = (int)reader["FarmId"],
                             Name = (string)reader["Name"],
                             Variety = (string)reader["Variety"],
+                            ExpectedBagsHarvested = (int)reader["ExpectedBagsHarvested"],
                             PlantingDate = (DateTime)reader["PlantingDate"],
-                            ExpectedHarvestDate = (DateTime)reader["ExpectedHarvestDate"]
+                            QuantityPlanted = (decimal)reader["QuantityPlanted"],
+                            FarmSizePlanted = (decimal)reader["FarmSizePlanted"],
                         };
                     }
                 }

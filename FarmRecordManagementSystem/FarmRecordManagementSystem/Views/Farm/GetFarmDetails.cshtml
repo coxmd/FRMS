@@ -1,44 +1,20 @@
 @model Farms
 
-<h2>@Model.Name Details</h2>
+<h2>@Model.Name Farm</h2>
 
-<div>
+<div class="mt-3 mb-3">
   <p>Size: @Model.Size hectares</p>
   <p>SoilType: @Model.SoilType</p>
-  <a
-    href="@Url.Action("ViewAllCrops", "Farm", new { farmId = @Model.Id })"
-    class="btn btn-primary"
-    >View Current planted crops</a
-  >
-  <a
-    href="@Url.Action("ViewAllExpenses", "Farm", new { farmId = @Model.Id })"
-    class="btn btn-primary"
-    >View All Expenses</a
-  >
-  <a
-    href="@Url.Action("GetAllTasks", "Farm", new { farmId = @Model.Id })"
-    class="btn btn-primary"
-    >View All Tasks</a
-  >
+  <a href="@Url.Action("ViewAllCrops", "Farm", new { farmId = @Model.Id })" class="btn btn-primary">View Current planted
+    crops</a>
+  <a href="@Url.Action("ViewAllExpenses", "Farm", new { farmId = @Model.Id })" class="btn btn-primary">View All
+    Expenses</a>
+  <a href="@Url.Action("GetAllTasks", "Farm", new { farmId = @Model.Id })" class="btn btn-primary">View All Tasks</a>
 </div>
 
 <div>
   <h4>Actions</h4>
-  <a
-    href="@Url.Action("AddCrops", "Farm", new { farmId = Model.Id })"
-    class="btn btn-primary"
-    >Add New Crops</a
-  >
-  <a
-    href="@Url.Action("AddTasks", "Farm", new { farmId = Model.Id })"
-    class="btn btn-primary"
-    >Set Tasks</a
-  >
-  <a
-    href="@Url.Action("AddExpenses", "Farm", new { farmId = Model.Id })"
-    class="btn btn-primary"
-    >Add Expenses</a
-  >
+  <a href="@Url.Action("AddCrops", "Farm", new { farmId = Model.Id })" class="btn btn-primary">Add New Crops</a>
+  <a href="@Url.Action("AddTasks", "Farm", new { farmId = Model.Id })" class="btn btn-primary">Set Tasks</a>
+  <a href="@Url.Action("AddExpenses", "Farm", new { farmId = Model.Id })" class="btn btn-primary">Add Expenses</a>
 </div>
-
-

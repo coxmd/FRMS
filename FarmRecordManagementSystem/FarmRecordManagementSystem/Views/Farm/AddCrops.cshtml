@@ -18,7 +18,7 @@
         <div class="row">
             <div class="col-4">
                 <label asp-for="Name"></label>
-                <select id="cropDropdown" asp-for="Name" class="form-control">
+                <select id="cropDropdown" asp-for="Name" class="form-control" required>
                     <option value="">-- Select Crop --</option>
                     <option class="text-dark" value="Maize">Maize</option>
                     <option class="text-dark" value="Beans">Beans</option>
@@ -34,14 +34,14 @@
 
             <div class="col-4">
                 <label asp-for="Variety"></label>
-                <select id="varietyDropdown" asp-for="Variety" class="form-control">
+                <select id="varietyDropdown" asp-for="Variety" class="form-control" required>
                     <option value="">-- Select Variety --</option>
                 </select>
             </div>
 
             <div class="col-4">
                 <label asp-for="PlantingDate"></label>
-                <input asp-for="PlantingDate" class="form-control" placeholder="Enter date" />
+                <input asp-for="PlantingDate" class="form-control" placeholder="Enter date" required />
             </div>
 
             <div class="col-4">

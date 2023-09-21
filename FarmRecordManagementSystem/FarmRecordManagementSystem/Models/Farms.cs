@@ -13,13 +13,8 @@ namespace FarmRecordManagementSystem.Models
 
         [Display(Name = "Has Partitions")]
         public bool HasPartitions { get; set; }
+        public List<FarmPartitions> Partitions { get; set; }
 
-        [Display(Name = "Number of Partitions")]
-        public int? NumberOfPartitions { get; set; }
-
-        public decimal? PartitionSizes { get; set; }
         public string? SoilType { get; set; }
-
-        public int? TotalFarmRevenue { get; set; }
     }
 }
