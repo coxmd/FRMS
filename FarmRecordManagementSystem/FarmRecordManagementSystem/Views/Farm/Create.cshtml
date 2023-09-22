@@ -1,4 +1,4 @@
-@model FarmRecordManagementSystem.Models.Farms
+@model Farms
 @{
     Layout = "_Layout";
 }
@@ -25,151 +25,20 @@
         </div>
 
         <div class="col-4">
-            <label>Partitions:</label>
+            <label>Partition Options:</label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" asp-for="HasPartitions" value="true" id="partitionsTrue">
-                <label class="form-check-label">Has Partitions</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" asp-for="HasPartitions" value="false" checked
-                    id="partitionsFalse">
+                <input class="form-check-input" type="radio" asp-for="HasPartitions" value="false" checked>
                 <label class="form-check-label">No Partitions</label>
             </div>
-        </div>
-
-        <div class="col-4" id="partitionDetailsDiv">
-            <label>Partition Details:</label>
-            <div id="partitionInputs">
-                <!-- Input fields for partition details -->
-                <!-- These fields will be dynamically generated based on user input -->
-            </div>
-        </div>
-
-        <div class="col-4" id="partitionSizeOptionDiv">
-            <label>Partition Size Option:</label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="PartitionSizeOption" id="sameSize" value="same">
-                <label class="form-check-label">Same Size</label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="PartitionSizeOption" id="differentSizes"
-                    value="different">
-                <label class="form-check-label">Different Sizes</label>
+                <input class="form-check-input" type="radio" asp-for="HasPartitions" value="true">
+                <label class="form-check-label">Has Partitions</label>
             </div>
         </div>
 
         <div class="mt-2">
             <button type="submit" class="btn btn-primary">Add</button>
-            <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+            <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back </a>
         </div>
     </div>
 </form>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-    console.log("JavaScript code loaded.");
-
-    $(document).ready(function () {
-        var partitionDetailsDiv = $('#partitionDetailsDiv');
-        var partitionInputs = $('#partitionInputs');
-        var partitionsTrue = $('#partitionsTrue');
-        var partitionsFalse = $('#partitionsFalse');
-        var sameSize = $('#sameSize');
-        var differentSizes = $('#differentSizes');
-        var partitionSizeOptionDiv = $('#partitionSizeOptionDiv');
-
-        // Initially hide the partition details and size options.
-        partitionDetailsDiv.hide();
-        partitionSizeOptionDiv.hide();
-
-        partitionsTrue.on('change', function () {
-            if (partitionsTrue.prop('checked')) {
-                partitionDetailsDiv.show();
-                partitionSizeOptionDiv.show();
-            } else {
-                partitionDetailsDiv.hide();
-                partitionInputs.empty(); // Clear any existing partition input fields
-                partitionSizeOptionDiv.hide();
-            }
-        });
-
-        partitionsFalse.on('change', function () {
-            if (partitionsFalse.prop('checked')) {
-                partitionDetailsDiv.hide();
-                partitionInputs.empty();
-                partitionSizeOptionDiv.hide();
-            }
-        });
-
-        sameSize.on('change', function () {
-            if (sameSize.prop('checked')) {
-                // Enable partition size option radio buttons
-                $('input[name="PartitionSizeOption"]').prop('disabled', false);
-                // Enable partition size input fields for same sizes
-                $('input[name^="Partitions["]').prop('disabled', false);
-                togglePartitionDetails(); // Update the input fields based on the selected option
-            }
-        });
-
-        differentSizes.on('change', function () {
-            if (differentSizes.prop('checked')) {
-                // Enable partition size option radio buttons
-                $('input[name="PartitionSizeOption"]').prop('disabled', false);
-                togglePartitionDetails(); // Prompt for partition sizes
-            }
-        });
-    });
-
-    function togglePartitionDetails() {
-        var partitionInputs = $('#partitionInputs');
-        var partitionsTrue = $('#partitionsTrue');
-        var differentSizes = $('#differentSizes');
-        var sameSize = $('#sameSize');
-
-        if (partitionsTrue.prop('checked') && differentSizes.prop('checked')) {
-            // Get the number of partitions from user input
-            var numPartitions = parseInt(prompt("Enter the number of partitions:"));
-
-            if (!isNaN(numPartitions) && numPartitions > 0) {
-                // Logic to add input fields for partition details based on user input
-                partitionInputs.empty(); // Clear existing inputs
-
-                for (var i = 0; i < numPartitions; i++) {
-                    var partitionInputHtml = `
-                    <div class="form-group" id="partition${i + 1}">
-                        <input type="text" class="form-control" name="Partitions[${i}].Name" placeholder="Partition ${i + 1} Name" />
-                        <input type="text" class="form-control" name="Partitions[${i}].Size" placeholder="Partition ${i + 1} Size" />
-                    </div>
-                `;
-                    partitionInputs.append(partitionInputHtml);
-                }
-            } else {
-                // Handle invalid input (e.g., non-numeric or negative number of partitions)
-                alert("Please enter a valid number of partitions greater than 0.");
-                partitionsTrue.prop('checked', false); // Uncheck the "Has Partitions" radio button
-                partitionDetailsDiv.hide(); // Hide the partition details section
-                partitionInputs.empty(); // Clear any existing partition input fields
-            }
-        } else if (partitionsTrue.prop('checked') && sameSize.prop('checked')) {
-            // If "Same Size" is selected without specifying the number of partitions, prompt for it
-            var numPartitions = parseInt(prompt("Enter the number of partitions:"));
-
-            if (!isNaN(numPartitions) && numPartitions > 0) {
-                // Display the input field for the number of partitions
-                partitionDetailsDiv.show();
-                partitionInputs.empty(); // Clear existing inputs
-            } else {
-                // Handle invalid input
-                alert("Please enter a valid number of partitions greater than 0.");
-                partitionsTrue.prop('checked', false); // Uncheck the "Has Partitions" radio button
-                partitionDetailsDiv.hide(); // Hide the partition details section
-                partitionInputs.empty(); // Clear any existing partition input fields
-            }
-        } else {
-            partitionInputs.empty(); // Clear any existing partition input fields
-        }
-    }
-
-
-</script>

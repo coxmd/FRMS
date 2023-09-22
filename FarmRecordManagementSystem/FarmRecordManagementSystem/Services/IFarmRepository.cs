@@ -17,7 +17,7 @@ namespace FarmRecordManagementSystem.Services
         Task UpdateExpense(Expenses expense);
         Task UpdateTask(Tasks tasks);
 
-        Task CreateFarm(Farms farm, int farmerId);
+        Task CreateFarm(Farms farm, List<FarmPartitions> partitions, int farmerId);
 
         Task<List<Crops>> ViewAllCrops(int farmId);
         Task<Crops?> GetCropById(int Id);

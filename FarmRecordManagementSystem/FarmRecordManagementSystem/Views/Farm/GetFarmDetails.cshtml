@@ -17,4 +17,16 @@
   <a href="@Url.Action("AddCrops", "Farm", new { farmId = Model.Id })" class="btn btn-primary">Add New Crops</a>
   <a href="@Url.Action("AddTasks", "Farm", new { farmId = Model.Id })" class="btn btn-primary">Set Tasks</a>
   <a href="@Url.Action("AddExpenses", "Farm", new { farmId = Model.Id })" class="btn btn-primary">Add Expenses</a>
+  @if (Model.HasPartitions)
+  {
+    <a href="@Url.Action("AddPartition", "Farm", new { farmId = Model.Id })" class="btn btn-primary">Add Partition</a>
+    <a href="@Url.Action("GetAllPartitions", "Farm", new { farmId = Model.Id })" class="btn btn-primary">Get All
+      Partitions</a>
+  }
+  else
+  {
+    <!-- If the farm has no partitions, disable the buttons -->
+    <button class="btn btn-primary" disabled>Add Partition</button>
+    <button class="btn btn-primary" disabled>Get All Partitions</button>
+  }
 </div>

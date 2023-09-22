@@ -361,31 +361,73 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
-        public async Task CreateFarm(Farms farm, int farmerId)
+        // public async Task CreateFarm(Farms farm, int farmerId)
+        // {
+        //     using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+        //     connection.Open();
+
+        //     decimal totalFarmSize = farm.Size ?? 0;
+        //     // int numberOfPartitions = farm.NumberOfPartitions ?? 1;
+        //     // decimal partitionSize = totalFarmSize / numberOfPartitions;
+
+
+        //     string query = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\", \"HasPartitions\", \"NumberOfPartitions\", \"PartitionSizes\", \"FarmerId\")" +
+        //             "VALUES(@Name, @Size, @HasPartitions, @NumberOfPartitions, @PartitionSizes, @farmerId)";
+
+        //     using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+        //     {
+        //         command.Parameters.AddWithValue("@Name", farm.Name);
+        //         command.Parameters.AddWithValue("@Size", totalFarmSize);
+        //         command.Parameters.AddWithValue("@HasPartitions", farm.HasPartitions);
+        //         // command.Parameters.AddWithValue("@NumberOfPartitions", numberOfPartitions);
+        //         // command.Parameters.AddWithValue("@PartitionSizes", partitionSize);
+        //         command.Parameters.AddWithValue("@farmerId", farmerId);
+
+        //         await command.ExecuteNonQueryAsync();
+        //     }
+        // }
+
+        public async Task CreateFarm(Farms farm, List<FarmPartitions> partitions, int farmerId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
             decimal totalFarmSize = farm.Size ?? 0;
-            // int numberOfPartitions = farm.NumberOfPartitions ?? 1;
-            // decimal partitionSize = totalFarmSize / numberOfPartitions;
 
+            string farmQuery = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\", \"HasPartitions\", \"FarmerId\")" +
+                    "VALUES(@Name, @Size, @HasPartitions, @farmerId) RETURNING \"Id\"";
 
-            string query = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\", \"HasPartitions\", \"NumberOfPartitions\", \"PartitionSizes\", \"FarmerId\")" +
-                    "VALUES(@Name, @Size, @HasPartitions, @NumberOfPartitions, @PartitionSizes, @farmerId)";
-
-            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            using (NpgsqlCommand farmCommand = new NpgsqlCommand(farmQuery, connection))
             {
-                command.Parameters.AddWithValue("@Name", farm.Name);
-                command.Parameters.AddWithValue("@Size", totalFarmSize);
-                command.Parameters.AddWithValue("@HasPartitions", farm.HasPartitions);
-                // command.Parameters.AddWithValue("@NumberOfPartitions", numberOfPartitions);
-                // command.Parameters.AddWithValue("@PartitionSizes", partitionSize);
-                command.Parameters.AddWithValue("@farmerId", farmerId);
+                farmCommand.Parameters.AddWithValue("@Name", farm.Name);
+                farmCommand.Parameters.AddWithValue("@Size", totalFarmSize);
+                farmCommand.Parameters.AddWithValue("@HasPartitions", farm.HasPartitions);
+                farmCommand.Parameters.AddWithValue("@farmerId", farmerId);
 
-                await command.ExecuteNonQueryAsync();
+                int farmId = (int)await farmCommand.ExecuteScalarAsync();
+
+                if (farm.HasPartitions && partitions != null && partitions.Any())
+                {
+                    string partitionQuery = "INSERT INTO public.\"FarmPartitions\" (\"FarmId\", \"Name\", \"Size\", \"DateCreated\")" +
+                        "VALUES(@FarmId, @Name, @Size, @DateCreated)";
+
+                    using (NpgsqlCommand partitionCommand = new NpgsqlCommand(partitionQuery, connection))
+                    {
+                        foreach (var partition in partitions)
+                        {
+                            partitionCommand.Parameters.Clear();
+                            partitionCommand.Parameters.AddWithValue("@FarmId", farmId);
+                            partitionCommand.Parameters.AddWithValue("@Name", partition.Name);
+                            partitionCommand.Parameters.AddWithValue("@Size", partition.Size);
+                            partitionCommand.Parameters.AddWithValue("@DateCreated", DateTime.Now);
+
+                            await partitionCommand.ExecuteNonQueryAsync();
+                        }
+                    }
+                }
             }
         }
+
 
         public async Task UpdateCropDetails(Crops crop)
         {
@@ -662,7 +704,8 @@ namespace FarmRecordManagementSystem.Repositories
                         {
                             Id = (int)reader["Id"],
                             Name = (string)reader["Name"],
-                            Size = (int)reader["Size"]
+                            Size = (int)reader["Size"],
+                            HasPartitions = (bool)reader["HasPartitions"]
                         };
                         if (!reader.IsDBNull(reader.GetOrdinal("SoilType")))
                         {

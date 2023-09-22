@@ -1,0 +1,26 @@
+@model FarmPartitions
+@{
+    Layout = "_Layout";
+}
+
+<partial name="_Notification" />
+<h2 class="mt-5">Add A Partition to Farm</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <div class="col-4">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="col-4">
+            <label asp-for="Size"></label>
+            <input asp-for="Size" class="form-control" />
+        </div>
+
+        <div class="mt-2">
+            <button type="submit" class="btn btn-primary">Add</button>
+            <a class="btn btn-danger mt-1 mb-2" onclick="window.history.back()">Back</a>
+        </div>
+    </div>
+</form>

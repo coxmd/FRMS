@@ -44,10 +44,10 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(Farms farm)
+        public async Task<IActionResult> Create(Farms farm, List<FarmPartitions> partitions)
         {
             var Id = HttpContext.Session.GetInt32("Id");
-            await _farmRepository.CreateFarm(farm, (int)Id);
+            await _farmRepository.CreateFarm(farm, partitions, (int)Id);
             TempData["success"] = "Farm Created Successfully";
             return RedirectToAction("GetAllFarms", new { Id = Id });
         }
