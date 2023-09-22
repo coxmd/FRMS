@@ -361,6 +361,25 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
+        public async Task AddPartition(FarmPartitions partition, int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            string query = "INSERT INTO public.\"FarmPartitions\" (\"Name\", \"Size\", \"FarmId\", \"DateCreated\")" +
+                        "VALUES(@Name, @Size, @farmId, @DateCreated)";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Name", partition.Name);
+                command.Parameters.AddWithValue("@Size", partition.Size);
+                command.Parameters.AddWithValue("@farmId", farmId);
+                command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         // public async Task CreateFarm(Farms farm, int farmerId)
         // {
         //     using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -645,6 +664,38 @@ namespace FarmRecordManagementSystem.Repositories
             if (tasks.Count == 0)
                 return null;
             return tasks;
+        }
+
+        public async Task<List<FarmPartitions>> GetAllPartitions(int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            var partitions = new List<FarmPartitions>();
+            string query = "SELECT * FROM public.\"FarmPartitions\" WHERE public.\"FarmPartitions\".\"FarmId\" = @farmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@farmId", farmId);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var partition = new FarmPartitions
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            Size = (int)reader["Size"]
+                        };
+
+                        partitions.Add(partition);
+                        // if(servicePoint is ServicePoint)
+                    }
+                }
+            }
+            if (partitions.Count == 0)
+                return null;
+            return partitions;
         }
 
         public async Task MarkAsFinished(int Id)

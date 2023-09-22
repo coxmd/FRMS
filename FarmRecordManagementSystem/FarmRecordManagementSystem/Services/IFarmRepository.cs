@@ -22,11 +22,13 @@ namespace FarmRecordManagementSystem.Services
         Task<List<Crops>> ViewAllCrops(int farmId);
         Task<Crops?> GetCropById(int Id);
         Task<List<Tasks>> GetAllTasks(int farmId);
+        Task<List<FarmPartitions>> GetAllPartitions(int farmId);
 
         Task MarkAsFinished(int Id);
         Task<List<Expenses>> ViewAllExpenses(int farmId);
         Task AddCrops(Crops crop, int farmId);
         Task AddExpenses(Expenses expense, int farmId);
+        Task AddPartition(FarmPartitions partition, int farmId);
         Task AddInventoryItem(Inventory inventory, int farmId);
         Task AddTasks(Tasks task, int farmId);
         Task UpdateFarmDetails(Farms farm);

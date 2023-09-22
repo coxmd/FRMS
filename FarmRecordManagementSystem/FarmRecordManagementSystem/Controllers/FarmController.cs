@@ -60,6 +60,13 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public IActionResult AddPartition(int farmId)
+        {
+            var model = new FarmPartitions { FarmId = farmId };
+            return View(model);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
         public IActionResult AddInventory(int farmId)
         {
             var model = new Inventory { FarmId = farmId };
@@ -84,6 +91,14 @@ namespace FarmRecordManagementSystem.Controllers
             await _farmRepository.AddExpenses(expense, farmId);
             TempData["success"] = "Expense Added Successfully";
             return RedirectToAction("ViewAllExpenses", new { farmId = farmId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPartition(FarmPartitions partition, int farmId)
+        {
+            await _farmRepository.AddPartition(partition, farmId);
+            TempData["success"] = "Farm Partition Added Successfully";
+            return RedirectToAction("GetAllPartitions", new { farmId = farmId });
         }
 
         [HttpPost]
@@ -205,6 +220,13 @@ namespace FarmRecordManagementSystem.Controllers
         {
             var tasks = await _farmRepository.GetAllTasks(farmId);
             return View(tasks);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> GetAllPartitions(int farmId)
+        {
+            var partitions = await _farmRepository.GetAllPartitions(farmId);
+            return View(partitions);
         }
 
         [HttpPost, Authorize(AuthenticationSchemes = "UserAuthentication")]
