@@ -53,10 +53,19 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
-        public IActionResult AddCrops(int farmId)
+        public async Task<IActionResult> AddCrops(int farmId)
         {
-            var model = new Crops { FarmId = farmId };
-            return View(model);
+            var farm = await _farmRepository.GetFarmDetails(farmId);
+            var partitions = await _farmRepository.GetAllFarmPartitions(farmId);
+            var crops = new Crops { FarmId = farmId };
+
+            var viewModel = new CropFarmViewModel
+            {
+                Farms = farm,
+                Crops = crops,
+                Partitions = partitions
+            };
+            return View(viewModel);
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]

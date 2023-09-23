@@ -618,13 +618,41 @@ namespace FarmRecordManagementSystem.Repositories
                         };
 
                         farms.Add(farm);
-                        // if(servicePoint is ServicePoint)
                     }
                 }
             }
             if (farms.Count == 0)
                 return null;
             return farms;
+        }
+
+        public async Task<List<FarmPartitions>> GetAllFarmPartitions(int? Id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            var partitions = new List<FarmPartitions>();
+            string commandText = $"SELECT * FROM public.\"FarmPartitions\" WHERE public.\"FarmPartitions\".\"FarmId\" = @Id";
+            using (NpgsqlCommand command = new NpgsqlCommand(commandText, connection))
+            {
+                command.Parameters.AddWithValue("@Id", Id);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var partition = new FarmPartitions
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            Size = (int)reader["Size"]
+                        };
+
+                        partitions.Add(partition);
+                    }
+                }
+            }
+            if (partitions.Count == 0)
+                return null;
+            return partitions;
         }
 
         public async Task<List<Tasks>> GetAllTasks(int farmId)

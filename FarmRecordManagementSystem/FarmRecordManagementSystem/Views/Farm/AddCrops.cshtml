@@ -1,4 +1,4 @@
-@model Crops
+@model CropFarmViewModel
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
@@ -44,10 +44,30 @@
                 <input asp-for="PlantingDate" class="form-control" placeholder="Enter date" required />
             </div>
 
-            <div class="col-4">
-                <label asp-for="FarmSizePlanted"></label>
-                <input asp-for="FarmSizePlanted" class="form-control" placeholder="Enter Size" required />
-            </div>
+            @if (Model.Farms.HasPartitions)
+            {
+                <div class="col-4">
+                    <label asp-for="FarmSizePlanted"></label>
+                    <select asp-for="PartitionPlanted" class="form-select" id="Id" name="Id">
+                        <option value="">-- Select Partition --</option>
+                        @foreach (var partition in Model.Partitions)
+                        {
+                            <option value="@partition.Id" class="text-dark">@partition.Name</option>
+                        }
+                    </select>
+                    @* <select asp-for="FarmSizePlanted" class="form-control" required>
+                <option value="">-- Select Partition --</option>
+                <!-- Add partition options here based on farm partitions -->
+                </select> *@
+                </div>
+            }
+            else
+            {
+                <div class="col-4">
+                    <label asp-for="FarmSizePlanted"></label>
+                    <input asp-for="FarmSizePlanted" class="form-control" placeholder="Enter Size" required />
+                </div>
+            }
 
             <div class="col-4">
                 <label asp-for="QuantityPlanted"></label>

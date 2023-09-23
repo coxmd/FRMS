@@ -1,18 +1,18 @@
 namespace FarmRecordManagementSystem.Models
 {
-    public class Crops
+    public class CropFarmViewModel
     {
-        public int Id { get; set; }
+        public Farms Farms { get; set; }
+        public Crops Crops { get; set; }
+        public List<FarmPartitions> Partitions { get; set; }
 
         public string? Name { get; set; }
         public string? Variety { get; set; }
         public int? FarmId { get; set; }
         public decimal FarmSizePlanted { get; set; }
         public decimal QuantityPlanted { get; set; }
-        public decimal PartitonPlanted { get; set; }
-        public decimal ExpectedHarvestedQuantity { get; set; }
-        public int ExpectedBagsHarvested { get; set; }
-        public DateTime ExpectedHarvestDate { get; set; }
+        public decimal PartitionPlanted { get; set; }
+
         public DateTime PlantingDate { get; set; }
     }
 }
