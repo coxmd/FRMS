@@ -59,7 +59,7 @@ namespace FarmRecordManagementSystem.Controllers
             var partitions = await _farmRepository.GetAllFarmPartitions(farmId);
             var crops = new Crops { FarmId = farmId };
 
-            var viewModel = new CropFarmViewModel
+            var viewModel = new CropsFarmViewModel
             {
                 Farms = farm,
                 Crops = crops,
@@ -111,7 +111,7 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCrops(Crops crop, int farmId)
+        public async Task<IActionResult> AddCrops(CropsFarmViewModel crop, int farmId)
         {
             await _farmRepository.AddCrops(crop, farmId);
             TempData["success"] = "Crops Added Successfully";

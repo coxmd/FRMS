@@ -14,7 +14,7 @@ namespace FarmRecordManagementSystem.Repositories
             _config = config;
         }
 
-        public async Task AddCrops(Crops crop, int farmId)
+        public async Task AddCrops(CropsFarmViewModel crop, int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
@@ -94,8 +94,8 @@ namespace FarmRecordManagementSystem.Repositories
                 expectedHarvestDate = crop.PlantingDate.AddMonths(4);
             }
 
-            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\", \"FarmSizePlanted\", \"QuantityPlanted\", \"ExpectedHarvestQuantity\", \"ExpectedBagsHarvested\")" +
-                        "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate, @FarmSizePlanted, @QuantityPlanted, @ExpectedHarvestQuantity, @ExpectedBagsHarvested)";
+            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\", \"FarmSizePlanted\", \"PartitionPlanted\", \"QuantityPlanted\", \"ExpectedHarvestQuantity\", \"ExpectedBagsHarvested\")" +
+                        "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate, @FarmSizePlanted, @PartitionPlanted, @QuantityPlanted, @ExpectedHarvestQuantity, @ExpectedBagsHarvested)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -105,6 +105,7 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@PlantingDate", new DateTimeOffset(crop.PlantingDate).Date);
                 command.Parameters.AddWithValue("@ExpectedHarvestDate", expectedHarvestDate);
                 command.Parameters.AddWithValue("@FarmSizePlanted", crop.FarmSizePlanted);
+                command.Parameters.AddWithValue("@PartitionPlanted", crop.PartitionPlanted);
                 command.Parameters.AddWithValue("@QuantityPlanted", crop.QuantityPlanted);
                 command.Parameters.AddWithValue("@ExpectedHarvestQuantity", expectedHarvestQuantity);
                 command.Parameters.AddWithValue("@ExpectedBagsHarvested", numberOfBags);

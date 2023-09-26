@@ -1,6 +1,6 @@
 namespace FarmRecordManagementSystem.Models
 {
-    public class CropFarmViewModel
+    public class CropsFarmViewModel
     {
         public Farms Farms { get; set; }
         public Crops Crops { get; set; }

@@ -1,4 +1,4 @@
-@model CropFarmViewModel
+@model CropsFarmViewModel
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @{
@@ -48,18 +48,20 @@
             {
                 <div class="col-4">
                     <label asp-for="FarmSizePlanted"></label>
-                    <select asp-for="PartitionPlanted" class="form-select" id="Id" name="Id">
+                    <select asp-for="PartitionPlanted" class="form-select" id="PartitionPlanted" name="PartitionPlanted">
                         <option value="">-- Select Partition --</option>
                         @foreach (var partition in Model.Partitions)
                         {
-                            <option value="@partition.Id" class="text-dark">@partition.Name</option>
+                            <option value="@partition.Id" class="text-dark" data-partition-size="@partition.Size">
+                                @partition.Name - (@partition.Size Hectares) -
+                                ID(@partition.Id)
+                            </option>
                         }
                     </select>
-                    @* <select asp-for="FarmSizePlanted" class="form-control" required>
-                <option value="">-- Select Partition --</option>
-                <!-- Add partition options here based on farm partitions -->
-                </select> *@
                 </div>
+
+                <input type="hidden" asp-for="FarmSizePlanted" id="FarmSizePlanted" name="FarmSizePlanted" />
+
             }
             else
             {
@@ -170,6 +172,18 @@
                     varietyDropdown.innerHTML += "<option value='KS20 (uncle)' class='text-dark'>KS20 (uncle)</option>";
                     varietyDropdown.innerHTML += "<option value='N26 (nylon)' class='text-dark'>N26 (nylon)</option>";
                 }
+            });
+        });
+
+        $(document).ready(function () {
+            // Attach an event listener to the partition dropdown
+            $('#PartitionPlanted').change(function () {
+                // Get the selected partition size from the data attribute
+                var selectedPartitionSize = $('#PartitionPlanted option:selected').data('partition-size');
+                console.log("Selected Partition Size: " + selectedPartitionSize);
+
+                // Populate the hidden input field with the selected partition size
+                $('#FarmSizePlanted').val(selectedPartitionSize);
             });
         });
     </script>
