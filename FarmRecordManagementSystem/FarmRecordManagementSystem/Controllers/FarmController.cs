@@ -56,7 +56,7 @@ namespace FarmRecordManagementSystem.Controllers
         public async Task<IActionResult> AddCrops(int farmId)
         {
             var farm = await _farmRepository.GetFarmDetails(farmId);
-            var partitions = await _farmRepository.GetAllFarmPartitions(farmId);
+            var partitions = await _farmRepository.GetAllPartitions(farmId);
             var crops = new Crops { FarmId = farmId };
 
             var viewModel = new CropsFarmViewModel
@@ -83,8 +83,18 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
-        public IActionResult AddExpenses()
+        public async Task<IActionResult> AddExpenses(int farmId)
         {
+            bool farmHasPartitions = await _farmRepository.CheckPartitions(farmId);
+
+            if (farmHasPartitions)
+            {
+                List<FarmPartitions> partitions = await _farmRepository.GetAllPartitions(farmId);
+                ViewBag.Partitions = partitions;
+            }
+
+            ViewBag.FarmHasPartitions = farmHasPartitions;
+
             return View();
         }
 

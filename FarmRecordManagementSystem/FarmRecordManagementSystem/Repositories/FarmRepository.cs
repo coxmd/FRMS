@@ -119,8 +119,8 @@ namespace FarmRecordManagementSystem.Repositories
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Expenses\" (\"DateCreated\", \"Name\", \"Price\", \"Category\", \"FarmId\")" +
-                        "VALUES(@DateCreated, @Name, @Price, @Category, @FarmId)";
+            string query = "INSERT INTO public.\"Expenses\" (\"DateCreated\", \"Name\", \"Price\", \"Category\", \"FarmId\", \"PartitionId\")" +
+                        "VALUES(@DateCreated, @Name, @Price, @Category, @FarmId, @PartitionId)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -129,6 +129,7 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@Price", expense.Price);
                 command.Parameters.AddWithValue("@Category", string.IsNullOrEmpty(expense.Category) ? DBNull.Value : (object)expense.Category);
                 command.Parameters.AddWithValue("@FarmId", farmId);
+                command.Parameters.AddWithValue("@PartitionId", expense.PartitionId);
                 // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(expense.CropId) ? DBNull.Value : (object)expense.CropId);
 
                 await command.ExecuteNonQueryAsync();
@@ -627,35 +628,6 @@ namespace FarmRecordManagementSystem.Repositories
             return farms;
         }
 
-        public async Task<List<FarmPartitions>> GetAllFarmPartitions(int? Id)
-        {
-            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
-            connection.Open();
-            var partitions = new List<FarmPartitions>();
-            string commandText = $"SELECT * FROM public.\"FarmPartitions\" WHERE public.\"FarmPartitions\".\"FarmId\" = @Id";
-            using (NpgsqlCommand command = new NpgsqlCommand(commandText, connection))
-            {
-                command.Parameters.AddWithValue("@Id", Id);
-                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        var partition = new FarmPartitions
-                        {
-                            Id = (int)reader["Id"],
-                            Name = (string)reader["Name"],
-                            Size = (int)reader["Size"]
-                        };
-
-                        partitions.Add(partition);
-                    }
-                }
-            }
-            if (partitions.Count == 0)
-                return null;
-            return partitions;
-        }
-
         public async Task<List<Tasks>> GetAllTasks(int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -726,6 +698,24 @@ namespace FarmRecordManagementSystem.Repositories
                 return null;
             return partitions;
         }
+
+        public async Task<bool> CheckPartitions(int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            string query = "SELECT COUNT(*) FROM public.\"FarmPartitions\" WHERE public.\"FarmPartitions\".\"FarmId\" = @farmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@farmId", farmId);
+                var result = await command.ExecuteScalarAsync();
+
+                // If there are partitions (result > 0), return true; otherwise, return false.
+                return Convert.ToInt32(result) > 0;
+            }
+        }
+
 
         public async Task MarkAsFinished(int Id)
         {
@@ -893,6 +883,7 @@ namespace FarmRecordManagementSystem.Repositories
                             PlantingDate = (DateTime)reader["PlantingDate"],
                             ExpectedHarvestDate = (DateTime)reader["ExpectedHarvestDate"],
                             QuantityPlanted = (decimal)reader["QuantityPlanted"],
+                            // PartitonPlanted = (decimal)reader["PartitonPlanted"],
                             ExpectedHarvestedQuantity = (decimal)reader["ExpectedHarvestQuantity"],
                             ExpectedBagsHarvested = (int)reader["ExpectedBagsHarvested"],
                             FarmSizePlanted = (decimal)reader["FarmSizePlanted"]

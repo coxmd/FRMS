@@ -53,8 +53,7 @@
                         @foreach (var partition in Model.Partitions)
                         {
                             <option value="@partition.Id" class="text-dark" data-partition-size="@partition.Size">
-                                @partition.Name - (@partition.Size Hectares) -
-                                ID(@partition.Id)
+                                @partition.Name - (@partition.Size Hectares)
                             </option>
                         }
                     </select>
@@ -180,7 +179,6 @@
             $('#PartitionPlanted').change(function () {
                 // Get the selected partition size from the data attribute
                 var selectedPartitionSize = $('#PartitionPlanted option:selected').data('partition-size');
-                console.log("Selected Partition Size: " + selectedPartitionSize);
 
                 // Populate the hidden input field with the selected partition size
                 $('#FarmSizePlanted').val(selectedPartitionSize);

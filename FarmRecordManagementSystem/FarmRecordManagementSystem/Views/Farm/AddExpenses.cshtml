@@ -12,25 +12,48 @@
         string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
     }
     <div class="form-group">
-        <input type="hidden" asp-for="FarmId" value="@farmId"/>
+        <input type="hidden" asp-for="FarmId" value="@farmId" />
+
+        @if (ViewBag.FarmHasPartitions && ViewBag.Partitions != null)
+        {
+            <div class="col-4">
+                <label asp-for="PartitionId"></label>
+                <select asp-for="PartitionId" class="form-control">
+                    <option value="">-- Select Partition --</option>
+                    @foreach (var partition in ViewBag.Partitions)
+                    {
+                        <option value="@partition.Id">@partition.Name</option>
+                    }
+                </select>
+            </div>
+        }
+
         <div class="col-4">
             <label asp-for="Name"></label>
-            <input asp-for="Name" class="form-control" />
+            <input asp-for="Name" class="form-control" required />
         </div>
 
         <div class="col-4">
             <label asp-for="Price"></label>
-            <input asp-for="Price" class="form-control" />
+            <input asp-for="Price" class="form-control" required />
         </div>
 
         <div class="col-4">
             <label asp-for="Category"></label>
-            <input asp-for="Category" class="form-control" />
+            <select id="cropDropdown" asp-for="Category" class="form-control" required>
+                <option value="">-- Select Expense Category --</option>
+                <option class="text-dark" value="Fertilizer">Fertilizer</option>
+                <option class="text-dark" value="Labour">Labour</option>
+                <option class="text-dark" value="Seed">Seed</option>
+                <option class="text-dark" value="Water">Water</option>
+                <option class="text-dark" value="Pesticides">Pesticides</option>
+            </select>
         </div>
 
         <div class="mt-2">
             <button type="submit" class="btn btn-primary mt-1 mb-2">Add</button>
-            <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Back</a>
+            <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })"
+                class="btn btn-danger mt-1 mb-2">Back</a>
         </div>
     </div>
 </form>

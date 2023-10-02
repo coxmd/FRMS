@@ -6,7 +6,6 @@ namespace FarmRecordManagementSystem.Services
     public interface IFarmRepository
     {
         Task<List<Farms>> GetAllFarms(int? Id);
-        Task<List<FarmPartitions>> GetAllFarmPartitions(int? Id);
 
         Task<Farms> GetFarmDetails(int farmId);
         Task<List<Inventory>> GetFarmInventory(int farmId);
@@ -24,6 +23,7 @@ namespace FarmRecordManagementSystem.Services
         Task<Crops?> GetCropById(int Id);
         Task<List<Tasks>> GetAllTasks(int farmId);
         Task<List<FarmPartitions>> GetAllPartitions(int farmId);
+        Task<bool> CheckPartitions(int farmId);
 
         Task MarkAsFinished(int Id);
         Task<List<Expenses>> ViewAllExpenses(int farmId);
