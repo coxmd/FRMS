@@ -83,6 +83,13 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public IActionResult AddStorageLocation(int farmId)
+        {
+            var model = new StorageLocation { FarmId = farmId };
+            return View(model);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
         public async Task<IActionResult> AddExpenses(int farmId)
         {
             bool farmHasPartitions = await _farmRepository.CheckPartitions(farmId);
@@ -110,6 +117,14 @@ namespace FarmRecordManagementSystem.Controllers
             await _farmRepository.AddExpenses(expense, farmId);
             TempData["success"] = "Expense Added Successfully";
             return RedirectToAction("ViewAllExpenses", new { farmId = farmId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddStorageLocation(StorageLocation location, int farmId)
+        {
+            await _farmRepository.AddStorageLocation(location, farmId);
+            TempData["success"] = "Storage Location Added Successfully";
+            return RedirectToAction("Inventory", new { farmId = farmId });
         }
 
         [HttpPost]

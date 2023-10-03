@@ -8,6 +8,11 @@ Layout = "_LayoutAdminLoggedIn";
 <h2>Inventory</h2>
 <a href="@Url.Action("AddInventory", "Farm", new { farmId = @Model.Farm.Id })" class="btn btn-primary">Add Inventory
     Item</a>
+<a href="@Url.Action("AddStorageLocation", "Farm", new { farmId = @Model.Farm.Id })" class="btn btn-primary">Add Storage
+    Location</a>
+<a href="@Url.Action("GetStorageLocation", "Farm", new { farmId = @Model.Farm.Id })" class="btn btn-primary">View All
+    Storage
+    Locations</a>
 @* <a asp-action="AddInventory" asp-route-farmId="@Model.Id" class="btn btn-primary mt-1 mb-2">Add a new Inventory
 Item</a> *@
 <a href="@Url.Action("SelectFarm", "Farm")" class="btn btn-primary">Back</a>

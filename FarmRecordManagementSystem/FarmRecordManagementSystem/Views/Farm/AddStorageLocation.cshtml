@@ -1,0 +1,27 @@
+@model StorageLocation
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "_Layout";
+}
+<partial name="_Notification" />
+
+<h2 class="mt-2">Add A Storage Location</h2>
+
+<form asp-action="AddStorageLocation" method="post">
+    @{
+        string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
+    }
+    <div class="form-group">
+        <input type="hidden" asp-for="FarmId" value="@farmId" />
+        <div class="col-4">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" placeholder="Enter Storage Location Name" />
+        </div>
+
+        <div class="mt-2">
+            <button type="submit" class="btn btn-primary mt-1 mb-2">Add</button>
+            <a href="@Url.Action("Inventory", "Farm", new { farmId = farmId })"
+                class="btn btn-danger mt-1 mb-2">Back</a>
+        </div>
+    </div>
+</form>

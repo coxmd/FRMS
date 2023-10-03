@@ -136,6 +136,24 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
+        public async Task AddStorageLocation(StorageLocation location, int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            string query = "INSERT INTO public.\"StorageLocations\" (\"DateCreated\", \"Name\", \"FarmId\")" +
+                        "VALUES(@DateCreated, @Name, @FarmId)";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+                command.Parameters.AddWithValue("@Name", location.Name);
+                command.Parameters.AddWithValue("@FarmId", farmId);
+
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         public async Task AddInventoryItem(Inventory inventory, int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -774,12 +792,15 @@ namespace FarmRecordManagementSystem.Repositories
                         {
                             Id = (int)reader["Id"],
                             Name = (string)reader["Name"],
-                            Size = (int)reader["Size"],
-                            HasPartitions = (bool)reader["HasPartitions"]
+                            Size = (int)reader["Size"]
                         };
                         if (!reader.IsDBNull(reader.GetOrdinal("SoilType")))
                         {
                             farm.SoilType = (string)reader["SoilType"];
+                        }
+                        if (!reader.IsDBNull(reader.GetOrdinal("HasPartitions")))
+                        {
+                            farm.HasPartitions = (bool)reader["HasPartitions"];
                         }
                     }
                 }
