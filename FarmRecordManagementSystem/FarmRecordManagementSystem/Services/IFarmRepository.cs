@@ -27,6 +27,7 @@ namespace FarmRecordManagementSystem.Services
 
         Task MarkAsFinished(int Id);
         Task<List<Expenses>> ViewAllExpenses(int farmId);
+        Task<List<StorageLocation>> ViewAllStorageLocations(int farmId);
         Task AddCrops(CropsFarmViewModel crop, int farmId);
         Task AddExpenses(Expenses expense, int farmId);
         Task AddStorageLocation(StorageLocation location, int farmId);

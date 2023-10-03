@@ -76,9 +76,12 @@ namespace FarmRecordManagementSystem.Controllers
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
-        public IActionResult AddInventory(int farmId)
+        public async Task<IActionResult> AddInventory(int farmId)
         {
             var model = new Inventory { FarmId = farmId };
+
+            List<StorageLocation> locations = await _farmRepository.ViewAllStorageLocations(farmId);
+            ViewBag.Locations = locations;
             return View(model);
         }
 
@@ -247,6 +250,13 @@ namespace FarmRecordManagementSystem.Controllers
         {
             var expenses = await _farmRepository.ViewAllExpenses(farmId);
             return View(expenses);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> ViewAllStorageLocations(int farmId)
+        {
+            var locations = await _farmRepository.ViewAllStorageLocations(farmId);
+            return View(locations);
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]

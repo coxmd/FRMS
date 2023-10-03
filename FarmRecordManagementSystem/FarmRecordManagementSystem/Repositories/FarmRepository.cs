@@ -961,5 +961,38 @@ namespace FarmRecordManagementSystem.Repositories
                 return null;
             return expenses;
         }
+
+        public async Task<List<StorageLocation>> ViewAllStorageLocations(int farmId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            var locations = new List<StorageLocation>();
+            string query = "SELECT * FROM public.\"StorageLocations\" WHERE public.\"StorageLocations\".\"FarmId\" = @farmId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@farmId", farmId);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var location = new StorageLocation
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"],
+                            DateCreated = (DateTime)reader["DateCreated"],
+                            FarmId = (int)reader["FarmId"]
+                        };
+
+                        locations.Add(location);
+                        // if(servicePoint is ServicePoint)
+                    }
+                }
+            }
+            if (locations.Count == 0)
+                return null;
+            return locations;
+        }
     }
 }

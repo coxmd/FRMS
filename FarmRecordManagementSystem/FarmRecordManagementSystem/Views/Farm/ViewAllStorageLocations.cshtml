@@ -1,0 +1,65 @@
+@model List<StorageLocation>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@* @{
+Layout = "_LayoutAdminLoggedIn";
+} *@
+
+<partial name="_Notification" />
+@if (Model != null)
+{
+    <h2>All Storage Locations</h2>
+    string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
+    <a href="@Url.Action("AddStorageLocation", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Add A
+        StorageLocation</a>
+    <a href="@Url.Action("Inventory", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Back</a>
+
+    <table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
+        <colgroup>
+            <col width="20%" />
+            <col width="40%" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th scope="row">Name</th>
+                <th scope="row">Date Created</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var location in Model)
+            {
+                <tr class="table-dark">
+                    <td>@location.Name</td>
+                    <td>@location.DateCreated</td>
+                    <td>
+                        <a class="btn btn-primary mx-1 btn-sm"
+                            href="@Url.Action("EditStorageLocation", new { id = location.Id })">Edit</a> |
+                        <form asp-action="DeleteExpense" asp-route-id="@location.Id" asp-route-farmId="@farmId" method="post"
+                            style="display:inline">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this storage Location?')">Delete</button>
+                        </form>
+                        @* <a class="btn btn-danger btn-sm" href="" onclick="confirmDelete('@expense.Id')">Delete</a> *@
+                        @* <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteExpense", new { id = expense.Id
+                })">Delete</a> *@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h1>No Expenses Added</h1>
+}
+
+@* <script>
+function confirmDelete(expenseId) {
+var result = confirm("Are you sure you want to delete this expense?");
+if (result) {
+// If the user confirms deletion, redirect to the DeleteExpense action
+window.location.href = "@Url.Action("DeleteExpense")/" + expenseId;
+}
+}
+</script> *@
