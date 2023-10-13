@@ -165,7 +165,7 @@ namespace FarmRecordManagementSystem.Controllers
                 if (appUsers.Role == "Admin")
                 {
                     TempData["success"] = "Login Successfully";
-                    return RedirectToAction("Dashboard", "Admin");
+                    return RedirectToAction("Index", "Admin");
                 }
                 else if (appUsers.Role == "User")
                 {

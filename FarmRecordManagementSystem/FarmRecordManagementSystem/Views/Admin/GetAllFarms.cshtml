@@ -1,0 +1,38 @@
+@model List<Farms>
+
+@* @{
+Layout = "_LayoutAdminLoggedIn";
+} *@
+
+<partial name="_Notification" />
+
+<h2>All Farms</h2>
+<a href="@Url.Action("Index", "Admin")" class="btn btn-danger mt-1 mb-2">Back</a>
+
+<table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
+    <colgroup>
+        <col width="20%" />
+        <col width="40%" />
+    </colgroup>
+    <thead>
+        <tr>
+            <th scope="row">Name</th>
+            <th scope="row">Size</th>
+            <th scope="row">Soil Type</th>
+            <th scope="row">Date Created</th>
+            <th scope="row">Created By</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var farm in Model)
+        {
+            <tr class="table-dark">
+                <td>@farm.Name</td>
+                <td>@farm.Size</td>
+                <td>@farm.SoilType</td>
+                <td>@farm.DateCreated</td>
+                <td>@farm.CreatedBy</td>
+            </tr>
+        }
+    </tbody>
+</table>
