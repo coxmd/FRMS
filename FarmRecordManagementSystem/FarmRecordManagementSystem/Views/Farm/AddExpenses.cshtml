@@ -27,6 +27,19 @@
                 </select>
             </div>
         }
+        else
+        {
+            <div class="col-4">
+                <label asp-for="CropId"></label>
+                <select id="cropDropdown" asp-for="CropId" class="form-control" required>
+                    <option value="">-- Select Crop --</option>
+                    @foreach (var crop in ViewBag.Crops)
+                    {
+                        <option value="@crop.Id">@crop.Name</option>
+                    }
+                </select>
+            </div>
+        }
 
         <div class="col-4">
             <label asp-for="Name"></label>

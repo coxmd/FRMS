@@ -19,6 +19,15 @@ namespace FarmRecordManagementSystem.Repositories
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
+            int? partitionId = null;
+
+            var hasPartitions = await CheckPartitions(farmId);
+
+            if (hasPartitions)
+            {
+                partitionId = (int?)crop.PartitionPlanted; // Assuming crop.PartitionPlanted contains the selected partition ID.
+            }
+
             // Calculate the expected harvest quantity based on farm size and total quantity planted
             decimal expectedHarvestQuantity = crop.FarmSizePlanted;
             if (crop.Name == "Maize" || crop.Name == "Wheat")
@@ -105,7 +114,14 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@PlantingDate", new DateTimeOffset(crop.PlantingDate).Date);
                 command.Parameters.AddWithValue("@ExpectedHarvestDate", expectedHarvestDate);
                 command.Parameters.AddWithValue("@FarmSizePlanted", crop.FarmSizePlanted);
-                command.Parameters.AddWithValue("@PartitionPlanted", crop.PartitionPlanted);
+                if (hasPartitions)
+                {
+                    command.Parameters.AddWithValue("@PartitionPlanted", partitionId);
+                }
+                else
+                {
+                    command.Parameters.AddWithValue("@PartitionPlanted", DBNull.Value);
+                }
                 command.Parameters.AddWithValue("@QuantityPlanted", crop.QuantityPlanted);
                 command.Parameters.AddWithValue("@ExpectedHarvestQuantity", expectedHarvestQuantity);
                 command.Parameters.AddWithValue("@ExpectedBagsHarvested", numberOfBags);
@@ -119,8 +135,17 @@ namespace FarmRecordManagementSystem.Repositories
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Expenses\" (\"DateCreated\", \"Name\", \"Price\", \"Category\", \"FarmId\", \"PartitionId\")" +
-                        "VALUES(@DateCreated, @Name, @Price, @Category, @FarmId, @PartitionId)";
+            int? partitionId = null;
+
+            var hasPartitions = await CheckPartitions(farmId);
+
+            if (hasPartitions)
+            {
+                partitionId = (int?)expense.PartitionId; // Assuming crop.PartitionPlanted contains the selected partition ID.
+            }
+
+            string query = "INSERT INTO public.\"Expenses\" (\"DateCreated\", \"Name\", \"Price\", \"Category\", \"FarmId\", \"PartitionId\", \"CropId\")" +
+                        "VALUES(@DateCreated, @Name, @Price, @Category, @FarmId, @PartitionId, @CropId)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -129,7 +154,15 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@Price", expense.Price);
                 command.Parameters.AddWithValue("@Category", string.IsNullOrEmpty(expense.Category) ? DBNull.Value : (object)expense.Category);
                 command.Parameters.AddWithValue("@FarmId", farmId);
-                command.Parameters.AddWithValue("@PartitionId", expense.PartitionId);
+                if (hasPartitions)
+                {
+                    command.Parameters.AddWithValue("@PartitionId", partitionId);
+                }
+                else
+                {
+                    command.Parameters.AddWithValue("@PartitionId", DBNull.Value);
+                }
+                command.Parameters.AddWithValue("@CropId", expense.CropId);
                 // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(expense.CropId) ? DBNull.Value : (object)expense.CropId);
 
                 await command.ExecuteNonQueryAsync();

@@ -16,5 +16,7 @@ namespace FarmRecordManagementSystem.Models
         public List<FarmPartitions> Partitions { get; set; }
 
         public string? SoilType { get; set; }
+        public DateTime DateCreated { get; set; }
+        public int? CreatedBy { get; set; }
     }
 }

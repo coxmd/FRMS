@@ -95,7 +95,7 @@ namespace FarmRecordManagementSystem.Controllers
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"AppUsers\" (\"Email\", \"UserName\", \"Password\", \"Role\") VALUES (@Email, @UserName, @Password, @Role)";
+            string query = "INSERT INTO public.\"AppUsers\" (\"Email\", \"UserName\", \"Password\", \"Role\", \"AccountStatus\") VALUES (@Email, @UserName, @Password, @Role, @Status)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -103,6 +103,7 @@ namespace FarmRecordManagementSystem.Controllers
                 command.Parameters.AddWithValue("@UserName", UserName);
                 command.Parameters.AddWithValue("@Password", password);
                 command.Parameters.AddWithValue("@Role", "User");
+                command.Parameters.AddWithValue("@Status", "Active");
 
                 int rowsAffected = await command.ExecuteNonQueryAsync();
 

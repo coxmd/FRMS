@@ -102,8 +102,10 @@ namespace FarmRecordManagementSystem.Controllers
                 List<FarmPartitions> partitions = await _farmRepository.GetAllPartitions(farmId);
                 ViewBag.Partitions = partitions;
             }
+            List<Crops> crops = await _farmRepository.ViewAllCrops(farmId);
 
             ViewBag.FarmHasPartitions = farmHasPartitions;
+            ViewBag.Crops = crops;
 
             return View();
         }

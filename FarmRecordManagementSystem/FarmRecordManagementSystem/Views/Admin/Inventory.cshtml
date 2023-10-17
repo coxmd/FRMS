@@ -1,0 +1,56 @@
+@model InventoryViewModel
+
+@* @{
+Layout = "_LayoutAdminLoggedIn";
+} *@
+
+<partial name="_Notification" />
+<h2>Inventory</h2>
+<a href="@Url.Action("AddInventory", "Farm", new { farmId = @Model.Farm.Id })" class="btn btn-primary">Add Inventory
+    Item</a>
+<a href="@Url.Action("AddStorageLocation", "Farm", new { farmId = @Model.Farm.Id })" class="btn btn-primary">Add Storage
+    Location</a>
+<a href="@Url.Action("ViewAllStorageLocations", "Farm", new { farmId = @Model.Farm.Id })" class="btn btn-primary">View
+    All
+    Storage
+    Locations</a>
+@* <a asp-action="AddInventory" asp-route-farmId="@Model.Id" class="btn btn-primary mt-1 mb-2">Add a new Inventory
+Item</a> *@
+<a href="@Url.Action("SelectFarm", "Farm")" class="btn btn-primary">Back</a>
+
+<table class="table table-hover"
+    style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
+    <thead>
+        <tr>
+            <th scope="col">Crop Name</th>
+            <th scope="col">Quantity Harvested(In bags)</th>
+            <th scope="col">Quantity Sold</th>
+            <th scope="col">Selling Price</th>
+            <th scope="col">Quantity Remaining</th>
+            <th scope="col">Sales</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var crop in Model.Inventory)
+        {
+            <tr class="table-dark">
+                <th scope="row">@crop.CropName</th>
+                <td class="text-right">@crop.QuantityHarvested</td>
+                <td class="text-right">@crop.TotalSold</td>
+                <td class="text-right">@crop.PriceSold</td>
+                <td class="text-right">@crop.QuantityRemaining</td>
+                <td class="text-right">@crop.Sales</td>
+                <td>
+                    <a class="btn btn-primary mx-1 btn-sm"
+                        href="@Url.Action("EditInventoryItem", new { id = crop.Id })">Edit</a> |
+                    <form asp-action="DeleteInventoryItem" asp-route-id="@crop.Id" asp-route-farmId="@Model.Farm.Id"
+                        method="post" style="display:inline">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                            onclick="return confirm('Are you sure you want to delete this Item - @crop.CropName ?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

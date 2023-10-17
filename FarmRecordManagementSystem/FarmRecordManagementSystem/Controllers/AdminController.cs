@@ -12,18 +12,32 @@ namespace FarmRecordManagementSystem.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly IFarmRepository _farmRepository;
+        private readonly IAdminRepository _adminRepository;
         private readonly IConfiguration _config;
 
-        public AdminController(IConfiguration config, IFarmRepository farmRepository)
+        public AdminController(IConfiguration config, IAdminRepository adminRepository)
         {
             _config = config;
-            _farmRepository = farmRepository;
+            _adminRepository = adminRepository;
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllFarms()
+        {
+            var farms = await _adminRepository.GetAllFarms();
+            return View(farms);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllUsers()
+        {
+            var users = await _adminRepository.GetAllUsers();
+            return View(users);
         }
 
     }
