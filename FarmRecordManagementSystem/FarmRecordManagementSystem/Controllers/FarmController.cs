@@ -47,7 +47,7 @@ namespace FarmRecordManagementSystem.Controllers
         public async Task<IActionResult> Create(Farms farm, List<FarmPartitions> partitions)
         {
             var Id = HttpContext.Session.GetInt32("Id");
-            await _farmRepository.CreateFarm(farm, partitions, (int)Id);
+            await _farmRepository.CreateFarm(farm, partitions, (int)Id, (int)Id);
             TempData["success"] = "Farm Created Successfully";
             return RedirectToAction("GetAllFarms", new { Id = Id });
         }
@@ -119,7 +119,8 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddExpenses(Expenses expense, int farmId)
         {
-            await _farmRepository.AddExpenses(expense, farmId);
+            var UserId = HttpContext.Session.GetInt32("Id");
+            await _farmRepository.AddExpenses(expense, farmId, (int)UserId);
             TempData["success"] = "Expense Added Successfully";
             return RedirectToAction("ViewAllExpenses", new { farmId = farmId });
         }
@@ -127,7 +128,8 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddStorageLocation(StorageLocation location, int farmId)
         {
-            await _farmRepository.AddStorageLocation(location, farmId);
+            var UserId = HttpContext.Session.GetInt32("Id");
+            await _farmRepository.AddStorageLocation(location, farmId, (int)UserId);
             TempData["success"] = "Storage Location Added Successfully";
             return RedirectToAction("Inventory", new { farmId = farmId });
         }
@@ -135,7 +137,8 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPartition(FarmPartitions partition, int farmId)
         {
-            await _farmRepository.AddPartition(partition, farmId);
+            var UserId = HttpContext.Session.GetInt32("Id");
+            await _farmRepository.AddPartition(partition, farmId, (int)UserId);
             TempData["success"] = "Farm Partition Added Successfully";
             return RedirectToAction("GetAllPartitions", new { farmId = farmId });
         }
@@ -143,7 +146,8 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddCrops(CropsFarmViewModel crop, int farmId)
         {
-            await _farmRepository.AddCrops(crop, farmId);
+            var UserId = HttpContext.Session.GetInt32("Id");
+            await _farmRepository.AddCrops(crop, farmId, (int)UserId);
             TempData["success"] = "Crops Added Successfully";
             return RedirectToAction("ViewAllCrops", new { farmId = farmId });
         }
@@ -151,7 +155,8 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddInventory(Inventory inventory, int farmId)
         {
-            await _farmRepository.AddInventoryItem(inventory, farmId);
+            var UserId = HttpContext.Session.GetInt32("Id");
+            await _farmRepository.AddInventoryItem(inventory, farmId, (int)UserId);
             TempData["success"] = "Item Added Successfully";
             return RedirectToAction("Inventory", new { farmId = farmId });
         }
@@ -216,7 +221,8 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTasks(Tasks task, int farmId)
         {
-            await _farmRepository.AddTasks(task, farmId);
+            var UserId = HttpContext.Session.GetInt32("Id");
+            await _farmRepository.AddTasks(task, farmId, (int)UserId);
             TempData["success"] = "Task Added Successfully";
             return RedirectToAction("GetAllTasks", new { farmId = farmId });
         }

@@ -22,7 +22,6 @@ Layout = "_LayoutAdminLoggedIn";
         <thead>
             <tr>
                 <th scope="row">Name</th>
-                <th scope="row">Date Created</th>
                 <th></th>
             </tr>
         </thead>
@@ -31,7 +30,6 @@ Layout = "_LayoutAdminLoggedIn";
             {
                 <tr class="table-dark">
                     <td>@location.Name</td>
-                    <td>@location.DateCreated</td>
                     <td>
                         <a class="btn btn-primary mx-1 btn-sm"
                             href="@Url.Action("EditStorageLocation", new { id = location.Id })">Edit</a> |

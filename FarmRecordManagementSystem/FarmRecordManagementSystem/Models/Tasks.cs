@@ -13,5 +13,8 @@ namespace FarmRecordManagementSystem.Models
         public DateTime? DateStarted { get; set; }
         public DateTime? DateCompleted { get; set; }
         public DateTime? DueDate { get; set; }
+
+        public int? CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

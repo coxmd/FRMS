@@ -79,7 +79,7 @@ namespace FarmRecordManagementSystem.Controllers
             connection.Open();
 
             string query = "SELECT COUNT(*) FROM public.\"AppUsers\" WHERE public.\"AppUsers\".\"Email\" = @Email";
-            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            using (NpgsqlCommand command = new(query, connection))
             {
                 command.Parameters.AddWithValue("@Email", email);
                 var result = await command.ExecuteScalarAsync();
@@ -97,7 +97,7 @@ namespace FarmRecordManagementSystem.Controllers
 
             string query = "INSERT INTO public.\"AppUsers\" (\"Email\", \"UserName\", \"Password\", \"Role\", \"AccountStatus\") VALUES (@Email, @UserName, @Password, @Role, @Status)";
 
-            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            using (NpgsqlCommand command = new(query, connection))
             {
                 command.Parameters.AddWithValue("@Email", email);
                 command.Parameters.AddWithValue("@UserName", UserName);
@@ -125,7 +125,7 @@ namespace FarmRecordManagementSystem.Controllers
 
             var parameters = new List<NpgsqlParameter>
             {
-                new NpgsqlParameter("@UserName", UserName),
+                new("@UserName", UserName),
             };
 
             // if (!string.IsNullOrEmpty(Password))
@@ -144,8 +144,8 @@ namespace FarmRecordManagementSystem.Controllers
             {
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Surname, appUsers.UserName),
-                    new Claim(ClaimTypes.Role, appUsers.Role),
+                    new(ClaimTypes.Surname, appUsers.UserName),
+                    new(ClaimTypes.Role, appUsers.Role),
                 };
 
                 var claimsIdentity = new ClaimsIdentity(
@@ -185,7 +185,7 @@ namespace FarmRecordManagementSystem.Controllers
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            using (NpgsqlCommand command = new(query, connection))
             {
                 foreach (var parameter in parameters)
                 {

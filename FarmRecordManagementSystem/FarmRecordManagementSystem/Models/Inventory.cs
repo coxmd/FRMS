@@ -12,6 +12,7 @@ namespace FarmRecordManagementSystem.Models
         public int? FarmId { get; set; }
         public int? Sales { get; set; }
         public int? StorageLocation { get; set; }
-        public DateTime? DateCreated { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

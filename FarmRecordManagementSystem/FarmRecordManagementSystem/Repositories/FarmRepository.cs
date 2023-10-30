@@ -14,7 +14,7 @@ namespace FarmRecordManagementSystem.Repositories
             _config = config;
         }
 
-        public async Task AddCrops(CropsFarmViewModel crop, int farmId)
+        public async Task AddCrops(CropsFarmViewModel crop, int farmId, int userId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
@@ -103,8 +103,10 @@ namespace FarmRecordManagementSystem.Repositories
                 expectedHarvestDate = crop.PlantingDate.AddMonths(4);
             }
 
-            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\", \"FarmSizePlanted\", \"PartitionPlanted\", \"QuantityPlanted\", \"ExpectedHarvestQuantity\", \"ExpectedBagsHarvested\")" +
-                        "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate, @FarmSizePlanted, @PartitionPlanted, @QuantityPlanted, @ExpectedHarvestQuantity, @ExpectedBagsHarvested)";
+            DateTime createdAt = DateTime.UtcNow;
+
+            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\", \"FarmSizePlanted\", \"PartitionPlanted\", \"QuantityPlanted\", \"ExpectedHarvestQuantity\", \"ExpectedBagsHarvested\", \"CreatedAt\", \"CreatedBy\")" +
+                        "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate, @FarmSizePlanted, @PartitionPlanted, @QuantityPlanted, @ExpectedHarvestQuantity, @ExpectedBagsHarvested, @CreatedAt, @CreatedBy)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -114,6 +116,8 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@PlantingDate", new DateTimeOffset(crop.PlantingDate).Date);
                 command.Parameters.AddWithValue("@ExpectedHarvestDate", expectedHarvestDate);
                 command.Parameters.AddWithValue("@FarmSizePlanted", crop.FarmSizePlanted);
+                command.Parameters.AddWithValue("@CreatedAt", createdAt);
+                command.Parameters.AddWithValue("@CreatedBy", userId);
                 if (hasPartitions)
                 {
                     command.Parameters.AddWithValue("@PartitionPlanted", partitionId);
@@ -130,7 +134,7 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
-        public async Task AddExpenses(Expenses expense, int farmId)
+        public async Task AddExpenses(Expenses expense, int farmId, int userId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
@@ -144,12 +148,13 @@ namespace FarmRecordManagementSystem.Repositories
                 partitionId = (int?)expense.PartitionId; // Assuming crop.PartitionPlanted contains the selected partition ID.
             }
 
-            string query = "INSERT INTO public.\"Expenses\" (\"DateCreated\", \"Name\", \"Price\", \"Category\", \"FarmId\", \"PartitionId\", \"CropId\")" +
-                        "VALUES(@DateCreated, @Name, @Price, @Category, @FarmId, @PartitionId, @CropId)";
+            DateTime CreatedAt = DateTime.UtcNow;
+
+            string query = "INSERT INTO public.\"Expenses\" (\"Name\", \"Price\", \"Category\", \"FarmId\", \"PartitionId\", \"CropId\", \"CreatedAt\", \"CreatedBy\")" +
+                        "VALUES(@Name, @Price, @Category, @FarmId, @PartitionId, @CropId, @CreatedAt, @CreatedBy)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
                 command.Parameters.AddWithValue("@Name", expense.Name);
                 command.Parameters.AddWithValue("@Price", expense.Price);
                 command.Parameters.AddWithValue("@Category", string.IsNullOrEmpty(expense.Category) ? DBNull.Value : (object)expense.Category);
@@ -157,43 +162,49 @@ namespace FarmRecordManagementSystem.Repositories
                 if (hasPartitions)
                 {
                     command.Parameters.AddWithValue("@PartitionId", partitionId);
+                    command.Parameters.AddWithValue("@CropId", DBNull.Value);
                 }
                 else
                 {
                     command.Parameters.AddWithValue("@PartitionId", DBNull.Value);
+                    command.Parameters.AddWithValue("@CropId", expense.CropId);
                 }
-                command.Parameters.AddWithValue("@CropId", expense.CropId);
+                command.Parameters.AddWithValue("@CreatedAt", CreatedAt);
+                command.Parameters.AddWithValue("@CreatedBy", userId);
                 // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(expense.CropId) ? DBNull.Value : (object)expense.CropId);
 
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        public async Task AddStorageLocation(StorageLocation location, int farmId)
+        public async Task AddStorageLocation(StorageLocation location, int farmId, int userId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"StorageLocations\" (\"DateCreated\", \"Name\", \"FarmId\")" +
-                        "VALUES(@DateCreated, @Name, @FarmId)";
+            string query = "INSERT INTO public.\"StorageLocations\" (\"Name\", \"FarmId\", \"CreatedAt\", \"CreatedBy\")" +
+                        "VALUES(@Name, @FarmId, @CreatedAt, @CreatedBy)";
+
+            DateTime CreatedAt = DateTime.UtcNow;
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
                 command.Parameters.AddWithValue("@Name", location.Name);
                 command.Parameters.AddWithValue("@FarmId", farmId);
+                command.Parameters.AddWithValue("@CreatedAt", CreatedAt);
+                command.Parameters.AddWithValue("@CreatedBy", userId);
 
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        public async Task AddInventoryItem(Inventory inventory, int farmId)
+        public async Task AddInventoryItem(Inventory inventory, int farmId, int userId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Inventory\" (\"DateCreated\", \"CropName\", \"QuantityHarvested\", \"PriceSold\", \"FarmId\", \"QuantityRemaining\", \"TotalSold\", \"Sales\")" +
-                        "VALUES(@DateCreated, @Name, @QuantityHarvested, @PriceSold, @FarmId, @QuantityRemaining, @TotalSold, @Sales)";
+            string query = "INSERT INTO public.\"Inventory\" (\"CropName\", \"QuantityHarvested\", \"PriceSold\", \"FarmId\", \"QuantityRemaining\", \"TotalSold\", \"Sales\", \"CreatedAt\", \"CreatedBy\")" +
+                        "VALUES(@Name, @QuantityHarvested, @PriceSold, @FarmId, @QuantityRemaining, @TotalSold, @Sales, @CreatedAt, @CreatedBy)";
 
             int quantityHarvested = inventory.QuantityHarvested ?? 0;
             int totalSold = inventory.TotalSold ?? 0;
@@ -203,9 +214,10 @@ namespace FarmRecordManagementSystem.Repositories
             // Fetch the total revenue (SUM of all sales) for the farm
             int revenue = await GetTotalRevenueForFarm(farmId, connection);
 
+            DateTime CreatedAt = DateTime.UtcNow;
+
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
                 command.Parameters.AddWithValue("@Name", inventory.CropName);
                 command.Parameters.AddWithValue("@QuantityHarvested", quantityHarvested);
                 command.Parameters.AddWithValue("@PriceSold", priceSold);
@@ -213,6 +225,8 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@QuantityRemaining", quantityRemaining);
                 command.Parameters.AddWithValue("@Sales", sales);
                 command.Parameters.AddWithValue("@FarmId", farmId);
+                command.Parameters.AddWithValue("@CreatedAt", CreatedAt);
+                command.Parameters.AddWithValue("@CreatedBy", userId);
                 // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(expense.CropId) ? DBNull.Value : (object)expense.CropId);
 
                 await command.ExecuteNonQueryAsync();
@@ -391,13 +405,15 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
-        public async Task AddTasks(Tasks task, int farmId)
+        public async Task AddTasks(Tasks task, int farmId, int userId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"Tasks\" (\"Description\", \"DueDate\", \"DateStarted\", \"AssignedTo\", \"Status\", \"Completed\", \"FarmId\")" +
-                        "VALUES(@Description, @DueDate, @DateStarted, @AssignedTo, @Status, @Completed, @FarmId)";
+            string query = "INSERT INTO public.\"Tasks\" (\"Description\", \"DueDate\", \"DateStarted\", \"AssignedTo\", \"Status\", \"Completed\", \"FarmId\", \"CreatedBy\", \"CreatedAt\")" +
+                        "VALUES(@Description, @DueDate, @DateStarted, @AssignedTo, @Status, @Completed, @FarmId, @CreatedBy, @CreatedAt)";
+
+            DateTime CreatedAt = DateTime.UtcNow;
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -408,26 +424,32 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@Status", "Pending");
                 command.Parameters.AddWithValue("@Completed", false);
                 command.Parameters.AddWithValue("@FarmId", farmId);
+                command.Parameters.AddWithValue("@CreatedBy", userId);
+                command.Parameters.AddWithValue("@CreatedAt", CreatedAt);
+
                 // command.Parameters.AddWithValue("@CropId", string.IsNullOrEmpty(task.CropId) ? DBNull.Value : (object)task.CropId);
 
                 await command.ExecuteNonQueryAsync();
             }
         }
 
-        public async Task AddPartition(FarmPartitions partition, int farmId)
+        public async Task AddPartition(FarmPartitions partition, int farmId, int userId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"FarmPartitions\" (\"Name\", \"Size\", \"FarmId\", \"DateCreated\")" +
-                        "VALUES(@Name, @Size, @farmId, @DateCreated)";
+            string query = "INSERT INTO public.\"FarmPartitions\" (\"Name\", \"Size\", \"FarmId\", \"CreatedAt\", \"CreatedBy\")" +
+                        "VALUES(@Name, @Size, @farmId, @CreatedAt, @CreatedBy)";
+
+            DateTime CreatedAt = DateTime.UtcNow;
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@Name", partition.Name);
                 command.Parameters.AddWithValue("@Size", partition.Size);
                 command.Parameters.AddWithValue("@farmId", farmId);
-                command.Parameters.AddWithValue("@DateCreated", DateTime.UtcNow);
+                command.Parameters.AddWithValue("@CreatedAt", DateTime.UtcNow);
+                command.Parameters.AddWithValue("@CreatedBy", userId);
 
                 await command.ExecuteNonQueryAsync();
             }
@@ -459,15 +481,17 @@ namespace FarmRecordManagementSystem.Repositories
         //     }
         // }
 
-        public async Task CreateFarm(Farms farm, List<FarmPartitions> partitions, int farmerId)
+        public async Task CreateFarm(Farms farm, List<FarmPartitions> partitions, int farmerId, int userId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
             decimal totalFarmSize = farm.Size ?? 0;
 
-            string farmQuery = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\", \"HasPartitions\", \"FarmerId\")" +
-                    "VALUES(@Name, @Size, @HasPartitions, @farmerId) RETURNING \"Id\"";
+            string farmQuery = "INSERT INTO public.\"Farms\" (\"Name\", \"Size\", \"HasPartitions\", \"FarmerId\", \"CreatedAt\", \"CreatedBy\")" +
+                    "VALUES(@Name, @Size, @HasPartitions, @farmerId, @CreatedAt, @CreatedBy) RETURNING \"Id\"";
+
+            DateTime CreatedAt = DateTime.UtcNow;
 
             using (NpgsqlCommand farmCommand = new NpgsqlCommand(farmQuery, connection))
             {
@@ -475,6 +499,8 @@ namespace FarmRecordManagementSystem.Repositories
                 farmCommand.Parameters.AddWithValue("@Size", totalFarmSize);
                 farmCommand.Parameters.AddWithValue("@HasPartitions", farm.HasPartitions);
                 farmCommand.Parameters.AddWithValue("@farmerId", farmerId);
+                farmCommand.Parameters.AddWithValue("@CreatedAt", CreatedAt);
+                farmCommand.Parameters.AddWithValue("@CreatedBy", userId);
 
                 int farmId = (int)await farmCommand.ExecuteScalarAsync();
 
@@ -1014,7 +1040,7 @@ namespace FarmRecordManagementSystem.Repositories
                         {
                             Id = (int)reader["Id"],
                             Name = (string)reader["Name"],
-                            DateCreated = (DateTime)reader["DateCreated"],
+                            CreatedAt = (DateTime)reader["CreatedAt"],
                             FarmId = (int)reader["FarmId"]
                         };
 

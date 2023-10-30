@@ -7,6 +7,8 @@ namespace FarmRecordManagementSystem.Models
         public string? Name { get; set; }
         public string? Variety { get; set; }
         public int? FarmId { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
         public decimal FarmSizePlanted { get; set; }
         public decimal QuantityPlanted { get; set; }
         public decimal PartitonPlanted { get; set; }

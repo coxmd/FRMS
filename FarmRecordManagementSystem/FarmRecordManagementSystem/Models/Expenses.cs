@@ -11,6 +11,7 @@ namespace FarmRecordManagementSystem.Models
         public int? FarmId { get; set; }
         public int? PartitionId { get; set; }
         public int? CropId { get; set; }
-        public DateTime? DateCreated { get; set; }
+        public int CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

@@ -11,7 +11,8 @@ namespace FarmRecordManagementSystem.Models
         // [Display(Name = "Farm Size (in hectares)")]
         public int? Size { get; set; }
 
-        public DateTime DateCreated { get; set; }
+        public int? CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public int FarmId { get; set; }
     }

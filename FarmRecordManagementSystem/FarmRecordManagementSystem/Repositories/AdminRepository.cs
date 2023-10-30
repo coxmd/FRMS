@@ -31,7 +31,7 @@ namespace FarmRecordManagementSystem.Repositories
                             Id = (int)reader["Id"],
                             Name = (string)reader["Name"],
                             Size = (int)reader["Size"],
-                            DateCreated = (DateTime)reader["DateCreated"],
+                            CreatedAt = (DateTime)reader["CreatedAt"],
                             CreatedBy = (int)reader["CreatedBy"]
                         };
                         if (!reader.IsDBNull(reader.GetOrdinal("SoilType")))

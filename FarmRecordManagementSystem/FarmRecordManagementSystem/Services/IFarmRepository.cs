@@ -17,7 +17,7 @@ namespace FarmRecordManagementSystem.Services
         Task UpdateExpense(Expenses expense);
         Task UpdateTask(Tasks tasks);
 
-        Task CreateFarm(Farms farm, List<FarmPartitions> partitions, int farmerId);
+        Task CreateFarm(Farms farm, List<FarmPartitions> partitions, int farmerId, int userId);
 
         Task<List<Crops>> ViewAllCrops(int farmId);
         Task<Crops?> GetCropById(int Id);
@@ -28,12 +28,12 @@ namespace FarmRecordManagementSystem.Services
         Task MarkAsFinished(int Id);
         Task<List<Expenses>> ViewAllExpenses(int farmId);
         Task<List<StorageLocation>> ViewAllStorageLocations(int farmId);
-        Task AddCrops(CropsFarmViewModel crop, int farmId);
-        Task AddExpenses(Expenses expense, int farmId);
-        Task AddStorageLocation(StorageLocation location, int farmId);
-        Task AddPartition(FarmPartitions partition, int farmId);
-        Task AddInventoryItem(Inventory inventory, int farmId);
-        Task AddTasks(Tasks task, int farmId);
+        Task AddCrops(CropsFarmViewModel crop, int farmId, int userId);
+        Task AddExpenses(Expenses expense, int farmId, int userId);
+        Task AddStorageLocation(StorageLocation location, int farmId, int userId);
+        Task AddPartition(FarmPartitions partition, int farmId, int userId);
+        Task AddInventoryItem(Inventory inventory, int farmId, int userId);
+        Task AddTasks(Tasks task, int farmId, int userId);
         Task UpdateFarmDetails(Farms farm);
         Task UpdateCropDetails(Crops crop);
 
