@@ -21,6 +21,7 @@
                     <div class="form-group">
                         <label for="farmSelect" class="col-form-label">Farm</label>
                         <select class="form-control" id="farmSelect" name="farmId" class="text-dark">
+                            <option value="">-- Select Farm --</option>
                             @foreach (var farm in Model)
                             {
                                 <option value="@farm.Id" class="text-dark">@farm.Name</option>
@@ -30,14 +31,25 @@
                     <div class="form-group">
                         <label for="reportTypeSelect" class="col-form-label">Report Type</label>
                         <select class="form-control" id="reportTypeSelect" name="reportTypeId" class="text-dark">
+                            <option value="">-- Select Report Type --</option>
                             <option value="1" class="text-dark">Inventory Items</option>
                             <option value="2" class="text-dark">All Crops Planted</option>
                             <option value="3" class="text-dark">All Tasks</option>
-                            <option value="4" class="text-dark">All Expenses</option>
-                            <option value="5" class="text-dark">Revenue Generated - Detailed</option>
-                            <option value="6" class="text-dark">Revenue Generated For each Farm (Summary)</option>
+                            <option value="4" class="text-dark">All Expenses (General)</option>
+                            <option value="5" class="text-dark">All Expenses - Each Partition</option>
+                            <option value="6" class="text-dark">Revenue Generated - Detailed</option>
+                            <option value="7" class="text-dark">Revenue Generated For each Farm (Summary)</option>
                         </select>
                     </div>
+
+                    <div class="form-group" id="partitionSelectDiv" style="display: none;">
+                        <label for="partitionSelect" class="col-form-label">Partition</label>
+                        <select class="form-control" id="partitionSelect" name="partitionId" class="text-dark">
+                            <option value="">-- Select Partition --</option>
+                            <!-- Options for partitions will be dynamically loaded here using JavaScript -->
+                        </select>
+                    </div>
+
                     <div class="form-group">
                         <label for="startDate" class="col-form-label">Start Date</label>
                         <input type="date" class="form-control" id="startDate" name="StartDate">
@@ -57,3 +69,44 @@
 </div>
 
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Handler for farm select change
+            $('#farmSelect').change(function () {
+                var farmId = $(this).val();
+                $.get('/Farm/CheckFarmPartitions', { farmId: farmId }, function (data) {
+                    console.log(data);
+                    if (data.hasPartitions) {
+                        $('#reportTypeSelect option[value="5"]').show();
+
+                        populatePartitionDropdown(data.partitions);
+                    } else {
+                        $('#reportTypeSelect option[value="5"]').hide();
+                        $('#partitionSelectDiv').hide();
+                    }
+                });
+            });
+        });
+
+        function populatePartitionDropdown(partitions) {
+            // Assuming that 'partitions' is an array of partition objects with properties 'id' and 'name'.
+
+            // Clear existing options
+            $('#partitionSelect').empty();
+
+            // Add the default "Select Partition" option
+            $('#partitionSelect').append('<option value="">-- Select Partition --</option>');
+
+            // Add partition options
+            partitions.forEach(function (partition) {
+                $('#partitionSelect').append('<option value="' + partition.id + '">' + partition.name + '</option>');
+            });
+
+            // Show the partition dropdown
+            $('#partitionSelectDiv').show();
+        }
+
+    </script>
+}

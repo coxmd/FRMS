@@ -427,6 +427,23 @@ namespace FarmRecordManagementSystem.Controllers
             return View(farm);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CheckFarmPartitions(int farmId)
+        {
+            bool hasPartitions = await _farmRepository.CheckPartitions(farmId);
+            if (hasPartitions)
+            {
+                // Load partition data from your database
+                var partitions = await _farmRepository.GetAllPartitions(farmId);
+                return Json(new { hasPartitions = true, partitions });
+            }
+            else
+            {
+                return Json(new { hasPartitions = false });
+            }
+        }
+
+
         // public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId)
         // {
         //     // Load the report file
@@ -570,8 +587,9 @@ namespace FarmRecordManagementSystem.Controllers
                 { 2, "Crops.frx" },    // Example mapping for report type ID 2
                 { 3, "Tasks.frx"},
                 { 4, "Expenses.frx"},
-                { 5, "Revenue.frx"},
-                { 6, "Revenue-Farms-Summary.frx"}
+                { 5, "ExpensesPartition.frx"},
+                { 6, "Revenue.frx"},
+                { 7, "Revenue-Farms-Summary.frx"}
             };
 
             // Retrieve the report file name based on the report type ID
