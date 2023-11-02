@@ -485,11 +485,8 @@ namespace FarmRecordManagementSystem.Controllers
         //     }
         // }
 
-        public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId)
+        public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId, int partitionId)
         {
-            // Load the report file
-            string templatePath = $"Reports/InventoryItems.frx";
-            string reportPath = Path.Combine(webHostEnvironment.ContentRootPath, templatePath);
             using (Report report = new Report())
             {
                 var reportName = GetReportFileName(reportTypeId);
@@ -520,6 +517,18 @@ namespace FarmRecordManagementSystem.Controllers
                     sql = "SELECT * FROM public.\"Farms\" WHERE public.\"Farms\".\"FarmerId\" = @farmerId";
 
                 }
+                else if (reportName == "ExpensesPartition.frx")
+                {
+                    if (HttpContext.Request.Form.ContainsKey("partitionId"))
+                    {
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" = @partitionId";
+                    }
+                    else
+                    {
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" IS NULL";
+                    }
+
+                }
                 else
                 {
                     sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
@@ -530,6 +539,8 @@ namespace FarmRecordManagementSystem.Controllers
                     var FarmerId = HttpContext.Session.GetInt32("Id");
                     command.Parameters.AddWithValue("@farmerId", FarmerId);
                     command.Parameters.AddWithValue("@farmId", farmId);
+                    command.Parameters.AddWithValue("@partitionId", partitionId);
+
                     using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                     {
                         var dataTable = new DataTable();
@@ -554,6 +565,10 @@ namespace FarmRecordManagementSystem.Controllers
                         else if (reportName == "Revenue-Farms-Summary.frx")
                         {
                             report.RegisterData(dataTable, "public_Farms");
+                        }
+                        else if (reportName == "ExpensesPartition.frx")
+                        {
+                            report.RegisterData(dataTable, "public_Expenses");
                         }
                         else
                         {
