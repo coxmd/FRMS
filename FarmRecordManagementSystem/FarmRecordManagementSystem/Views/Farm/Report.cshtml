@@ -17,7 +17,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="/Farm/GenerateReports" method="post">
+                <form id="reportForm" action="/Farm/GenerateReports" method="post">
                     <div class="form-group">
                         <label for="farmSelect" class="col-form-label">Farm</label>
                         <select class="form-control" id="farmSelect" name="farmId" class="text-dark">
@@ -37,8 +37,9 @@
                             <option value="3" class="text-dark">All Tasks</option>
                             <option value="4" class="text-dark">All Expenses (General)</option>
                             <option value="5" class="text-dark">All Expenses - Each Partition</option>
-                            <option value="6" class="text-dark">Revenue Generated - Detailed</option>
-                            <option value="7" class="text-dark">Revenue Generated For each Farm (Summary)</option>
+                            <option value="6" class="text-dark">All Expenses - Per Crop</option>
+                            <option value="7" class="text-dark">Revenue Generated - Detailed</option>
+                            <option value="8" class="text-dark">Revenue Generated For each Farm (Summary)</option>
                         </select>
                     </div>
 
@@ -47,6 +48,14 @@
                         <select class="form-control" id="partitionSelect" name="partitionId" class="text-dark">
                             <option value="">-- Select Partition --</option>
                             <!-- Options for partitions will be dynamically loaded here using JavaScript -->
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="cropSelectDiv" style="display: none;">
+                        <label for="cropSelect" class="col-form-label">Crop</label>
+                        <select class="form-control" id="cropSelect" name="cropId" class="text-dark">
+                            <option value="">-- Select Crops --</option>
+                            <!-- Options for crops will be dynamically loaded here using JavaScript -->
                         </select>
                     </div>
 
@@ -87,6 +96,38 @@
                         $('#partitionSelectDiv').hide();
                     }
                 });
+
+                $.get('/Farm/GetCrops', { farmId: farmId }, function (data) {
+                    $('#reportTypeSelect option[value="6"]').show();
+
+                    populatePartitionCropDropdown(data.crops);
+                });
+            });
+
+            // Handler for form submission
+            $('#reportForm').on('submit', function (event) {
+                // You can add additional logic here if needed
+
+                // Clear the form fields after 5 seconds
+                // Set a timer to clear the form fields after 5 seconds (5000 milliseconds)
+                setTimeout(function () {
+                    $(event.currentTarget)[0].reset(); // Clear the form
+                }, 5000);
+            });
+
+            // Handler for report type select change
+            $('#reportTypeSelect').change(function () {
+                var selectedReportType = $(this).val();
+                if (selectedReportType === "5") { // All Expenses - Each Partition
+                    $('#partitionSelectDiv').show();
+                } else {
+                    $('#partitionSelectDiv').hide();
+                }
+                if (selectedReportType === "6") { // All Expenses - Each Partition
+                    $('#cropSelectDiv').show();
+                } else {
+                    $('#cropSelectDiv').hide();
+                }
             });
         });
 
@@ -101,11 +142,23 @@
 
             // Add partition options
             partitions.forEach(function (partition) {
-                $('#partitionSelect').append('<option value="' + partition.id + '">' + partition.name + '</option>');
+                $('#partitionSelect').append('<option value="' + partition.id + '" class="text-dark">' + partition.name + '</option>');
             });
+        }
 
-            // Show the partition dropdown
-            $('#partitionSelectDiv').show();
+        function populatePartitionCropDropdown(crops) {
+            // Assuming that 'crops' is an array of partition objects with properties 'id' and 'name'.
+
+            // Clear existing options
+            $('#cropSelect').empty();
+
+            // Add the default "Select Partition" option
+            $('#cropSelect').append('<option value="">-- Select Crop --</option>');
+
+            // Add partition options
+            crops.forEach(function (crop) {
+                $('#cropSelect').append('<option value="' + crop.id + '" class="text-dark">' + crop.name + '</option>');
+            });
         }
 
     </script>

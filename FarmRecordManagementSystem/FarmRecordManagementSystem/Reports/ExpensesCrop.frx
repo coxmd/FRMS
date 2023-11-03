@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" TextQuality="Regular" ReportInfo.Description="Demonstrates a master-detail report. To create it:&#13;&#10;- go to &quot;Report|Configure Bands...&quot; menu;&#13;&#10;- select the existing data band;&#13;&#10;- press the &quot;Add&quot; button and select the &quot;Data&quot; band - this will add a data band to the existing one;&#13;&#10;- return to the report page, doubleclick each data band and set its datasource.&#13;&#10;Note: if you have defined the relation between master and detail tables, FastReport will use it automatically." ReportInfo.Created="01/17/2008 03:55:42" ReportInfo.Modified="11/03/2023 19:45:30" ReportInfo.CreatorVersion="2023.2.0.0">
+  <Styles>
+    <Style Name="EvenRows" Font="Arial, 10pt"/>
+  </Styles>
+  <Dictionary>
+    <PostgresDataConnection Name="DefaultConnection" ConnectionString="rijcmlq8ZkN6qUj4G/zvKvLeJ9DDB6WCp22J48oQEWWvz8/J/NksAmbO8W8oeq8qgeas2icQDEAfi2OWjvjKl3icG5ziY9d5VJrfNwjGxyhpJDs4lePvJ5fr9h16xFzj2Z3N+5A">
+      <TableDataSource Name="public_Inventory" DataType="System.Int32" Enabled="true" TableName="public.&quot;Inventory&quot;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="DateCreated" DataType="System.DateTime"/>
+        <Column Name="CropName" DataType="System.String"/>
+        <Column Name="QuantityHarvested" DataType="System.Int32"/>
+        <Column Name="PriceSold" DataType="System.Int32"/>
+        <Column Name="FarmId" DataType="System.Int32"/>
+        <Column Name="QuantityRemaining" DataType="System.Int32"/>
+        <Column Name="TotalSold" DataType="System.Int32"/>
+        <Column Name="Sales" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="public_Crops" DataType="System.Int32" Enabled="true" TableName="public.&quot;Crops&quot;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="PlantingDate" DataType="System.DateTime"/>
+        <Column Name="Variety" DataType="System.String"/>
+        <Column Name="ExpectedHarvestDate" DataType="System.DateTime"/>
+        <Column Name="FarmId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="public_Tasks" DataType="System.Int32" Enabled="true" TableName="public.&quot;Tasks&quot;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Description" DataType="System.String"/>
+        <Column Name="DueDate" DataType="System.DateTime"/>
+        <Column Name="AssignedTo" DataType="System.String"/>
+        <Column Name="Status" DataType="System.String"/>
+        <Column Name="FarmId" DataType="System.Int32"/>
+        <Column Name="DateStarted" DataType="System.DateTime"/>
+        <Column Name="DateCompleted" DataType="System.DateTime"/>
+      </TableDataSource>
+      <TableDataSource Name="public_Farms" DataType="System.Int32" Enabled="true" TableName="public.&quot;Farms&quot;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Size" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="SoilType" DataType="System.String"/>
+        <Column Name="FarmerId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="public_AppUsers" DataType="System.Int32" Enabled="true" TableName="public.&quot;AppUsers&quot;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="UserName" DataType="System.String"/>
+        <Column Name="Password" DataType="System.String"/>
+        <Column Name="Role" DataType="System.String"/>
+      </TableDataSource>
+      <TableDataSource Name="public_Expenses" DataType="System.Int32" Enabled="true" TableName="public.&quot;Expenses&quot;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="DateCreated" DataType="System.DateTime"/>
+        <Column Name="Name" DataType="System.String"/>
+        <Column Name="Price" DataType="System.Int32"/>
+        <Column Name="Category" DataType="System.String"/>
+        <Column Name="FarmId" DataType="System.Int32"/>
+        <Column Name="CropId" DataType="System.Int32"/>
+      </TableDataSource>
+      <TableDataSource Name="public_ReportTypes" DataType="System.Int32" Enabled="true" TableName="public.&quot;ReportTypes&quot;">
+        <Column Name="Id" DataType="System.Int32"/>
+        <Column Name="Name" DataType="System.String"/>
+      </TableDataSource>
+    </PostgresDataConnection>
+    <Relation Name="CategoriesProducts" ReferenceName="NorthWind.CategoriesProducts" ParentDataSource="null" ChildDataSource="null" ParentColumns="CategoryID" ChildColumns="CategoryID" Enabled="true"/>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="141.75" CanGrow="true">
+      <TextObject Name="Text3" Top="66.15" Width="718.2" Height="37.8" Text="ALL EXPENSES" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 14pt, style=Bold"/>
+      <TextObject Name="Text11" Top="28.35" Width="718.2" Height="28.35" Anchor="Top, Left, Right" Fill.Color="WhiteSmoke" CanGrow="true" CanShrink="true" Text="&#13;&#10;" Padding="4, 4, 4, 4" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text18" Width="718.2" Height="28.35" Anchor="Top, Left, Right" Fill.Color="WhiteSmoke" Cursor="Hand" Hyperlink.Value="http://fast.report/e0b07" Hyperlink.OpenLinkInNewTab="true" VertAlign="Center" Font="Tahoma, 10pt, style=Bold, Underline" TextFill.Color="Blue"/>
+      <ContainerObject Name="Container1" Top="103.95" Width="718.2" Height="37.8" Fill.Color="LightSlateGray"/>
+    </ReportTitleBand>
+    <DataBand Name="Data2" Top="178.1" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke" EvenStyle="EvenRows" DataSource="public_Expenses">
+      <TextObject Name="Text5" Width="94.5" Height="28.35" Text="[public_Expenses.Name]" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text9" Left="122.85" Width="75.6" Height="28.35" Text="[public_Expenses.Price]" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text7" Left="236.25" Width="94.5" Height="28.35" Text="[public_Expenses.Category]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="2" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <DataHeaderBand Name="DataHeader1" Top="145.75" Width="718.2" Height="28.35">
+        <TextObject Name="Text6" Width="47.25" Height="28.35" Text="Name" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text8" Left="122.85" Width="56.7" Height="28.35" Text="Price" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+        <TextObject Name="Text10" Left="236.25" Width="94.5" Height="28.35" Text="Category" HorzAlign="Center" VertAlign="Center" Font="Tahoma, 8pt, style=Bold"/>
+      </DataHeaderBand>
+      <DataFooterBand Name="DataFooter1" Top="210.45" Width="718.2" Height="28.35"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="242.8" Width="718.2" Height="28.35" Fill.Color="WhiteSmoke">
+      <TextObject Name="Text4" Left="614.25" Width="94.5" Height="28.35" Text="[PageN]" HorzAlign="Right" VertAlign="Center" Font="Tahoma, 8pt"/>
+      <TextObject Name="Text13" Left="9.45" Width="217.35" Height="28.35" Cursor="Hand" Hyperlink.Value="https://www.fast-report.com/en/product/fast-report-net/" Text="Generated by FastReport .NET" VertAlign="Center" Font="Tahoma, 8pt, style=Underline" TextFill.Color="Blue"/>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

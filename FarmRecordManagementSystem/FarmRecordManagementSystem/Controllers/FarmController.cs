@@ -443,6 +443,13 @@ namespace FarmRecordManagementSystem.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetCrops(int farmId)
+        {
+            var crops = await _farmRepository.ViewAllCrops(farmId);
+            return Json(new { crops });
+        }
+
 
         // public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId)
         // {
@@ -485,7 +492,7 @@ namespace FarmRecordManagementSystem.Controllers
         //     }
         // }
 
-        public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId, int partitionId)
+        public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId, int partitionId, int cropId)
         {
             using (Report report = new Report())
             {
@@ -529,6 +536,18 @@ namespace FarmRecordManagementSystem.Controllers
                     }
 
                 }
+                else if (reportName == "ExpensesCrop.frx")
+                {
+                    if (HttpContext.Request.Form.ContainsKey("cropId"))
+                    {
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"CropId\" = @cropId";
+                    }
+                    else
+                    {
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
+                    }
+
+                }
                 else
                 {
                     sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
@@ -539,6 +558,7 @@ namespace FarmRecordManagementSystem.Controllers
                     var FarmerId = HttpContext.Session.GetInt32("Id");
                     command.Parameters.AddWithValue("@farmerId", FarmerId);
                     command.Parameters.AddWithValue("@farmId", farmId);
+                    command.Parameters.AddWithValue("@cropId", cropId);
                     command.Parameters.AddWithValue("@partitionId", partitionId);
 
                     using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
@@ -567,6 +587,10 @@ namespace FarmRecordManagementSystem.Controllers
                             report.RegisterData(dataTable, "public_Farms");
                         }
                         else if (reportName == "ExpensesPartition.frx")
+                        {
+                            report.RegisterData(dataTable, "public_Expenses");
+                        }
+                        else if (reportName == "ExpensesCrop.frx")
                         {
                             report.RegisterData(dataTable, "public_Expenses");
                         }
@@ -603,8 +627,9 @@ namespace FarmRecordManagementSystem.Controllers
                 { 3, "Tasks.frx"},
                 { 4, "Expenses.frx"},
                 { 5, "ExpensesPartition.frx"},
-                { 6, "Revenue.frx"},
-                { 7, "Revenue-Farms-Summary.frx"}
+                { 6, "ExpensesCrop.frx"},
+                { 7, "Revenue.frx"},
+                { 8, "Revenue-Farms-Summary.frx"}
             };
 
             // Retrieve the report file name based on the report type ID
