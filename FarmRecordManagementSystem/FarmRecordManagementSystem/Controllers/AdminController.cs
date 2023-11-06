@@ -40,5 +40,13 @@ namespace FarmRecordManagementSystem.Controllers
             return View(users);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddUsers(AppUsers user)
+        {
+            await _adminRepository.AddUser(user);
+            TempData["success"] = "User Created Successfully";
+            return RedirectToAction("GetAllUsers");
+        }
+
     }
 }

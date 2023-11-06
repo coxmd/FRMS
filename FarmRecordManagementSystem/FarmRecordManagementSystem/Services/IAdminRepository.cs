@@ -7,6 +7,7 @@ namespace FarmRecordManagementSystem.Services
     {
         Task<List<Farms>> GetAllFarms();
         Task<List<AppUsers>> GetAllUsers();
+        Task AddUser(AppUsers user);
         // Task<List<Inventory>> GetAllInventoryItems();
 
         // Task<Farms> GetFarmDetails(int farmId);

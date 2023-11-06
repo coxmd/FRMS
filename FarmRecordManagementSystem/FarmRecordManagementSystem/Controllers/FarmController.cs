@@ -523,6 +523,8 @@ namespace FarmRecordManagementSystem.Controllers
                 {
                     sql = "SELECT * FROM public.\"Farms\" WHERE public.\"Farms\".\"FarmerId\" = @farmerId";
 
+                    //  sql = "SELECT * FROM public.\"Revenue\" WHERE public.\"Revenue\".\"FarmId\" = @farmId";
+
                 }
                 else if (reportName == "ExpensesPartition.frx")
                 {

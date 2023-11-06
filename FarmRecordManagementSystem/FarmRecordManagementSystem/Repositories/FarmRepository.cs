@@ -235,7 +235,7 @@ namespace FarmRecordManagementSystem.Repositories
             int newTotalRevenue = revenue + sales;
 
             // Calculate and update the new total revenue in the "FarmRevenue" table
-            string updateRevenueQuery = "UPDATE public.\"Farms\" SET \"TotalFarmRevenue\" = @TotalRevenue WHERE public.\"Farms\".\"Id\" = @FarmId";
+            string updateRevenueQuery = "UPDATE public.\"Revenue\" SET \"TotalRevenue\" = @TotalRevenue WHERE public.\"Revenue\".\"FarmId\" = @FarmId";
 
             using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateRevenueQuery, connection))
             {
@@ -502,26 +502,17 @@ namespace FarmRecordManagementSystem.Repositories
                 farmCommand.Parameters.AddWithValue("@CreatedAt", CreatedAt);
                 farmCommand.Parameters.AddWithValue("@CreatedBy", userId);
 
-                int farmId = (int)await farmCommand.ExecuteScalarAsync();
+                // Execute the query and get the newly generated farm ID
+                int newFarmId = (int)await farmCommand.ExecuteScalarAsync();
 
-                if (farm.HasPartitions && partitions != null && partitions.Any())
+                string insertRevenue = "INSERT INTO public.\"Revenue\" (\"FarmId\", \"TotalRevenue\") VALUES(@farmId, @totalRevenue)";
+
+                using (NpgsqlCommand revenueCommand = new NpgsqlCommand(insertRevenue, connection))
                 {
-                    string partitionQuery = "INSERT INTO public.\"FarmPartitions\" (\"FarmId\", \"Name\", \"Size\", \"DateCreated\")" +
-                        "VALUES(@FarmId, @Name, @Size, @DateCreated)";
+                    revenueCommand.Parameters.AddWithValue("@farmId", newFarmId);
+                    revenueCommand.Parameters.AddWithValue("@totalRevenue", 0);
 
-                    using (NpgsqlCommand partitionCommand = new NpgsqlCommand(partitionQuery, connection))
-                    {
-                        foreach (var partition in partitions)
-                        {
-                            partitionCommand.Parameters.Clear();
-                            partitionCommand.Parameters.AddWithValue("@FarmId", farmId);
-                            partitionCommand.Parameters.AddWithValue("@Name", partition.Name);
-                            partitionCommand.Parameters.AddWithValue("@Size", partition.Size);
-                            partitionCommand.Parameters.AddWithValue("@DateCreated", DateTime.Now);
-
-                            await partitionCommand.ExecuteNonQueryAsync();
-                        }
-                    }
+                    await revenueCommand.ExecuteNonQueryAsync();
                 }
             }
         }

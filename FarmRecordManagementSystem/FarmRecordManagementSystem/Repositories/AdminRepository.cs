@@ -30,13 +30,19 @@ namespace FarmRecordManagementSystem.Repositories
                         {
                             Id = (int)reader["Id"],
                             Name = (string)reader["Name"],
-                            Size = (int)reader["Size"],
-                            CreatedAt = (DateTime)reader["CreatedAt"],
-                            CreatedBy = (int)reader["CreatedBy"]
+                            Size = (int)reader["Size"]
                         };
                         if (!reader.IsDBNull(reader.GetOrdinal("SoilType")))
                         {
                             farm.SoilType = (string)reader["SoilType"];
+                        }
+                        if (!reader.IsDBNull(reader.GetOrdinal("CreatedAt")))
+                        {
+                            farm.CreatedAt = (DateTime)reader["CreatedAt"];
+                        }
+                        if (!reader.IsDBNull(reader.GetOrdinal("CreatedBy")))
+                        {
+                            farm.CreatedBy = (int)reader["CreatedBy"];
                         }
 
                         farms.Add(farm);
@@ -75,6 +81,27 @@ namespace FarmRecordManagementSystem.Repositories
             if (users.Count == 0)
                 return null;
             return users;
+        }
+
+        public async Task AddUser(AppUsers user)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            string query = "INSERT INTO public.\"AppUsers\" (\"Email\", \"UserName\", \"Password\", \"Role\", \"AccountStatus\") VALUES (@Email, @UserName, @Password, @Role, @Status)";
+
+            DateTime CreatedAt = DateTime.UtcNow;
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Email", user.Email);
+                command.Parameters.AddWithValue("@UserName", user.UserName);
+                command.Parameters.AddWithValue("@Password", user.Password);
+                command.Parameters.AddWithValue("@Role", user.Role);
+                command.Parameters.AddWithValue("@Status", "Active");
+
+                await command.ExecuteNonQueryAsync();
+            }
         }
     }
 }
