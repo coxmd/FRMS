@@ -8,11 +8,8 @@ namespace FarmRecordManagementSystem.Services
         Task<List<Farms>> GetAllFarms();
         Task<List<AppUsers>> GetAllUsers();
         Task AddUser(AppUsers user);
-        // Task<List<Inventory>> GetAllInventoryItems();
-
-        // Task<Farms> GetFarmDetails(int farmId);
-        // // Task<List<Inventory>> GetFarmInventory(int farmId);
-        // Task AddUser(AppUsers user);
-        // Task UpdateUser(AppUsers user);
+        Task<AppUsers> GetUser(int id);
+        Task UpdateUser(AppUsers user);
+        Task DeactivateUser(int Id);
     }
 }

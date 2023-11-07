@@ -7,7 +7,7 @@ Layout = "_LayoutAdminLoggedIn";
 <partial name="_Notification" />
 
 <h2>All Users</h2>
-<a href="@Url.Action("AddUser", "Admin")" class="btn btn-danger mt-1 mb-2">Add A new
+<a href="@Url.Action("AddUsers", "Admin")" class="btn btn-danger mt-1 mb-2">Add A new
     User</a>
 <a href="@Url.Action("Index", "Admin")" class="btn btn-danger mt-1 mb-2">Back</a>
 
@@ -37,7 +37,8 @@ Layout = "_LayoutAdminLoggedIn";
                     |
                     <form asp-action="DeactivateUser" asp-route-id="@user.Id" method="post" style="display:inline">
                         <button type="submit" class="btn btn-danger btn-sm"
-                            onclick="return confirm('Are you sure you want to deactivate this User?')">Deactivate</button>
+                            onclick="return confirm('Are you sure you want to deactivate this User Account?')"
+                        @(user.AccountStatus == "Deactivated" ? "disabled" : "")>Deactivate</button>
                     </form>
                     @* <a class="btn btn-danger btn-sm" href="" onclick="confirmDelete('@expense.Id')">Delete</a> *@
                     @* <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteExpense", new { id = expense.Id

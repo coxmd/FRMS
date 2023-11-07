@@ -40,6 +40,12 @@ namespace FarmRecordManagementSystem.Controllers
             return View(users);
         }
 
+        [HttpGet]
+        public IActionResult AddUsers()
+        {
+            return View();
+        }
+
         [HttpPost]
         public async Task<IActionResult> AddUsers(AppUsers user)
         {
@@ -47,6 +53,33 @@ namespace FarmRecordManagementSystem.Controllers
             TempData["success"] = "User Created Successfully";
             return RedirectToAction("GetAllUsers");
         }
+
+        [HttpGet]
+        public async Task<IActionResult> EditUser(int Id)
+        {
+            var user = await _adminRepository.GetUser(Id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(AppUsers user)
+        {
+            await _adminRepository.UpdateUser(user);
+            TempData["success"] = "User Updated Successfully";
+            return RedirectToAction("GetAllUsers");
+        }
+
+        public async Task<IActionResult> DeactivateUser(int Id)
+        {
+            await _adminRepository.DeactivateUser(Id);
+            TempData["success"] = "User Deactivated Successfully";
+            return RedirectToAction("GetAllUsers");
+        }
+
 
     }
 }
