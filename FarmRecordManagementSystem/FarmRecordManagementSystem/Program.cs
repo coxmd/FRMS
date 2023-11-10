@@ -32,6 +32,7 @@ configuration.SaveJsonToFile(configurationPath);
 
 builder.Services.AddSingleton<IFarmRepository, FarmRepository>();
 builder.Services.AddSingleton<IAdminRepository, AdminRepository>();
+builder.Services.AddSingleton<IProfileRepository, ProfileRepository>();
 
 builder.Services.AddAuthentication(options =>
 {

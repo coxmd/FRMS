@@ -158,7 +158,7 @@ namespace FarmRecordManagementSystem.Repositories
             if (!string.IsNullOrEmpty(user.Password))
             {
                 query += "\"Password\" = @Password, ";
-                parameters.Add(new NpgsqlParameter("@Password", user.Password));
+                parameters.Add(new NpgsqlParameter("@Password", BC.HashPassword(user.Password)));
             }
 
             if (!string.IsNullOrEmpty(user.Role))
