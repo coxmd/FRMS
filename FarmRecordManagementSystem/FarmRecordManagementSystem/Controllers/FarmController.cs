@@ -492,7 +492,7 @@ namespace FarmRecordManagementSystem.Controllers
         //     }
         // }
 
-        public async Task<IActionResult> GenerateReports([FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId, int partitionId, int cropId)
+        public async Task<IActionResult> GenerateReports(DateTime startDate, DateTime endDate, [FromServices] IWebHostEnvironment webHostEnvironment, int reportTypeId, int farmId, int partitionId, int cropId)
         {
             using (Report report = new Report())
             {
@@ -508,15 +508,15 @@ namespace FarmRecordManagementSystem.Controllers
                 }
                 else if (reportName == "Crops.frx")
                 {
-                    sql = "SELECT * FROM public.\"Crops\" WHERE public.\"Crops\".\"FarmId\" = @farmId";
+                    sql = "SELECT * FROM public.\"Crops\" WHERE public.\"Crops\".\"FarmId\" = @farmId AND public.\"Crops\".\"CreatedAt\" >= @startDate AND public.\"Crops\".\"CreatedAt\" <= @endDate";
                 }
                 else if (reportName == "Tasks.frx")
                 {
-                    sql = "SELECT * FROM public.\"Tasks\" WHERE public.\"Tasks\".\"FarmId\" = @farmId";
+                    sql = "SELECT * FROM public.\"Tasks\" WHERE public.\"Tasks\".\"FarmId\" = @farmId AND public.\"Tasks\".\"CreatedAt\" >= @startDate AND public.\"Tasks\".\"CreatedAt\" <= @endDate";
                 }
                 else if (reportName == "Revenue.frx")
                 {
-                    sql = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId";
+                    sql = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId AND public.\"Inventory\".\"CreatedAt\" >= @startDate AND public.\"Inventory\".\"CreatedAt\" <= @endDate";
 
                 }
                 else if (reportName == "Revenue-Farms-Summary.frx")
@@ -530,11 +530,11 @@ namespace FarmRecordManagementSystem.Controllers
                 {
                     if (HttpContext.Request.Form.ContainsKey("partitionId"))
                     {
-                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" = @partitionId";
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" = @partitionId AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
                     }
                     else
                     {
-                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" IS NULL";
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" IS NULL AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
                     }
 
                 }
@@ -542,17 +542,17 @@ namespace FarmRecordManagementSystem.Controllers
                 {
                     if (HttpContext.Request.Form.ContainsKey("cropId"))
                     {
-                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"CropId\" = @cropId";
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"CropId\" = @cropId AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
                     }
                     else
                     {
-                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
                     }
 
                 }
                 else
                 {
-                    sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
+                    sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
                 }
 
                 using (NpgsqlCommand command = new NpgsqlCommand(sql, connection))
@@ -562,6 +562,8 @@ namespace FarmRecordManagementSystem.Controllers
                     command.Parameters.AddWithValue("@farmId", farmId);
                     command.Parameters.AddWithValue("@cropId", cropId);
                     command.Parameters.AddWithValue("@partitionId", partitionId);
+                    command.Parameters.AddWithValue("@startDate", startDate);
+                    command.Parameters.AddWithValue("@endDate", endDate);
 
                     using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
                     {
