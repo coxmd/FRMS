@@ -220,8 +220,17 @@ namespace FarmRecordManagementSystem.Controllers
         public async Task<IActionResult> Index()
         {
             var Id = HttpContext.Session.GetInt32("Id");
-            var farms = await _farmRepository.GetAllFarms(Id);
-            return View(farms);
+
+            if (Id != null)
+            {
+                var farms = await _farmRepository.GetAllFarms(Id);
+                return View(farms);
+            }
+            else
+            {
+                // Handle the case where the Id is null or missing in the session
+                return RedirectToAction("Login"); // Redirect to login page
+            }
         }
 
         public IActionResult Privacy()

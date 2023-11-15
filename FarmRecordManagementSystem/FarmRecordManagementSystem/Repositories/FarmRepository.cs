@@ -105,8 +105,10 @@ namespace FarmRecordManagementSystem.Repositories
 
             DateTime createdAt = DateTime.UtcNow;
 
-            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\", \"FarmSizePlanted\", \"PartitionPlanted\", \"QuantityPlanted\", \"ExpectedHarvestQuantity\", \"ExpectedBagsHarvested\", \"CreatedAt\", \"CreatedBy\")" +
-                        "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate, @FarmSizePlanted, @PartitionPlanted, @QuantityPlanted, @ExpectedHarvestQuantity, @ExpectedBagsHarvested, @CreatedAt, @CreatedBy)";
+            string initialStatus = "Growing";
+
+            string query = "INSERT INTO public.\"Crops\" (\"Name\", \"Variety\", \"FarmId\", \"PlantingDate\", \"ExpectedHarvestDate\", \"FarmSizePlanted\", \"PartitionPlanted\", \"QuantityPlanted\", \"ExpectedHarvestQuantity\", \"ExpectedBagsHarvested\", \"CreatedAt\", \"CreatedBy\", \"Status\")" +
+                        "VALUES(@Name, @Variety, @FarmId, @PlantingDate, @ExpectedHarvestDate, @FarmSizePlanted, @PartitionPlanted, @QuantityPlanted, @ExpectedHarvestQuantity, @ExpectedBagsHarvested, @CreatedAt, @CreatedBy, @Status)";
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
             {
@@ -118,6 +120,7 @@ namespace FarmRecordManagementSystem.Repositories
                 command.Parameters.AddWithValue("@FarmSizePlanted", crop.FarmSizePlanted);
                 command.Parameters.AddWithValue("@CreatedAt", createdAt);
                 command.Parameters.AddWithValue("@CreatedBy", userId);
+                command.Parameters.AddWithValue("@Status", initialStatus);
                 if (hasPartitions)
                 {
                     command.Parameters.AddWithValue("@PartitionPlanted", partitionId);
@@ -238,6 +241,16 @@ namespace FarmRecordManagementSystem.Repositories
             string updateRevenueQuery = "UPDATE public.\"Revenue\" SET \"TotalRevenue\" = @TotalRevenue WHERE public.\"Revenue\".\"FarmId\" = @FarmId";
 
             using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateRevenueQuery, connection))
+            {
+                updateCommand.Parameters.AddWithValue("@FarmId", farmId);
+                updateCommand.Parameters.AddWithValue("@TotalRevenue", newTotalRevenue);
+
+                await updateCommand.ExecuteNonQueryAsync();
+            }
+
+            string updateRevenueQuery2 = "UPDATE public.\"Farms\" SET \"TotalFarmRevenue\" = @TotalRevenue WHERE public.\"Farms\".\"Id\" = @FarmId";
+
+            using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateRevenueQuery2, connection))
             {
                 updateCommand.Parameters.AddWithValue("@FarmId", farmId);
                 updateCommand.Parameters.AddWithValue("@TotalRevenue", newTotalRevenue);
@@ -823,6 +836,37 @@ namespace FarmRecordManagementSystem.Repositories
             }
         }
 
+        public async Task MarkAsHarvested(int Id)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            Crops crop = null!;
+            string query = "SELECT * FROM public.\"Crops\" WHERE public.\"Crops\".\"Id\" = @Id";
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@Id", Id);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        crop = new Crops
+                        {
+                            Id = (int)reader["Id"],
+                            Status = (string)reader["Status"]
+                        };
+                    }
+                }
+            }
+
+            string updateStatusQuery = "UPDATE public.\"Crops\" SET \"Status\" = 'Harvested' WHERE public.\"Crops\".\"Id\" = @Id";
+            using (NpgsqlCommand command = new NpgsqlCommand(updateStatusQuery, connection))
+            {
+                command.Parameters.AddWithValue("@Id", Id);
+                await command.ExecuteNonQueryAsync();
+            }
+        }
+
         public async Task<Farms> GetFarmDetails(int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -963,6 +1007,10 @@ namespace FarmRecordManagementSystem.Repositories
                         {
                             crop.Variety = (string)reader["Variety"];
                         }
+                        if (!reader.IsDBNull(reader.GetOrdinal("Status")))
+                        {
+                            crop.Status = (string)reader["Status"];
+                        }
 
                         crops.Add(crop);
                         // if(servicePoint is ServicePoint)
@@ -971,6 +1019,18 @@ namespace FarmRecordManagementSystem.Repositories
             }
             if (crops.Count == 0)
                 return null;
+
+            // Check and update statuses of all crops with reached expected harvest date
+            string updateStatusQuery = "UPDATE public.\"Crops\" SET \"Status\" = 'Ready for Harvesting' WHERE \"ExpectedHarvestDate\" <= @CurrentDate AND \"Status\" != 'Harvested'";
+
+            using (NpgsqlCommand updateStatusCommand = new NpgsqlCommand(updateStatusQuery, connection))
+            {
+                updateStatusCommand.Parameters.AddWithValue("@CurrentDate", DateTime.UtcNow);
+
+                await updateStatusCommand.ExecuteNonQueryAsync();
+
+            }
+
             return crops;
         }
 

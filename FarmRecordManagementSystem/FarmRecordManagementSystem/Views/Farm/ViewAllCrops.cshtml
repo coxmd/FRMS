@@ -27,6 +27,7 @@ Layout = "_LayoutAdminLoggedIn";
                 <th scope="row">Variety</th>
                 <th scope="row">Planting Date</th>
                 <th scope="row">Expected Harvest Date</th>
+                <th scope="row">Status</th>
                 <th scope="row">Quantity Planted(In Kg)</th>
                 <th scope="row">Expected Harvest Quantity (In Kg)</th>
                 <th scope="row">Expected Harvested Bags (50kg Sacks)</th>
@@ -42,11 +43,18 @@ Layout = "_LayoutAdminLoggedIn";
                     <td>@crop.Variety</td>
                     <td>@crop.PlantingDate</td>
                     <td>@crop.ExpectedHarvestDate</td>
+                    <td>@crop.Status</td>
                     <td>@crop.QuantityPlanted</td>
                     <td>@crop.ExpectedHarvestedQuantity</td>
                     <td>@crop.ExpectedBagsHarvested</td>
                     <td>@crop.FarmSizePlanted</td>
                     <td>
+                        @if (crop.Status == "Ready for Harvesting")
+                        {
+                            <a class="btn btn-success mx-1 btn-sm"
+                                href="@Url.Action("MarkAsHarvested", new { id = crop.Id, farmId = crop.FarmId })">Mark As
+                                Harvested</a>
+                        }
                         <a class="btn btn-primary mx-1 btn-sm"
                             href="@Url.Action("UpdateCropDetails", new { id = crop.Id, farmId = crop.FarmId })">Edit</a> |
                         <form asp-action="DeleteCrop" asp-route-id="@crop.Id" asp-route-farmId="@farmId" method="post"

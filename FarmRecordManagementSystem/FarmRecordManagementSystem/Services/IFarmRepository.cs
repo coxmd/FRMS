@@ -26,6 +26,7 @@ namespace FarmRecordManagementSystem.Services
         Task<bool> CheckPartitions(int farmId);
 
         Task MarkAsFinished(int Id);
+        Task MarkAsHarvested(int Id);
         Task<List<Expenses>> ViewAllExpenses(int farmId);
         Task<List<StorageLocation>> ViewAllStorageLocations(int farmId);
         Task AddCrops(CropsFarmViewModel crop, int farmId, int userId);

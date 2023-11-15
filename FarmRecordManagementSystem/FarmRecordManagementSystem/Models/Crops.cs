@@ -6,6 +6,7 @@ namespace FarmRecordManagementSystem.Models
 
         public string? Name { get; set; }
         public string? Variety { get; set; }
+        public string Status { get; set; }
         public int? FarmId { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }

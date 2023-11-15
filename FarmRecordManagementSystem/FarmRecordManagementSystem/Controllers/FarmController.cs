@@ -368,6 +368,13 @@ namespace FarmRecordManagementSystem.Controllers
             return RedirectToAction("GetAllTasks", new { farmId = farmId });
         }
 
+        public async Task<IActionResult> MarkAsHarvested(Crops crop, int Id, int farmId)
+        {
+            await _farmRepository.MarkAsHarvested(Id);
+            TempData["success"] = "Crop Marked as Harvested";
+            return RedirectToAction("ViewAllCrops", new { farmId = farmId });
+        }
+
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("UserAuthentication");
