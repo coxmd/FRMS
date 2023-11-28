@@ -57,13 +57,15 @@ namespace FarmRecordManagementSystem.Controllers
         {
             var farm = await _farmRepository.GetFarmDetails(farmId);
             var partitions = await _farmRepository.GetAllPartitions(farmId);
+            var cropTypes = await _farmRepository.GetCropTypes();
             var crops = new Crops { FarmId = farmId };
 
             var viewModel = new CropsFarmViewModel
             {
                 Farms = farm,
                 Crops = crops,
-                Partitions = partitions
+                Partitions = partitions,
+                CropTypes = cropTypes
             };
             return View(viewModel);
         }
@@ -272,6 +274,13 @@ namespace FarmRecordManagementSystem.Controllers
         {
             var tasks = await _farmRepository.GetAllTasks(farmId);
             return View(tasks);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> GetVarieties(int cropId)
+        {
+            var variety = await _farmRepository.GetVarietiesForCrop(cropId);
+            return Json(new { variety });
         }
 
         [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
@@ -515,20 +524,40 @@ namespace FarmRecordManagementSystem.Controllers
                 }
                 else if (reportName == "Crops.frx")
                 {
-                    sql = "SELECT * FROM public.\"Crops\" WHERE public.\"Crops\".\"FarmId\" = @farmId AND public.\"Crops\".\"CreatedAt\" >= @startDate AND public.\"Crops\".\"CreatedAt\" <= @endDate";
+                    sql = "SELECT * FROM public.\"Crops\" WHERE public.\"Crops\".\"FarmId\" = @farmId";
+
+                    if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                    {
+                        sql += " AND public.\"Crops\".\"CreatedAt\" >= @startDate AND public.\"Crops\".\"CreatedAt\" <= @endDate";
+                    }
                 }
                 else if (reportName == "Tasks.frx")
                 {
-                    sql = "SELECT * FROM public.\"Tasks\" WHERE public.\"Tasks\".\"FarmId\" = @farmId AND public.\"Tasks\".\"CreatedAt\" >= @startDate AND public.\"Tasks\".\"CreatedAt\" <= @endDate";
+                    sql = "SELECT * FROM public.\"Tasks\" WHERE public.\"Tasks\".\"FarmId\" = @farmId";
+
+                    if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                    {
+                        sql += " AND public.\"Tasks\".\"CreatedAt\" >= @startDate AND public.\"Tasks\".\"CreatedAt\" <= @endDate";
+                    }
                 }
                 else if (reportName == "Revenue.frx")
                 {
-                    sql = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId AND public.\"Inventory\".\"CreatedAt\" >= @startDate AND public.\"Inventory\".\"CreatedAt\" <= @endDate";
+                    sql = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId";
+
+                    if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                    {
+                        sql += " AND public.\"Inventory\".\"CreatedAt\" >= @startDate AND public.\"Inventory\".\"CreatedAt\" <= @endDate";
+                    }
 
                 }
                 else if (reportName == "Revenue-Farms-Summary.frx")
                 {
                     sql = "SELECT * FROM public.\"Farms\" WHERE public.\"Farms\".\"FarmerId\" = @farmerId";
+
+                    if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                    {
+                        sql += " AND public.\"Inventory\".\"CreatedAt\" >= @startDate AND public.\"Inventory\".\"CreatedAt\" <= @endDate";
+                    }
 
                     //  sql = "SELECT * FROM public.\"Revenue\" WHERE public.\"Revenue\".\"FarmId\" = @farmId";
 
@@ -537,11 +566,21 @@ namespace FarmRecordManagementSystem.Controllers
                 {
                     if (HttpContext.Request.Form.ContainsKey("partitionId"))
                     {
-                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" = @partitionId AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" = @partitionId";
+
+                        if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                        {
+                            sql += " AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                        }
                     }
                     else
                     {
-                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" IS NULL AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"PartitionId\" IS NULL";
+
+                        if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                        {
+                            sql += " AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                        }
                     }
 
                 }
@@ -549,17 +588,32 @@ namespace FarmRecordManagementSystem.Controllers
                 {
                     if (HttpContext.Request.Form.ContainsKey("cropId"))
                     {
-                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"CropId\" = @cropId AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"CropId\" = @cropId";
+
+                        if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                        {
+                            sql += "  AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                        }
                     }
                     else
                     {
-                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                        sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
+
+                        if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                        {
+                            sql += "  AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                        }
                     }
 
                 }
                 else
                 {
-                    sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                    sql = "SELECT * FROM public.\"Expenses\" WHERE public.\"Expenses\".\"FarmId\" = @farmId";
+
+                    if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                    {
+                        sql += "  AND public.\"Expenses\".\"CreatedAt\" >= @startDate AND public.\"Expenses\".\"CreatedAt\" <= @endDate";
+                    }
                 }
 
                 using (NpgsqlCommand command = new NpgsqlCommand(sql, connection))

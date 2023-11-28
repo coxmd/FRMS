@@ -4,6 +4,7 @@ namespace FarmRecordManagementSystem.Models
     {
         public Farms Farms { get; set; }
         public Crops Crops { get; set; }
+        public List<CropTypes> CropTypes { get; set; }
         public List<FarmPartitions> Partitions { get; set; }
 
         public string? Name { get; set; }

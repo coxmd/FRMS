@@ -22,6 +22,8 @@ namespace FarmRecordManagementSystem.Services
         Task<List<Crops>> ViewAllCrops(int farmId);
         Task<Crops?> GetCropById(int Id);
         Task<List<Tasks>> GetAllTasks(int farmId);
+        Task<List<CropTypes>> GetCropTypes();
+        Task<List<CropVariety>> GetVarietiesForCrop(int CropId);
         Task<List<FarmPartitions>> GetAllPartitions(int farmId);
         Task<bool> CheckPartitions(int farmId);
 

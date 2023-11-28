@@ -748,6 +748,36 @@ namespace FarmRecordManagementSystem.Repositories
             return tasks;
         }
 
+        public async Task<List<CropTypes>> GetCropTypes()
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            var cropTypes = new List<CropTypes>();
+            string query = "SELECT * FROM public.\"CropTypes\"";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var type = new CropTypes
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"]
+                        };
+
+                        cropTypes.Add(type);
+                        // if(servicePoint is ServicePoint)
+                    }
+                }
+            }
+            if (cropTypes.Count == 0)
+                return null;
+            return cropTypes;
+        }
+
         public async Task<List<FarmPartitions>> GetAllPartitions(int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
@@ -778,6 +808,37 @@ namespace FarmRecordManagementSystem.Repositories
             if (partitions.Count == 0)
                 return null;
             return partitions;
+        }
+
+        public async Task<List<CropVariety>> GetVarietiesForCrop(int CropId)
+        {
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            var varieties = new List<CropVariety>();
+            string query = "SELECT * FROM public.\"CropVariety\" WHERE public.\"CropVariety\".\"CropId\" = @cropId";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@cropId", CropId);
+                using (NpgsqlDataReader reader = await command.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        var variety = new CropVariety
+                        {
+                            Id = (int)reader["Id"],
+                            Name = (string)reader["Name"]
+                        };
+
+                        varieties.Add(variety);
+                        // if(servicePoint is ServicePoint)
+                    }
+                }
+            }
+            if (varieties.Count == 0)
+                return null;
+            return varieties;
         }
 
         public async Task<bool> CheckPartitions(int farmId)
@@ -1019,18 +1080,6 @@ namespace FarmRecordManagementSystem.Repositories
             }
             if (crops.Count == 0)
                 return null;
-
-            // Check and update statuses of all crops with reached expected harvest date
-            string updateStatusQuery = "UPDATE public.\"Crops\" SET \"Status\" = 'Ready for Harvesting' WHERE \"ExpectedHarvestDate\" <= @CurrentDate AND \"Status\" != 'Harvested'";
-
-            using (NpgsqlCommand updateStatusCommand = new NpgsqlCommand(updateStatusQuery, connection))
-            {
-                updateStatusCommand.Parameters.AddWithValue("@CurrentDate", DateTime.UtcNow);
-
-                await updateStatusCommand.ExecuteNonQueryAsync();
-
-            }
-
             return crops;
         }
 
