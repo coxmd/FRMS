@@ -21,9 +21,36 @@ namespace FarmRecordManagementSystem.Controllers
             _adminRepository = adminRepository;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var numberOfFarms = await _adminRepository.GetFarmCount();
+            var numberOfUsers = await _adminRepository.GetUserCount();
+            var totalRevenue = await _adminRepository.GetTotalRevenue();
+
+            ViewBag.NumberOfFarms = numberOfFarms;
+            ViewBag.NumberOfUsers = numberOfUsers;
+            ViewBag.TotalRevenue = FormatNumberWithCommas(totalRevenue);
             return View();
+        }
+
+        public string FormatNumberWithCommas(decimal number)
+        {
+            string formattedNumber;
+
+            if (number >= 1000000)
+            {
+                formattedNumber = number.ToString("#,##0");
+            }
+            else if (number >= 1000)
+            {
+                formattedNumber = number.ToString("#,##0");
+            }
+            else
+            {
+                formattedNumber = number.ToString("#,##0");
+            }
+
+            return formattedNumber;
         }
 
         [HttpGet]
@@ -38,6 +65,27 @@ namespace FarmRecordManagementSystem.Controllers
         {
             var users = await _adminRepository.GetAllUsers();
             return View(users);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> ViewExpenseCategory()
+        {
+            var category = await _adminRepository.GetAllExpenseCategory();
+            return View(category);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> ViewCropTypes()
+        {
+            var cropTypes = await _adminRepository.GetAllCropTypes();
+            return View(cropTypes);
+        }
+
+        [HttpGet, Authorize(AuthenticationSchemes = "UserAuthentication")]
+        public async Task<IActionResult> ViewCropVariety()
+        {
+            var category = await _adminRepository.GetAllCropVariety();
+            return View(category);
         }
 
         [HttpGet]

@@ -165,6 +165,7 @@ namespace FarmRecordManagementSystem.Controllers
 
                 if (appUsers.Role == "Admin")
                 {
+                    HttpContext.Session.SetInt32("Id", (int)appUsers.Id);
                     TempData["success"] = "Login Successfully";
                     return RedirectToAction("Index", "Admin");
                 }

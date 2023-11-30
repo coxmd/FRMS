@@ -8,7 +8,7 @@
     <div class="card mt-4 mx-2" style="width: 25rem;">
         <div class="card-body">
             <h5 class="card-title fs-3">Total Farms</h5>
-            <p class="card-text fs-3">22</p>
+            <p class="card-text fs-3">@ViewBag.NumberOfFarms</p>
             <a href="@Url.Action("GetAllFarms", "Admin")" class="btn btn-primary">View
                 Details</a>
         </div>
@@ -17,7 +17,16 @@
     <div class="card mt-4 mx-2" style="width: 25rem;">
         <div class="card-body">
             <h5 class="card-title fs-3">Number Of Users</h5>
-            <p class="card-text fs-3">22</p>
+            <p class="card-text fs-3">@ViewBag.NumberOfUsers</p>
+            <a href="@Url.Action("GetAllUsers", "Admin")" class="btn btn-primary">View
+                Details</a>
+        </div>
+    </div>
+
+    <div class="card mt-4 mx-2" style="width: 25rem;">
+        <div class="card-body">
+            <h5 class="card-title fs-3">Total Revenue Generated</h5>
+            <p class="card-text fs-3">Ksh @ViewBag.TotalRevenue</p>
             <a href="@Url.Action("GetAllUsers", "Admin")" class="btn btn-primary">View
                 Details</a>
         </div>

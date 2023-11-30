@@ -6,7 +6,6 @@ namespace FarmRecordManagementSystem.Services
     public interface IFarmRepository
     {
         Task<List<Farms>> GetAllFarms(int? Id);
-
         Task<Farms> GetFarmDetails(int farmId);
         Task<List<Inventory>> GetFarmInventory(int farmId);
         Task<Inventory> GetInventoryItem(int id);
