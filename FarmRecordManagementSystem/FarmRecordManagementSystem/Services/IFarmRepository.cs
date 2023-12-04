@@ -12,7 +12,7 @@ namespace FarmRecordManagementSystem.Services
 
         Task<Expenses> GetExpense(int id);
         Task<Tasks> GetTask(int id);
-        Task UpdateInventoryItem(Inventory inventory);
+        Task UpdateInventoryItem(Inventory inventory, int farmId);
         Task UpdateExpense(Expenses expense);
         Task UpdateTask(Tasks tasks);
 

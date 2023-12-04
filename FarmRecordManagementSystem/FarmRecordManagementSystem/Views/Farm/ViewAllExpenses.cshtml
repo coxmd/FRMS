@@ -2,7 +2,7 @@
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
 @* @{
-    Layout = "_LayoutAdminLoggedIn";
+Layout = "_LayoutAdminLoggedIn";
 } *@
 
 <partial name="_Notification" />
@@ -10,19 +10,18 @@
 {
     <h2>All Current Expenses</h2>
     string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
-    <a href="@Url.Action("AddExpenses", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Add An Expense</a>
+    <a href="@Url.Action("AddExpenses", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Add An
+        Expense</a>
     <a href="@Url.Action("GetFarmDetails", "Farm", new { farmId = farmId })" class="btn btn-danger mt-1 mb-2">Back</a>
 
     <table class="table" style="height: 350px; display:block; overflow-y: scroll; overflow-x: auto; white-space: nowrap;">
         <colgroup>
             <col width="20%" />
-            <col width="40%" />
         </colgroup>
         <thead>
             <tr>
                 <th scope="row">Name</th>
                 <th scope="row">Price</th>
-                <th scope="row">Category</th>
                 <th></th>
             </tr>
         </thead>
@@ -32,14 +31,17 @@
                 <tr class="table-dark">
                     <td>@expense.Name</td>
                     <td>@expense.Price</td>
-                    <td>@expense.Category</td>
                     <td>
-                        <a class="btn btn-primary mx-1 btn-sm" href="@Url.Action("EditExpense", new { id = expense.Id })">Edit</a> |
-                        <form asp-action="DeleteExpense" asp-route-id="@expense.Id" asp-route-farmId="@farmId" method="post" style="display:inline">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this expense?')">Delete</button>
+                        <a class="btn btn-primary mx-1 btn-sm"
+                            href="@Url.Action("EditExpense", new { id = expense.Id })">Edit</a> |
+                        <form asp-action="DeleteExpense" asp-route-id="@expense.Id" asp-route-farmId="@farmId" method="post"
+                            style="display:inline">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Are you sure you want to delete this expense?')">Delete</button>
                         </form>
                         @* <a class="btn btn-danger btn-sm" href="" onclick="confirmDelete('@expense.Id')">Delete</a> *@
-                        @* <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteExpense", new { id = expense.Id })">Delete</a> *@
+                        @* <a class="btn btn-danger btn-sm" href="@Url.Action("DeleteExpense", new { id = expense.Id
+                })">Delete</a> *@
                     </td>
                 </tr>
             }
@@ -52,12 +54,11 @@ else
 }
 
 @* <script>
-    function confirmDelete(expenseId) {
-        var result = confirm("Are you sure you want to delete this expense?");
-        if (result) {
-            // If the user confirms deletion, redirect to the DeleteExpense action
-            window.location.href = "@Url.Action("DeleteExpense")/" + expenseId;
-        }
-    }
+function confirmDelete(expenseId) {
+var result = confirm("Are you sure you want to delete this expense?");
+if (result) {
+// If the user confirms deletion, redirect to the DeleteExpense action
+window.location.href = "@Url.Action("DeleteExpense")/" + expenseId;
+}
+}
 </script> *@
-

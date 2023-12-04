@@ -9,6 +9,7 @@ namespace FarmRecordManagementSystem.Models
         public string? Category { get; set; }
 
         public int? FarmId { get; set; }
+        public string CategoryName { get; set; } // Add this property for category name
         public int? PartitionId { get; set; }
         public int? CropId { get; set; }
         public int CreatedBy { get; set; }

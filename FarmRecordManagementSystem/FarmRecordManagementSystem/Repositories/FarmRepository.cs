@@ -50,6 +50,10 @@ namespace FarmRecordManagementSystem.Repositories
             {
                 expectedHarvestQuantity = crop.FarmSizePlanted * 20000;
             }
+            else if (crop.Name == "GreenGrams")
+            {
+                expectedHarvestQuantity = crop.FarmSizePlanted * 450;
+            }
             else if (crop.Name == "Rice")
             {
                 expectedHarvestQuantity = crop.FarmSizePlanted * 14000;
@@ -78,7 +82,7 @@ namespace FarmRecordManagementSystem.Repositories
             {
                 expectedHarvestDate = crop.PlantingDate.AddMonths(6);
             }
-            else if (crop.Name == "Maize" || crop.Name == "Cabbage" || crop.Name == "Rice" || crop.Name == "Potatoes")
+            else if (crop.Name == "Maize" || crop.Name == "Cabbage" || crop.Name == "Rice" || crop.Name == "Potatoes" || crop.Name == "GreenGrams")
             {
                 expectedHarvestDate = crop.PlantingDate.AddMonths(3);
             }
@@ -298,6 +302,7 @@ namespace FarmRecordManagementSystem.Repositories
                             Id = (int)reader["Id"],
                             CropName = (string)reader["CropName"],
                             QuantityHarvested = (int)reader["QuantityHarvested"],
+                            QuantityRemaining = (int)reader["QuantityRemaining"],
                             PriceSold = (int)reader["PriceSold"],
                             TotalSold = (int)reader["TotalSold"],
                             FarmId = (int)reader["FarmId"]
@@ -308,22 +313,95 @@ namespace FarmRecordManagementSystem.Repositories
             return inventoryItem;
         }
 
-        public async Task UpdateInventoryItem(Inventory inventory)
+        public async Task UpdateInventoryItem(Inventory inventory, int farmId)
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
-            string query = "UPDATE public.\"Inventory\" SET \"CropName\" = @name, \"QuantityHarvested\" = @harvested, \"TotalSold\" = @TotalSold WHERE public.\"Inventory\".\"Id\" = @id";
+
+            // Start with the basic update query
+            string query = "UPDATE public.\"Inventory\" SET ";
+
+            int quantityHarvested = inventory.QuantityHarvested ?? 0;
+            int totalSold = inventory.TotalSold ?? 0;
+            int priceSold = inventory.PriceSold ?? 0;
+            int quantityRemaining = quantityHarvested - totalSold;
+            int sales = totalSold * priceSold;
+            // Fetch the total revenue (SUM of all sales) for the farm
+            int revenue = await GetTotalRevenueForFarm(farmId, connection);
+
+            // Initialize a list to store the parameters to set
+            var parameters = new List<NpgsqlParameter>();
+
+            if (!string.IsNullOrEmpty(inventory.CropName))
+            {
+                query += "\"CropName\" = @name, ";
+                parameters.Add(new NpgsqlParameter("@name", inventory.CropName));
+            }
+
+            if (inventory.QuantityHarvested.HasValue)
+            {
+                query += "\"QuantityHarvested\" = @harvested, ";
+                parameters.Add(new NpgsqlParameter("@harvested", inventory.QuantityHarvested.Value));
+            }
+
+            if (inventory.QuantityRemaining.HasValue)
+            {
+                query += "\"QuantityRemaining\" = @remaining, ";
+                parameters.Add(new NpgsqlParameter("@remaining", quantityRemaining));
+            }
+
+            if (inventory.PriceSold.HasValue)
+            {
+                query += "\"PriceSold\" = @PriceSold, ";
+                parameters.Add(new NpgsqlParameter("@PriceSold", priceSold));
+            }
+
+            if (inventory.TotalSold.HasValue)
+            {
+                query += "\"TotalSold\" = @totalSold, \"Sales\" = @Sales, ";
+                parameters.Add(new NpgsqlParameter("@totalSold", totalSold));
+                parameters.Add(new NpgsqlParameter("@Sales", sales));
+            }
+
+            // Remove the trailing comma
+            query = query.TrimEnd(' ', ',');
+
+            query += " WHERE \"Id\" = @id";
+
+            // Include the Inventory Id to specify which inventory to update
+            parameters.Add(new NpgsqlParameter("@id", inventory.Id));
 
             using (var command = new NpgsqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@name", inventory.CropName);
-                command.Parameters.AddWithValue("@harvested", inventory.QuantityHarvested);
-                command.Parameters.AddWithValue("@TotalSold", inventory.TotalSold);
-                command.Parameters.AddWithValue("@Id", inventory.Id);
+                command.Parameters.AddRange(parameters.ToArray());
 
                 await command.ExecuteNonQueryAsync();
             }
+
+            int newTotalRevenue = revenue + sales;
+
+            // Calculate and update the new total revenue in the "FarmRevenue" table
+            string updateRevenueQuery = "UPDATE public.\"Revenue\" SET \"TotalRevenue\" = @TotalRevenue WHERE public.\"Revenue\".\"FarmId\" = @FarmId";
+
+            using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateRevenueQuery, connection))
+            {
+                updateCommand.Parameters.AddWithValue("@FarmId", farmId);
+                updateCommand.Parameters.AddWithValue("@TotalRevenue", newTotalRevenue);
+
+                await updateCommand.ExecuteNonQueryAsync();
+            }
+
+            string updateRevenueQuery2 = "UPDATE public.\"Farms\" SET \"TotalFarmRevenue\" = @TotalRevenue WHERE public.\"Farms\".\"Id\" = @FarmId";
+
+            using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateRevenueQuery2, connection))
+            {
+                updateCommand.Parameters.AddWithValue("@FarmId", farmId);
+                updateCommand.Parameters.AddWithValue("@TotalRevenue", newTotalRevenue);
+
+                await updateCommand.ExecuteNonQueryAsync();
+            }
         }
+
 
         public async Task<Expenses> GetExpense(int id)
         {
@@ -1080,6 +1158,18 @@ namespace FarmRecordManagementSystem.Repositories
             }
             if (crops.Count == 0)
                 return null;
+
+            // Check and update statuses of all crops with reached expected harvest date
+            string updateStatusQuery = "UPDATE public.\"Crops\" SET \"Status\" = 'Ready for Harvesting' WHERE \"ExpectedHarvestDate\" <= @CurrentDate AND \"Status\" != 'Harvested'";
+
+            using (NpgsqlCommand updateStatusCommand = new NpgsqlCommand(updateStatusQuery, connection))
+            {
+                updateStatusCommand.Parameters.AddWithValue("@CurrentDate", DateTime.UtcNow);
+
+                await updateStatusCommand.ExecuteNonQueryAsync();
+
+            }
+
             return crops;
         }
 
@@ -1105,11 +1195,6 @@ namespace FarmRecordManagementSystem.Repositories
                             Price = (int)reader["Price"],
                             FarmId = (int)reader["FarmId"]
                         };
-                        if (!reader.IsDBNull(reader.GetOrdinal("Category")))
-                        {
-                            expense.Category = (string)reader["Category"];
-                        }
-
 
                         expenses.Add(expense);
                         // if(servicePoint is ServicePoint)

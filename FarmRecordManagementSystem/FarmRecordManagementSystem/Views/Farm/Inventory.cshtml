@@ -43,7 +43,7 @@ Item</a> *@
                 <td class="text-right">@crop.Sales</td>
                 <td>
                     <a class="btn btn-primary mx-1 btn-sm"
-                        href="@Url.Action("EditInventoryItem", new { id = crop.Id })">Edit</a> |
+                        href="@Url.Action("EditInventoryItem", new { id = crop.Id, farmId = @Model.Farm.Id })">Edit</a> |
                     <form asp-action="DeleteInventoryItem" asp-route-id="@crop.Id" asp-route-farmId="@Model.Farm.Id"
                         method="post" style="display:inline">
                         <button type="submit" class="btn btn-danger btn-sm"

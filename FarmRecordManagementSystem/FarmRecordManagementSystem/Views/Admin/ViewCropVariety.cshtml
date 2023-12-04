@@ -1,15 +1,14 @@
 @model List<CropVariety>
 @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
-@* @{
-Layout = "_LayoutAdminLoggedIn";
-} *@
+@{
+    Layout = "_LayoutAdmin";
+}
 
 <partial name="_Notification" />
 @if (Model != null)
 {
-    <h2>All Expense Categories</h2>
-    string farmId = HttpContextAccessor.HttpContext.Request.Query["farmId"];
+    <h2>All Crop Variety</h2>
     <a href="@Url.Action("AddCropVariety", "Admin")" class="btn btn-danger mt-1 mb-2">Add Crop
         Variety</a>
     <a href="@Url.Action("ViewCropVariety", "Admin")" class="btn btn-danger mt-1 mb-2">Back</a>
@@ -35,8 +34,8 @@ Layout = "_LayoutAdminLoggedIn";
                     <td>
                         <a class="btn btn-primary mx-1 btn-sm"
                             href="@Url.Action("EditCropType", new { id = cropVariety.Id })">Edit</a> |
-                        <form asp-action="DeleteCropVariety" asp-route-id="@cropVariety.Id" asp-route-farmId="@farmId"
-                            method="post" style="display:inline">
+                        <form asp-action="DeleteCropVariety" asp-route-id="@cropVariety.Id" method="post"
+                            style="display:inline">
                             <button type="submit" class="btn btn-danger btn-sm"
                                 onclick="return confirm('Are you sure you want to delete this Crop Variety?')">Delete</button>
                         </form>

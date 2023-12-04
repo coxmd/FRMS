@@ -11,25 +11,32 @@
     <div class="form-group">
         <div class="col-4">
             <label asp-for="CropName"></label>
-            <input asp-for="CropName" class="form-control" />
+            <input asp-for="CropName" class="form-control" required />
         </div>
 
         <div class="col-4">
             <label asp-for="StorageLocation"></label>
-            <select asp-for="StorageLocation" class="form-select">
+            <select asp-for="StorageLocation" class="form-select" required>
                 <option value="">-- Select Storage Location --</option>
-                @foreach (var location in ViewBag.Locations)
+                @if (ViewBag.Locations != null && ViewBag.Locations.Count > 0)
                 {
-                    <option value="@location.Id" class="text-dark">
-                        @location.Name
-                    </option>
+                    foreach (var location in ViewBag.Locations)
+                    {
+                        <option value="@location.Id" class="text-dark">
+                            @location.Name
+                        </option>
+                    }
+                }
+                else
+                {
+                    <option value="" disabled>No storage locations available. Add a storage location first.</option>
                 }
             </select>
         </div>
 
         <div class="col-4">
             <label asp-for="QuantityHarvested"></label>
-            <input asp-for="QuantityHarvested" class="form-control" />
+            <input asp-for="QuantityHarvested" class="form-control" required />
         </div>
 
         <div class="col-4">

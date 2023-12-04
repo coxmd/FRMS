@@ -384,7 +384,7 @@ namespace FarmRecordManagementSystem.Repositories
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
 
-            string query = "INSERT INTO public.\"cropTypes\" (\"Name\") VALUES(@Name)";
+            string query = "INSERT INTO public.\"CropTypes\" (\"Name\") VALUES(@Name)";
 
 
             using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
@@ -438,7 +438,7 @@ namespace FarmRecordManagementSystem.Repositories
         {
             using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
             connection.Open();
-            string query = "UPDATE public.\"ExpenseCategory\" SET \"Name\" = @name WHERE public.\"Expenses\".\"Id\" = @id";
+            string query = "UPDATE public.\"ExpenseCategory\" SET \"Name\" = @name WHERE public.\"ExpenseCategory\".\"Id\" = @id";
 
             using (var command = new NpgsqlCommand(query, connection))
             {

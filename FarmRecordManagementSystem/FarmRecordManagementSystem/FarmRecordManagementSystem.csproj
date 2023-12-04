@@ -8,10 +8,11 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.1"/>
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.1.0"/>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.0"/>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.1"/>
     <PackageReference Include="FastReport.OpenSource" Version="2023.2.18"/>
     <PackageReference Include="FastReport.OpenSource.Data.Postgres" Version="2021.1.0"/>
     <PackageReference Include="FastReport.OpenSource.Web" Version="2023.1.0"/>
     <PackageReference Include="FastReport.OpenSource.Export.PdfSimple" Version="2023.1.0"/>
+    <PackageReference Include="sib_api_v3_sdk" Version="4.0.2"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2"/>
   </ItemGroup>
 </Project>

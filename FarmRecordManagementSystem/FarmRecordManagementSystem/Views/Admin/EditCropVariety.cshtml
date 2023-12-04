@@ -1,0 +1,24 @@
+@model CropVariety
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    Layout = "_LayoutAdmin";
+}
+<partial name="_Notification" />
+
+<h2 class="mt-2">Update Crop Variety</h2>
+
+<form asp-action="EditCropVariety" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="CropId" />
+    <div class="form-group">
+        @* <input type="hidden" asp-for="FarmId" value="@farmId" /> *@
+        <div class="col-4">
+            <label asp-for="Name"></label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+        <div class="mt-2">
+            <button type="submit" class="btn btn-primary mt-1 mb-2">Update</button>
+            <a class="btn btn-danger mx-1 mb-2" onclick="window.history.back()">Back</a>
+        </div>
+    </div>
+</form>

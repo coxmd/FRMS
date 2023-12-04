@@ -7,6 +7,15 @@ using Npgsql;
 using System.Diagnostics;
 using System.Security.Claims;
 using BC = BCrypt.Net.BCrypt;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using sib_api_v3_sdk.Api;
+using sib_api_v3_sdk.Client;
+using sib_api_v3_sdk.Model;
+using System.Diagnostics;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace FarmRecordManagementSystem.Controllers
 {
@@ -118,14 +127,111 @@ namespace FarmRecordManagementSystem.Controllers
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Login(string UserName, string Password)
+        // private string GenerateResetToken()
+        // {
+        //     // Generate a unique token for password reset using Guid.NewGuid().ToString()
+        //     string resetToken = Guid.NewGuid().ToString();
+
+        //     return resetToken;
+        // }
+
+        [HttpGet]
+        public IActionResult ResetPassword()
         {
-            var query = $"SELECT * FROM public.\"AppUsers\" WHERE public.\"AppUsers\". \"UserName\" = @UserName";
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult ResetPasswordUser()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(AppUsers model)
+        {
+            bool isEmailInUse = await CheckIfEmailExists(model.Email);
+
+            if (!isEmailInUse)
+            {
+                // If the email doesn't exist in the database, return an error message
+                ModelState.AddModelError(string.Empty, "Email does not exist. You can Create a new account");
+                return View();
+            }
+            // string resetToken = GenerateResetToken();
+            Configuration.Default.ApiKey.Add("api-key", "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");
+
+            var apiInstance = new TransactionalEmailsApi();
+            string SenderName = "Cox Musyoki";
+            string SenderEmail = "coxmusyoki@gmail.com";
+            SendSmtpEmailSender emailSender = new SendSmtpEmailSender(SenderName, SenderEmail);
+
+
+            SendSmtpEmailTo emailReciever1 = new SendSmtpEmailTo(model.Email, model.Email);
+            List<SendSmtpEmailTo> To = new List<SendSmtpEmailTo>();
+            To.Add(emailReciever1);
+
+
+
+            string HtmlContent = "<html><body><h1>Use the link to reset your password: </h1>" +
+            "<a href='https://localhost:7170/Home/ResetPasswordUser'>Click This Link to reset your Password</a></body></html>";
+
+            string TextContent = null;
+            string Subject = "Password Reset";
+            try
+            {
+                var sendSmtpEmail = new SendSmtpEmail(emailSender, To, null, null, HtmlContent, TextContent, Subject);
+                CreateSmtpEmail result = apiInstance.SendTransacEmail(sendSmtpEmail);
+                Console.WriteLine("Response:\n" + result.ToJson());
+                TempData["success"] = "Reset Link Has been sent to your email";
+                return RedirectToAction("Login", "Home");
+            }
+            catch (Exception e)
+            {
+                TempData["error"] = "An Error Occured try again later";
+                Console.WriteLine(e.Message);
+                return RedirectToAction("Login", "Home");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPasswordUser(AppUsers model)
+        {
+            bool isEmailInUse = await CheckIfEmailExists(model.Email);
+
+            if (!isEmailInUse)
+            {
+                // If the email doesn't exist in the database, return an error message
+                ModelState.AddModelError(string.Empty, "Email does not exist. You can Create a new account");
+                return View();
+            }
+
+            using var connection = new NpgsqlConnection(_config.GetConnectionString("DefaultConnection"));
+            connection.Open();
+
+            // Start with the basic update query
+            string query = "UPDATE public.\"AppUsers\" SET \"Password\" = @NewPassword WHERE public.\"AppUsers\".\"Email\" = @Email";
+
+            using (var command = new NpgsqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@NewPassword", BC.HashPassword(model.Password));
+                command.Parameters.AddWithValue("@Email", model.Email);
+
+                await command.ExecuteNonQueryAsync();
+            }
+            TempData["success"] = "Password Reset Successful";
+            return RedirectToAction("Login", "Home");
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Login(string Email, string Password)
+        {
+            var query = $"SELECT * FROM public.\"AppUsers\" WHERE public.\"AppUsers\". \"Email\" = @Email";
 
             var parameters = new List<NpgsqlParameter>
             {
-                new("@UserName", UserName),
+                new("@Email", Email),
             };
 
             // if (!string.IsNullOrEmpty(Password))

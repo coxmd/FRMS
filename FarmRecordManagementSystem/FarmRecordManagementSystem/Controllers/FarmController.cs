@@ -177,7 +177,7 @@ namespace FarmRecordManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> EditInventoryItem(Inventory inventory, int farmId)
         {
-            await _farmRepository.UpdateInventoryItem(inventory);
+            await _farmRepository.UpdateInventoryItem(inventory, farmId);
             TempData["success"] = "Inventory Item Updated Successfully";
             return RedirectToAction("Inventory", new { farmId = farmId });
         }
@@ -541,6 +541,16 @@ namespace FarmRecordManagementSystem.Controllers
                     }
                 }
                 else if (reportName == "Revenue.frx")
+                {
+                    sql = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId";
+
+                    if (startDate != DateTime.MinValue && endDate != DateTime.MinValue)
+                    {
+                        sql += " AND public.\"Inventory\".\"CreatedAt\" >= @startDate AND public.\"Inventory\".\"CreatedAt\" <= @endDate";
+                    }
+
+                }
+                else if (reportName == "NetIncome.frx")
                 {
                     sql = "SELECT * FROM public.\"Inventory\" WHERE public.\"Inventory\".\"FarmId\" = @farmId";
 

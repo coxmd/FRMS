@@ -14,5 +14,6 @@ namespace FarmRecordManagementSystem.Models
         public int? StorageLocation { get; set; }
         public int? CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
+        public List<CropTypes> CropTypes { get; set; }
     }
 }
